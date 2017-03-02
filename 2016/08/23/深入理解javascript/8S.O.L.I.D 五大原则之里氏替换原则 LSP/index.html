@@ -1,0 +1,162 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>S.O.L.I.D 五大原则之里氏替换原则 LSP | Hexo</title>
+
+  
+  <meta name="author" content="John Doe">
+  
+
+  
+  <meta name="description" content="本章我们要讲解的是 S.O.L.I.D 五大原则 JavaScript 语言实现的第3篇，里氏替换原则 LSP（The Liskov Substitution Principle ）。
+开闭原则的描述是：
+
+Subtypes must be substitutable for their base ">
+  
+
+  
+  
+  <meta name="keywords" content="">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="S.O.L.I.D 五大原则之里氏替换原则 LSP"/>
+
+  <meta property="og:site_name" content="Hexo"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">Hexo</a>
+    </h1>
+    <p class="site-description"></p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
+
+  
+    
+    <h3 class="article-title"><span>S.O.L.I.D 五大原则之里氏替换原则 LSP</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2016/08/23/深入理解javascript/8S.O.L.I.D 五大原则之里氏替换原则 LSP/" rel="bookmark">
+        <time class="entry-date published" datetime="2016-08-23T04:02:02.000Z">
+          2016-08-23
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>本章我们要讲解的是 S.O.L.I.D 五大原则 JavaScript 语言实现的第3篇，里氏替换原则 LSP（The Liskov Substitution Principle ）。</p>
+<p>开闭原则的描述是：</p>
+<blockquote>
+<p>Subtypes must be substitutable for their base types.<br>派生类型必须可以替换它的基类型。</p>
+</blockquote>
+<p>在面向对象编程里，继承提供了一个机制让子类和共享基类的代码，这是通过在基类型里封装通用的数据和行为来实现的，然后已经及类型来声明更详细的子类型，为了应用里氏替换原则，继承子类型需要在语义上等价于基类型里的期望行为。</p>
+<p>为了来更好的理解，请参考如下代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">function Vehicle(my) &#123;</div><div class="line">    var my = my || &#123;&#125;;</div><div class="line">    my.speed = 0;</div><div class="line">    my.running = false;</div><div class="line">    this.speed = function() &#123;</div><div class="line">        return my.speed;</div><div class="line">    &#125;;</div><div class="line">    this.start = function() &#123;</div><div class="line">        my.running = true;</div><div class="line">    &#125;;</div><div class="line">    this.stop = function() &#123;</div><div class="line">        my.running = false;</div><div class="line">    &#125;;</div><div class="line">    this.accelerate = function() &#123;</div><div class="line">        my.speed++;</div><div class="line">    &#125;;</div><div class="line">    this.decelerate = function() &#123;</div><div class="line">        my.speed--;</div><div class="line">    &#125;, this.state = function() &#123;</div><div class="line">        if (!my.running) &#123;</div><div class="line">            return &quot;parked&quot;;</div><div class="line">        &#125;</div><div class="line">        else if (my.running &amp;&amp; my.speed) &#123;</div><div class="line">            return &quot;moving&quot;;</div><div class="line">        &#125;</div><div class="line">        else if (my.running) &#123;</div><div class="line">            return &quot;idle&quot;;</div><div class="line">        &#125;</div><div class="line">    &#125;;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>上述代码我们定义了一个 Vehicle 函数，其构造函数为 vehicle 对象提供了一些基本的操作，我们来想想如果当前函数当前正运行在服务客户的产品环境上，如果现在需要添加一个新的构造函数来实现加快移动的 vehicle。思考以后，我们写出了如下代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">function FastVehicle(my) &#123;</div><div class="line">    var my = my || &#123;&#125;;</div><div class="line">    var that = new Vehicle(my);</div><div class="line">    that.accelerate = function() &#123;</div><div class="line">        my.speed += 3;</div><div class="line">    &#125;;</div><div class="line">    return that;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在浏览器的控制台我们都测试了，所有的功能都是我们的预期，没有问题，FastVehicle 的速度增快了 3 倍，而且继承他的方法也是按照我们的预期工作。此后，我们开始部署这个新版本的类库到产品环境上，可是我们却接到了新的构造函数导致现有的代码不能支持执行了，下面的代码段揭示了这个问题：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">var maneuver = function(vehicle) &#123;</div><div class="line">    write(vehicle.state());</div><div class="line">    vehicle.start();</div><div class="line">    write(vehicle.state());</div><div class="line">    vehicle.accelerate();</div><div class="line">    write(vehicle.state());</div><div class="line">    write(vehicle.speed());</div><div class="line">    vehicle.decelerate();</div><div class="line">    write(vehicle.speed());</div><div class="line">    if (vehicle.state() != &quot;idle&quot;) &#123;</div><div class="line">        throw &quot;The vehicle is still moving!&quot;;</div><div class="line">    &#125;</div><div class="line">    vehicle.stop();</div><div class="line">    write(vehicle.state());</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>根据上面的代码，我们看到抛出的异常是“The vehicle is still moving!”，这是因为写这段代码的作者一直认为加速（accelerate）和减速（decelerate）的数字是一样的。但 FastVehicle 的代码和 Vehicle 的代码并不是完全能够替换掉的。因此，FastVehicle 违反了里氏替换原则。</p>
+<p>在这点上，你可能会想：“但，客户端不能老假定 vehicle 都是按照这样的规则来做”，里氏替换原则(LSP)的妨碍（译者注：就是妨碍实现 LSP 的代码）不是基于我们所想的继承子类应该在行为里确保更新代码，而是这样的更新是否能在当前的期望中得到实现。</p>
+<p>上述代码这个 case，解决这个不兼容的问题需要在 vehicle 类库或者客户端调用代码上进行一点重新设计，或者两者都要改。</p>
+<h2 id="减少-LSP-妨碍"><a href="#减少-LSP-妨碍" class="headerlink" title="减少 LSP 妨碍"></a>减少 LSP 妨碍</h2><p>那么，我们如何避免 LSP 妨碍？不幸的话，并不是一直都是可以做到的。我们这里有几个策略我们处理这个事情。</p>
+<h3 id="契约（Contracts）"><a href="#契约（Contracts）" class="headerlink" title="契约（Contracts）"></a>契约（Contracts）</h3><p>处理 LSP 过分妨碍的一个策略是使用契约，契约清单有 2 种形式：执行说明书（executable specifications）和错误处理，在执行说明书里，一个详细类库的契约也包括一组自动化测试，而错误处理是在代码里直接处理的，例如在前置条件，后置条件，常量检查等，可以从 Bertrand Miller 的大作<a href="http://en.wikipedia.org/wiki/Design_by_contract" target="_blank" rel="external">《契约设计》</a>中查看这个技术。虽然自动化测试和契约设计不在本篇文字的范围内，但当我们用的时候我还是推荐如下内容：</p>
+<ol>
+<li>检查使用测试驱动开发（Test-Driven Development）来指导你代码的设计</li>
+<li>设计可重用类库的时候可随意使用契约设计技术</li>
+</ol>
+<p>对于你自己要维护和实现的代码，使用契约设计趋向于添加很多不必要的代码，如果你要控制输入，添加测试是非常有必要的，如果你是类库作者，使用契约设计，你要注意不正确的使用方法以及让你的用户使之作为一个测试工具。</p>
+<h3 id="避免继承"><a href="#避免继承" class="headerlink" title="避免继承"></a>避免继承</h3><p>避免 LSP 妨碍的另外一个测试是：如果可能的话，尽量不用继承，在Gamma的大作<a href="http://www.amazon.com/Design-Patterns-Elements-Reusable-Object-Oriented/dp/0201633612" target="_blank" rel="external">《Design Patterns – Elements of Reusable Object-Orineted Software》</a>中，我们可以看到如下建议：</p>
+<blockquote>
+<p>Favor object composition over class inheritance<br>尽量使用对象组合而不是类继承</p>
+</blockquote>
+<p>有些书里讨论了组合比继承好的唯一作用是静态类型，基于类的语言（例如，在运行时可以改变行为），与 JavaScript 相关的一个问题是耦合，当使用继承的时候，继承子类型和他们的基类型耦合在一起了，就是说基类型的改变会影响到继承子类型。组合倾向于对象更小化，更容易向静态和动态语言语言维护。</p>
+<h2 id="与行为有关，而不是继承"><a href="#与行为有关，而不是继承" class="headerlink" title="与行为有关，而不是继承"></a>与行为有关，而不是继承</h2><p>到现在，我们讨论了和继承上下文在内的里氏替换原则，指示出 JavaScript 的面向对象实。不过，里氏替换原则（LSP）的本质不是真的和继承有关，而是行为兼容性。JavaScript 是一个动态语言，一个对象的契约行为不是对象的类型决定的，而是对象期望的功能决定的。里氏替换原则的初始构想是作为继承的一个原则指南，等价于对象设计中的隐式接口。</p>
+<p>举例来说，让我们来看一下 Robert C. Martin的 大作<a href="http://www.amazon.com/Design-Patterns-Elements-Reusable-Object-Oriented/dp/0201633612" target="_blank" rel="external">《敏捷软件开发 原则、模式与实践》</a>中的一个矩形类型：</p>
+<h3 id="矩形例子"><a href="#矩形例子" class="headerlink" title="矩形例子"></a>矩形例子</h3><p>考虑我们有一个程序用到下面这样的一个矩形对象:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">var rectangle = &#123;</div><div class="line">    length: 0,</div><div class="line">    width: 0</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>过后，程序有需要一个正方形，由于正方形就是一个长(length)和宽(width)都一样的特殊矩形，所以我们觉得创建一个正方形代替矩形。我们添加了 length 和 width 属性来匹配矩形的声明，但我们觉得使用属性的g etters/setters 一般我们可以让 length 和 width 保存同步，确保声明的是一个正方形：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">var square = &#123;&#125;;</div><div class="line">(function() &#123;</div><div class="line">    var length = 0, width = 0;</div><div class="line">    // 注意defineProperty方式是262-5版的新特性</div><div class="line">    Object.defineProperty(square, &quot;length&quot;, &#123;</div><div class="line">        get: function() &#123; return length; &#125;,</div><div class="line">        set: function(value) &#123; length = width = value; &#125;</div><div class="line">    &#125;);</div><div class="line">    Object.defineProperty(square, &quot;width&quot;, &#123;</div><div class="line">        get: function() &#123; return width; &#125;,</div><div class="line">        set: function(value) &#123; length = width = value; &#125;</div><div class="line">    &#125;);</div><div class="line">&#125;)();</div></pre></td></tr></table></figure>
+<p>不幸的是，当我们使用正方形代替矩形执行代码的时候发现了问题，其中一个计算矩形面积的方法如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">var g = function(rectangle) &#123;</div><div class="line">    rectangle.length = 3;</div><div class="line">    rectangle.width = 4;</div><div class="line">    write(rectangle.length);</div><div class="line">    write(rectangle.width);</div><div class="line">    write(rectangle.length * rectangle.width);</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>该方法在调用的时候，结果是 16，而不是期望的 12，我们的正方形 square 对象违反了 LSP 原则，square 的长度和宽度属性暗示着并不是和矩形 100% 兼容，但我们并不总是这样明确的暗示。解决这个问题，我们可以重新设计一个 shape 对象来实现程序，依据多边形的概念，我们声明 rectangle 和square，relevant。不管怎么说，我们的目的是要说里氏替换原则并不只是继承，而是任何方法（其中的行为可以另外的行为）。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>里氏替换原则（LSP）表达的意思不是继承的关系，而是任何方法（只要该方法的行为能体会另外的行为就行）。</p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/xuhongbo" target="_blank">Xuhongbo</a>
+    </br>
+    
+    &copy; 2017 John Doe
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

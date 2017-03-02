@@ -1,0 +1,148 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>设计模式之状态模式 | Hexo</title>
+
+  
+  <meta name="author" content="John Doe">
+  
+
+  
+  <meta name="description" content="状态模式（State）允许一个对象在其内部状态改变的时候改变它的行为，对象看起来似乎修改了它的类。
+正文举个例子，就比如我们平时在下载东西，通常就会有好几个状态，比如准备状态（ReadyState）、下载状态（DownloadingState）、暂停状态（DownloadPausedState）、下">
+  
+
+  
+  
+  <meta name="keywords" content="">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="设计模式之状态模式"/>
+
+  <meta property="og:site_name" content="Hexo"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">Hexo</a>
+    </h1>
+    <p class="site-description"></p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
+
+  
+    
+    <h3 class="article-title"><span>设计模式之状态模式</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2015/05/22/深入理解javascript/43设计模式之状态模式/" rel="bookmark">
+        <time class="entry-date published" datetime="2015-05-22T08:02:02.000Z">
+          2015-05-22
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>状态模式（State）允许一个对象在其内部状态改变的时候改变它的行为，对象看起来似乎修改了它的类。</p>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><p>举个例子，就比如我们平时在下载东西，通常就会有好几个状态，比如准备状态（ReadyState）、下载状态（DownloadingState）、暂停状态（DownloadPausedState）、下载完毕状态（DownloadedState）、失败状态（DownloadFailedState），也就是说在每个状态都只可以做当前状态才可以做的事情，而不能做其它状态能做的事儿。</p>
+<p>由于 State 模式描述了下载（Download）如何在每一种状态下表现出不同的行为。这一模式的关键思想就是引入了一个叫做 State 的抽象类（或 JS 里的函数）来表示下载状态，State 函数（作为原型）为每个状态的子类（继承函数）声明了一些公共接口。其每个继承函数实现与特定状态相关的行为，比如 DownloadingState 和 DownloadedState 分别实现了正在下载和下载完毕的行为。这些行为可以通过 Download 来来维护。</p>
+<p>让我们来实现一把，首先定义作为其他基础函数的原型的 State 函数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">var State = function () &#123;</div><div class="line">&#125;;</div><div class="line">State.prototype.download = function () &#123;</div><div class="line">    throw new Error(&quot;该方法必须被重载!&quot;);</div><div class="line">&#125;;</div><div class="line">State.prototype.pause = function () &#123;</div><div class="line">    throw new Error(&quot;该方法必须被重载!&quot;);</div><div class="line">&#125;;</div><div class="line">State.prototype.fail = function () &#123;</div><div class="line">    throw new Error(&quot;该方法必须被重载!&quot;);</div><div class="line">&#125;;</div><div class="line">State.prototype.finish = function () &#123;</div><div class="line">    throw new Error(&quot;该方法必须被重载!&quot;);</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>我们为 State 的原型定义了 4 个方法接口，分别对应着下载（download）、暂停（pause）、失败（fail）、结束（finish）以便子函数可以重写。</p>
+<p>在编写子函数之前，我们先来编写一个 ReadyState 函数，以便可以将状态传递给第一个 download 状态：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">var ReadyState = function (oDownload) &#123;</div><div class="line">    State.apply(this);</div><div class="line">    this.oDownload = oDownload;</div><div class="line">&#125;;</div><div class="line">ReadyState.prototype = new State();</div><div class="line">ReadyState.prototype.download = function () &#123;</div><div class="line">    this.oDownload.setState(this.oDownload.getDownloadingState());</div><div class="line">    // Ready以后，可以开始下载，所以设置了Download函数里的状态获取方法</div><div class="line"> console.log(&quot;Start Download!&quot;);</div><div class="line">&#125;;</div><div class="line">ReadyState.prototype.pause = function () &#123;</div><div class="line">    throw new Error(&quot;还没开始下载，不能暂停!&quot;);</div><div class="line">&#125;;</div><div class="line">ReadyState.prototype.fail = function () &#123;</div><div class="line">    throw new Error(&quot;文件还没开始下载，怎么能说失败呢!&quot;);</div><div class="line">&#125;;</div><div class="line">ReadyState.prototype.finish = function () &#123;</div><div class="line">    throw new Error(&quot;文件还没开始下载，当然也不能结束了!&quot;);</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>该函数接收了一个 Download 维护函数的实例作为参数，Download 函数用于控制状态的改变和获取（类似于中央控制器，让外部调用），ReadyState 重写了原型的 download 方法，以便开始进行下载。我们继续来看 Download 函数的主要功能：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line">var Download = function () &#123;</div><div class="line">    this.oState = new ReadyState(this);</div><div class="line">&#125;;</div><div class="line">Download.prototype.setState = function (oState) &#123;</div><div class="line">    this.oState = oState;</div><div class="line">&#125;;</div><div class="line">// 对外暴露的四个公共方法，以便外部调用</div><div class="line">Download.prototype.download = function () &#123;</div><div class="line">    this.oState.download();</div><div class="line">&#125;;</div><div class="line">Download.prototype.pause = function () &#123;</div><div class="line">    this.oState.pause();</div><div class="line">&#125;;</div><div class="line">Download.prototype.fail = function () &#123;</div><div class="line">    this.oState.fail();</div><div class="line">&#125;;</div><div class="line">Download.prototype.finish = function () &#123;</div><div class="line">    this.oState.finish();</div><div class="line">&#125;;</div><div class="line">//获取各种状态，传入当前this对象</div><div class="line">Download.prototype.getReadyState = function () &#123;</div><div class="line">    return new ReadyState(this);</div><div class="line">&#125;;</div><div class="line">Download.prototype.getDownloadingState = function () &#123;</div><div class="line">    return new DownloadingState(this);</div><div class="line">&#125;;</div><div class="line">Download.prototype.getDownloadPausedState = function () &#123;</div><div class="line">    return new DownloadPausedState(this);</div><div class="line">&#125;;</div><div class="line">Download.prototype.getDownloadedState = function () &#123;</div><div class="line">    return new DownloadedState(this);</div><div class="line">&#125;;</div><div class="line">Download.prototype.getDownloadedFailedState = function () &#123;</div><div class="line">    return new DownloadFailedState(this);</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>Download 函数的原型提供了 8 个方法，4 个是对用于下载状态的操作行为，另外 4 个是用于获取当前四个不同的状态，这 4 个方法都接收 this 作为参数，也就是将 Download 实例自身作为一个参数传递给处理该请求的状态对象（ReadyState 以及后面要实现的继承函数），这使得状态对象比必要的时候可以访问 oDownlaod。</p>
+<p>接下来，继续定义 4 个相关状态的函数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">var DownloadingState = function (oDownload) &#123;</div><div class="line">    State.apply(this);</div><div class="line">    this.oDownload = oDownload;</div><div class="line">&#125;;</div><div class="line">DownloadingState.prototype = new State();</div><div class="line">DownloadingState.prototype.download = function () &#123;</div><div class="line">    throw new Error(&quot;文件已经正在下载中了!&quot;);</div><div class="line">&#125;;</div><div class="line">DownloadingState.prototype.pause = function () &#123; this.oDownload.setState(this.oDownload.getDownloadPausedState());</div><div class="line">    console.log(&quot;暂停下载!&quot;);</div><div class="line">&#125;;</div><div class="line">DownloadingState.prototype.fail = function () &#123; this.oDownload.setState(this.oDownload.getDownloadedFailedState());</div><div class="line">    console.log(&quot;下载失败!&quot;);</div><div class="line">&#125;;</div><div class="line">DownloadingState.prototype.finish = function () &#123;</div><div class="line">    this.oDownload.setState(this.oDownload.getDownloadedState());</div><div class="line">    console.log(&quot;下载完毕!&quot;);</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>DownloadingState 的主要注意事项就是已经正在下载的文件，不能再次开始下载了，其它的状态都可以连续进行。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line">var DownloadPausedState = function (oDownload) &#123;</div><div class="line">    State.apply(this);</div><div class="line">    this.oDownload = oDownload;</div><div class="line">&#125;;</div><div class="line">DownloadPausedState.prototype = new State();</div><div class="line">DownloadPausedState.prototype.download = function () &#123;</div><div class="line">    this.oDownload.setState(this.oDownload.getDownloadingState());</div><div class="line">    console.log(&quot;继续下载!&quot;);</div><div class="line">&#125;;</div><div class="line">DownloadPausedState.prototype.pause = function () &#123;</div><div class="line">    throw new Error(&quot;已经暂停了，咋还要暂停呢!&quot;);</div><div class="line">&#125;;</div><div class="line">DownloadPausedState.prototype.fail = function () &#123; this.oDownload.setState(this.oDownload.getDownloadedFailedState());</div><div class="line">    console.log(&quot;下载失败!&quot;);</div><div class="line">&#125;;</div><div class="line">DownloadPausedState.prototype.finish = function () &#123;</div><div class="line">    this.oDownload.setState(this.oDownload.getDownloadedState());</div><div class="line">    console.log(&quot;下载完毕!&quot;);</div><div class="line">&#125;;</div><div class="line">DownloadPausedState函数里要注意的是，已经暂停的下载，不能再次暂停。</div><div class="line">var DownloadedState = function (oDownload) &#123;</div><div class="line">    State.apply(this);</div><div class="line">    this.oDownload = oDownload;</div><div class="line">&#125;;</div><div class="line">DownloadedState.prototype = new State();</div><div class="line">DownloadedState.prototype.download = function () &#123;</div><div class="line">    this.oDownload.setState(this.oDownload.getDownloadingState());</div><div class="line">    console.log(&quot;重新下载!&quot;);</div><div class="line">&#125;;</div><div class="line">DownloadedState.prototype.pause = function () &#123;</div><div class="line">    throw new Error(&quot;对下载完了，还暂停啥？&quot;);</div><div class="line">&#125;;</div><div class="line">DownloadedState.prototype.fail = function () &#123;</div><div class="line">    throw new Error(&quot;都下载成功了，咋会失败呢？&quot;);</div><div class="line">&#125;;</div><div class="line">DownloadedState.prototype.finish = function () &#123;</div><div class="line">    throw new Error(&quot;下载成功了，不能再为成功了吧!&quot;);</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>DownloadedState 函数，同理成功下载以后，不能再设置 finish 了，只能设置重新下载状态。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">var DownloadFailedState = function (oDownload) &#123;</div><div class="line">    State.apply(this);</div><div class="line">    this.oDownload = oDownload;</div><div class="line">&#125;;</div><div class="line">DownloadFailedState.prototype = new State();</div><div class="line">DownloadFailedState.prototype.download = function () &#123;</div><div class="line">    this.oDownload.setState(this.oDownload.getDownloadingState());</div><div class="line">    console.log(&quot;尝试重新下载!&quot;);</div><div class="line">&#125;;</div><div class="line">DownloadFailedState.prototype.pause = function () &#123;</div><div class="line">    throw new Error(&quot;失败的下载，也不能暂停!&quot;);</div><div class="line">&#125;;</div><div class="line">DownloadFailedState.prototype.fail = function () &#123;</div><div class="line">    throw new Error(&quot;都失败了，咋还失败呢!&quot;);</div><div class="line">&#125;;</div><div class="line">DownloadFailedState.prototype.finish = function () &#123;</div><div class="line">    throw new Error(&quot;失败的下载，肯定也不会成功!&quot;);</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>同理，DownloadFailedState 函数的失败状态，也不能再次失败，但可以和 finished 以后再次尝试重新下载。</p>
+<p>调用测试代码，就非常简单了，我们在 HTML 里演示吧，首先是要了 jquery，然后有 3 个按钮分别代表：开始下载、暂停、重新下载。（注意在 Firefox 里用 firebug 查看结果，因为用了 console.log 方法）。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line">&lt;html&gt;</div><div class="line">&lt;head&gt;</div><div class="line">    &lt;link type=&quot;text/css&quot; rel=&quot;stylesheet&quot; href=&quot;http://www.cnblogs.com/css/style.css&quot; /&gt;</div><div class="line">    &lt;title&gt;State Pattern&lt;/title&gt;</div><div class="line">    &lt;script type=&quot;text/javascript&quot; src=&quot;/jquery.js&quot;&gt;&lt;/script&gt;</div><div class="line">    &lt;script type=&quot;text/javascript&quot; src=&quot;Download.js&quot;&gt;&lt;/script&gt;</div><div class="line">    &lt;script type=&quot;text/javascript&quot; src=&quot;states/State.js&quot;&gt;&lt;/script&gt;</div><div class="line">    &lt;script type=&quot;text/javascript&quot; src=&quot;states/DownloadFailedState.js&quot;&gt;&lt;/script&gt;</div><div class="line">    &lt;script type=&quot;text/javascript&quot; src=&quot;states/DownloadPausedState.js&quot;&gt;&lt;/script&gt;</div><div class="line">    &lt;script type=&quot;text/javascript&quot; src=&quot;states/DownloadedState.js&quot;&gt;&lt;/script&gt;</div><div class="line">    &lt;script type=&quot;text/javascript&quot; src=&quot;states/DownloadingState.js&quot;&gt;&lt;/script&gt;</div><div class="line">    &lt;script type=&quot;text/javascript&quot; src=&quot;states/ReadyState.js&quot;&gt;&lt;/script&gt;</div><div class="line">&lt;/head&gt;</div><div class="line">&lt;body&gt;</div><div class="line">    &lt;input type=&quot;button&quot; value=&quot;开始下载&quot; id=&quot;download_button&quot; /&gt;</div><div class="line">    &lt;input type=&quot;button&quot; value=&quot;暂停&quot; id=&quot;pause_button&quot; /&gt;</div><div class="line">    &lt;input type=&quot;button&quot; value=&quot;重新下载&quot; id=&quot;resume_button&quot; /&gt;</div><div class="line">    &lt;script type=&quot;text/javascript&quot;&gt;</div><div class="line">        var oDownload = new Download();</div><div class="line">        $(&quot;#download_button&quot;).click(function () &#123;</div><div class="line">            oDownload.download();</div><div class="line">        &#125;);</div><div class="line">        $(&quot;#pause_button&quot;).click(function () &#123;</div><div class="line">            oDownload.pause();</div><div class="line">        &#125;);</div><div class="line">        $(&quot;#resume_button&quot;).click(function () &#123;</div><div class="line">            oDownload.download();</div><div class="line">        &#125;);</div><div class="line">    &lt;/script&gt;</div><div class="line">&lt;/body&gt;</div><div class="line">&lt;/html&gt;</div></pre></td></tr></table></figure>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>状态模式的使用场景也特别明确，有如下两点：</p>
+<ol>
+<li>一个对象的行为取决于它的状态，并且它必须在运行时刻根据状态改变它的行为。</li>
+<li>一个操作中含有大量的分支语句，而且这些分支语句依赖于该对象的状态。状态通常为一个或多个枚举常量的表示。</li>
+</ol>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/xuhongbo" target="_blank">Xuhongbo</a>
+    </br>
+    
+    &copy; 2017 John Doe
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

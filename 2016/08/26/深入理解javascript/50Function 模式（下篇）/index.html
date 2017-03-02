@@ -1,0 +1,152 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Function 模式（下篇） | Hexo</title>
+
+  
+  <meta name="author" content="John Doe">
+  
+
+  
+  <meta name="description" content="本篇我们介绍的一些模式称为初始化模式和性能模式，主要是用在初始化以及提高性能方面，一些模式之前已经提到过，这里只是做一下总结。
+立即执行的函数在本系列第 4 篇的《立即调用的函数表达式》中，我们已经对类似的函数进行过详细的描述，这里我们只是再举两个简单的例子做一下总结。
+12345678910111">
+  
+
+  
+  
+  <meta name="keywords" content="">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="Function 模式（下篇）"/>
+
+  <meta property="og:site_name" content="Hexo"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">Hexo</a>
+    </h1>
+    <p class="site-description"></p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
+
+  
+    
+    <h3 class="article-title"><span>Function 模式（下篇）</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2016/08/26/深入理解javascript/50Function 模式（下篇）/" rel="bookmark">
+        <time class="entry-date published" datetime="2016-08-26T08:56:02.000Z">
+          2016-08-26
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>本篇我们介绍的一些模式称为初始化模式和性能模式，主要是用在初始化以及提高性能方面，一些模式之前已经提到过，这里只是做一下总结。</p>
+<h2 id="立即执行的函数"><a href="#立即执行的函数" class="headerlink" title="立即执行的函数"></a>立即执行的函数</h2><p>在本系列第 4 篇的<a href="http://www.cnblogs.com/TomXu/archive/2011/12/31/2289423.html" target="_blank" rel="external">《立即调用的函数表达式》中</a>，我们已经对类似的函数进行过详细的描述，这里我们只是再举两个简单的例子做一下总结。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">// 声明完函数以后，立即执行该函数</div><div class="line">(function () &#123;</div><div class="line">    console.log(&apos;watch out!&apos;);</div><div class="line">&#125; ());  </div><div class="line">//这种方式声明的函数，也可以立即执行</div><div class="line">!function () &#123;</div><div class="line">    console.log(&apos;watch out!&apos;);</div><div class="line">&#125; ();  </div><div class="line">// 如下方式也都可以哦</div><div class="line">~function () &#123; /* code */ &#125; ();</div><div class="line">-function () &#123; /* code */ &#125; ();</div><div class="line">+function () &#123; /* code */ &#125; ();</div></pre></td></tr></table></figure>
+<h2 id="立即执行的对象初始化"><a href="#立即执行的对象初始化" class="headerlink" title="立即执行的对象初始化"></a>立即执行的对象初始化</h2><p>该模式的意思是指在声明一个对象（而非函数）的时候，立即执行对象里的某一个方法来进行初始化工作，通常该模式可以用在一次性执行的代码上。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">(&#123;</div><div class="line">    // 这里你可以定义常量，设置其它值</div><div class="line">    maxwidth: 600,</div><div class="line">    maxheight: 400,  </div><div class="line">    //  当然也可以定义utility方法</div><div class="line">    gimmeMax: function () &#123;</div><div class="line">        return this.maxwidth + &quot;x&quot; + this.maxheight;</div><div class="line">    &#125;,  </div><div class="line">    // 初始化</div><div class="line">    init: function () &#123;</div><div class="line">        console.log(this.gimmeMax());</div><div class="line">        // 更多代码...</div><div class="line">    &#125;</div><div class="line">&#125;).init();  // 这样就开始初始化咯</div></pre></td></tr></table></figure>
+<h2 id="分支初始化"><a href="#分支初始化" class="headerlink" title="分支初始化"></a>分支初始化</h2><p>分支初始化是指在初始化的时候，根据不同的条件（场景）初始化不同的代码，也就是所谓的条件语句赋值。之前我们在做事件处理的时候，通常使用类似下面的代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">var utils = &#123;</div><div class="line">    addListener: function (el, type, fn) &#123;</div><div class="line">        if (typeof window.addEventListener === &apos;function&apos;) &#123;</div><div class="line">            el.addEventListener(type, fn, false);</div><div class="line">        &#125; else if (typeof document.attachEvent !== &apos;undefined&apos;) &#123;</div><div class="line">            el.attachEvent(&apos;on&apos; + type, fn);</div><div class="line">        &#125; else &#123;</div><div class="line">            el[&apos;on&apos; + type] = fn;</div><div class="line">        &#125;</div><div class="line">    &#125;,</div><div class="line">    removeListener: function (el, type, fn) &#123;</div><div class="line">    &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>我们来改进一下，首先我们要定义两个接口，一个用来add事件句柄，一个用来 remove 事件句柄，代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">var utils = &#123;</div><div class="line">    addListener: null,</div><div class="line">    removeListener: null</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>实现代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">if (typeof window.addEventListener === &apos;function&apos;) &#123;</div><div class="line">    utils.addListener = function (el, type, fn) &#123;</div><div class="line">        el.addEventListener(type, fn, false);</div><div class="line">    &#125;;</div><div class="line">&#125; else if (typeof document.attachEvent !== &apos;undefined&apos;) &#123; // IE</div><div class="line">    utils.addListener = function (el, type, fn) &#123;</div><div class="line">        el.attachEvent(&apos;on&apos; + type, fn);</div><div class="line">    &#125;;</div><div class="line">    utils.removeListener = function (el, type, fn) &#123;</div><div class="line">        el.detachEvent(&apos;on&apos; + type, fn);</div><div class="line">    &#125;;</div><div class="line">&#125; else &#123; // 其它旧浏览器</div><div class="line">    utils.addListener = function (el, type, fn) &#123;</div><div class="line">        el[&apos;on&apos; + type] = fn;</div><div class="line">    &#125;;</div><div class="line">    utils.removeListener = function (el, type, fn) &#123;</div><div class="line">        el[&apos;on&apos; + type] = null;</div><div class="line">    &#125;;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>用起来，是不是就很方便了？代码也优雅多了。</p>
+<h2 id="自声明函数"><a href="#自声明函数" class="headerlink" title="自声明函数"></a>自声明函数</h2><p>一般是在函数内部，重写同名函数代码，比如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">var scareMe = function () &#123;</div><div class="line">    alert(&quot;Boo!&quot;);</div><div class="line">    scareMe = function () &#123;</div><div class="line">        alert(&quot;Double boo!&quot;);</div><div class="line">    &#125;;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>这种代码，非常容易使人迷惑，我们先来看看例子的执行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">// 1. 添加新属性</div><div class="line">scareMe.property = &quot;properly&quot;;</div><div class="line">// 2. scareMe赋与一个新值</div><div class="line">var prank = scareMe;</div><div class="line">// 3. 作为一个方法调用</div><div class="line">var spooky = &#123;</div><div class="line">    boo: scareMe</div><div class="line">&#125;;</div><div class="line">// 使用新变量名称进行调用</div><div class="line">prank(); // &quot;Boo!&quot;</div><div class="line">prank(); // &quot;Boo!&quot;</div><div class="line">console.log(prank.property); // &quot;properly&quot;</div><div class="line">// 使用方法进行调用</div><div class="line">spooky.boo(); // &quot;Boo!&quot;</div><div class="line">spooky.boo(); // &quot;Boo!&quot;</div><div class="line">console.log(spooky.boo.property); // &quot;properly&quot;</div></pre></td></tr></table></figure>
+<p>通过执行结果，可以发现，将定于的函数赋值与新变量（或内部方法），代码并不执行重载的 scareMe 代码，而如下例子则正好相反：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">// 使用自声明函数</div><div class="line">scareMe(); // Double boo!</div><div class="line">scareMe(); // Double boo!</div><div class="line">console.log(scareMe.property); // undefined</div></pre></td></tr></table></figure>
+<p>大家使用这种模式时，一定要非常小心才行，否则实际结果很可能和你期望的结果不一样，当然你也可以利用这个特殊做一些特殊的操作。</p>
+<h2 id="内存优化"><a href="#内存优化" class="headerlink" title="内存优化"></a>内存优化</h2><p>该模式主要是利用函数的属性特性来避免大量的重复计算。通常代码形式如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">var myFunc = function (param) &#123;</div><div class="line">    if (!myFunc.cache[param]) &#123;</div><div class="line">        var result = &#123;&#125;;</div><div class="line">        // ... 复杂操作 ...</div><div class="line">        myFunc.cache[param] = result;</div><div class="line">    &#125;</div><div class="line">    return myFunc.cache[param];</div><div class="line">&#125;;</div><div class="line">// cache 存储</div><div class="line">myFunc.cache = &#123;&#125;;</div></pre></td></tr></table></figure>
+<p>但是上述代码有个问题，如果传入的参数是 toString 或者其它类似 Object 拥有的一些公用方法的话，就会出现问题，这时候就需要使用传说中的 hasOwnProperty 方法了，代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">var myFunc = function (param) &#123;</div><div class="line">    if (!myFunc.cache.hasOwnProperty(param)) &#123;</div><div class="line">        var result = &#123;&#125;;</div><div class="line">        // ... 复杂操作 ...</div><div class="line">        myFunc.cache[param] = result;</div><div class="line">    &#125;</div><div class="line">    return myFunc.cache[param];</div><div class="line">&#125;;  </div><div class="line">// cache 存储</div><div class="line">myFunc.cache = &#123;&#125;;</div></pre></td></tr></table></figure>
+<p>或者如果你传入的参数是多个的话，可以将这些参数通过 JSON 的 stringify 方法生产一个 cachekey 值进行存储，代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">var myFunc = function () &#123;</div><div class="line">    var cachekey = JSON.stringify(Array.prototype.slice.call(arguments)),</div><div class="line">        result;</div><div class="line">    if (!myFunc.cache[cachekey]) &#123;</div><div class="line">        result = &#123;&#125;;</div><div class="line">        // ... 复杂操作 ...</div><div class="line">        myFunc.cache[cachekey] = result;</div><div class="line">    &#125;</div><div class="line">    return myFunc.cache[cachekey];</div><div class="line">&#125;;  </div><div class="line">// cache 存储</div><div class="line">myFunc.cache = &#123;&#125;;</div></pre></td></tr></table></figure>
+<p>或者多个参数的话，也可以利用 arguments.callee 特性：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">var myFunc = function (param) &#123;</div><div class="line">    var f = arguments.callee,</div><div class="line">        result;</div><div class="line">    if (!f.cache[param]) &#123;</div><div class="line">        result = &#123;&#125;;</div><div class="line">        // ... 复杂操作 ...</div><div class="line">        f.cache[param] = result;</div><div class="line">    &#125;</div><div class="line">    return f.cache[param];</div><div class="line">&#125;;  </div><div class="line">// cache 存储</div><div class="line">myFunc.cache = &#123;&#125;;</div></pre></td></tr></table></figure>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>就不用总结了吧，大家仔细看代码就行咯</p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/xuhongbo" target="_blank">Xuhongbo</a>
+    </br>
+    
+    &copy; 2017 John Doe
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

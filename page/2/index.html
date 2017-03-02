@@ -1,0 +1,1063 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>第 2 页 | Hexo</title>
+
+  
+  <meta name="author" content="John Doe">
+  
+
+  
+
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  
+
+  <meta property="og:site_name" content="Hexo"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">Hexo</a>
+    </h1>
+    <p class="site-description"></p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/2016/05/29/深入理解javascript/46代码复用模式（推荐篇）/"><span>代码复用模式（推荐篇）</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2016/05/29/深入理解javascript/46代码复用模式（推荐篇）/" rel="bookmark">
+        <time class="entry-date published" datetime="2016-05-29T15:12:02.000Z">
+          2016-05-29
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>本文介绍的四种代码复用模式都是最佳实践，推荐大家在编程的过程中使用。</p>
+<h2 id="模式-1：原型继承"><a href="#模式-1：原型继承" class="headerlink" title="模式 1：原型继承"></a>模式 1：原型继承</h2><p>原型继承是让父对象作为子对象的原型，从而达到继承的目的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line">function object(o) &#123;</div><div class="line">    function F() &#123;</div><div class="line">    &#125;  </div><div class="line">    F.prototype = o;</div><div class="line">    return new F();</div><div class="line">&#125;    </div><div class="line">// 要继承的父对象</div><div class="line">var parent = &#123;</div><div class="line">    name: &quot;Papa&quot;</div><div class="line">&#125;;  </div><div class="line">// 新对象</div><div class="line">var child = object(parent);  </div><div class="line">// 测试</div><div class="line">console.log(child.name); // &quot;Papa&quot;  </div><div class="line">// 父构造函数</div><div class="line">function Person() &#123;</div><div class="line">    // an &quot;own&quot; property</div><div class="line">    this.name = &quot;Adam&quot;;</div><div class="line">&#125;</div><div class="line">// 给原型添加新属性</div><div class="line">Person.prototype.getName = function () &#123;</div><div class="line">    return this.name;</div><div class="line">&#125;;</div><div class="line">// 创建新person</div><div class="line">var papa = new Person();</div><div class="line">// 继承</div><div class="line">var kid = object(papa);</div><div class="line">console.log(kid.getName()); // &quot;Adam&quot;  </div><div class="line">// 父构造函数</div><div class="line">function Person() &#123;</div><div class="line">    // an &quot;own&quot; property</div><div class="line">    this.name = &quot;Adam&quot;;</div><div class="line">&#125;</div><div class="line">// 给原型添加新属性</div><div class="line">Person.prototype.getName = function () &#123;</div><div class="line">    return this.name;</div><div class="line">&#125;;</div><div class="line">// 继承</div><div class="line">var kid = object(Person.prototype);</div><div class="line">console.log(typeof kid.getName); // &quot;function&quot;,因为是在原型里定义的</div><div class="line">console.log(typeof kid.name); // &quot;undefined&quot;, 因为只继承了原型</div></pre></td></tr></table></figure>
+<p>同时，ECMAScript5 也提供了类似的一个方法叫做 Object.create 用于继承对象，用法如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">/* 使用新版的ECMAScript 5提供的功能 */</div><div class="line">var child = Object.create(parent);  </div><div class="line">var child = Object.create(parent, &#123;</div><div class="line">    age: &#123; value: 2&#125; // ECMA5 descriptor</div><div class="line">&#125;);</div><div class="line">console.log(child.hasOwnProperty(&quot;age&quot;)); // true</div></pre></td></tr></table></figure>
+<p>而且，也可以更细粒度地在第二个参数上定义属性：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">// 首先，定义一个新对象man</div><div class="line">var man = Object.create(null);  </div><div class="line">// 接着，创建包含属性的配置设置</div><div class="line">// 属性设置为可写，可枚举，可配置</div><div class="line">var config = &#123;</div><div class="line">    writable: true,</div><div class="line">    enumerable: true,</div><div class="line">    configurable: true</div><div class="line">&#125;;  </div><div class="line">// 通常使用Object.defineProperty()来添加新属性(ECMAScript5支持）</div><div class="line">// 现在，为了方便，我们自定义一个封装函数</div><div class="line">var defineProp = function (obj, key, value) &#123;</div><div class="line">    config.value = value;</div><div class="line">    Object.defineProperty(obj, key, config);</div><div class="line">&#125;  </div><div class="line">defineProp(man, &apos;car&apos;, &apos;Delorean&apos;);</div><div class="line">defineProp(man, &apos;dob&apos;, &apos;1981&apos;);</div><div class="line">defineProp(man, &apos;beard&apos;, false);</div></pre></td></tr></table></figure>
+<p>所以，继承就这么可以做了：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">var driver = Object.create( man );</div><div class="line">defineProp (driver, &apos;topSpeed&apos;, &apos;100mph&apos;);</div><div class="line">driver.topSpeed // 100mph</div></pre></td></tr></table></figure>
+<p>但是有个地方需要注意，就是 Object.create(null)创建的对象的原型为 undefined，也就是没有 toString 和 valueOf 方法，所以 alert(man)；的时候会出错，但 alert(man.car)；是没问题的。</p>
+<h2 id="模式-2：复制所有属性进行继承"><a href="#模式-2：复制所有属性进行继承" class="headerlink" title="模式 2：复制所有属性进行继承"></a>模式 2：复制所有属性进行继承</h2><p>这种方式的继承就是将父对象里所有的属性都复制到子对象上，一般子对象可以使用父对象的数据。</p>
+<p>先来看一个浅拷贝的例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">/* 浅拷贝 */</div><div class="line">function extend(parent, child) &#123;</div><div class="line">    var i;</div><div class="line">    child = child || &#123;&#125;;</div><div class="line">    for (i in parent) &#123;</div><div class="line">        if (parent.hasOwnProperty(i)) &#123;</div><div class="line">            child[i] = parent[i];</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    return child;</div><div class="line">&#125;  </div><div class="line">var dad = &#123; name: &quot;Adam&quot; &#125;;</div><div class="line">var kid = extend(dad);</div><div class="line">console.log(kid.name); // &quot;Adam&quot;  </div><div class="line">var dad = &#123;</div><div class="line">    counts: [1, 2, 3],</div><div class="line">    reads: &#123; paper: true &#125;</div><div class="line">&#125;;</div><div class="line">var kid = extend(dad);</div><div class="line">kid.counts.push(4);</div><div class="line">console.log(dad.counts.toString()); // &quot;1,2,3,4&quot;</div><div class="line">console.log(dad.reads === kid.reads); // true</div></pre></td></tr></table></figure>
+<p>代码的最后一行，你可以发现 dad 和 kid 的 reads 是一样的，也就是他们使用的是同一个引用，这也就是浅拷贝带来的问题。</p>
+<p>我们再来看一下深拷贝：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">/* 深拷贝 */</div><div class="line">function extendDeep(parent, child) &#123;</div><div class="line">    var i,</div><div class="line">        toStr = Object.prototype.toString,</div><div class="line">        astr = &quot;[object Array]&quot;;  </div><div class="line">    child = child || &#123;&#125;;  </div><div class="line">    for (i in parent) &#123;</div><div class="line">        if (parent.hasOwnProperty(i)) &#123;</div><div class="line">            if (typeof parent[i] === &apos;object&apos;) &#123;</div><div class="line">                child[i] = (toStr.call(parent[i]) === astr) ? [] : &#123;&#125;;</div><div class="line">                extendDeep(parent[i], child[i]);</div><div class="line">            &#125; else &#123;</div><div class="line">                child[i] = parent[i];</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    return child;</div><div class="line">&#125;  </div><div class="line">var dad = &#123;</div><div class="line">    counts: [1, 2, 3],</div><div class="line">    reads: &#123; paper: true &#125;</div><div class="line">&#125;;</div><div class="line">var kid = extendDeep(dad);  </div><div class="line">kid.counts.push(4);</div><div class="line">console.log(kid.counts.toString()); // &quot;1,2,3,4&quot;</div><div class="line">console.log(dad.counts.toString()); // &quot;1,2,3&quot;  </div><div class="line">console.log(dad.reads === kid.reads); // false</div><div class="line">kid.reads.paper = false;</div></pre></td></tr></table></figure>
+<p>深拷贝以后，两个值就不相等了，bingo！</p>
+<h2 id="模式-3：混合（mix-in）"><a href="#模式-3：混合（mix-in）" class="headerlink" title="模式 3：混合（mix-in）"></a>模式 3：混合（mix-in）</h2><p>混入就是将一个对象的一个或多个（或全部）属性（或方法）复制到另外一个对象，我们举一个例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">function mix() &#123;</div><div class="line">    var arg, prop, child = &#123;&#125;;</div><div class="line">    for (arg = 0; arg &lt; arguments.length; arg += 1) &#123;</div><div class="line">        for (prop in arguments[arg]) &#123;</div><div class="line">            if (arguments[arg].hasOwnProperty(prop)) &#123;</div><div class="line">                child[prop] = arguments[arg][prop];</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    return child;</div><div class="line">&#125;  </div><div class="line">var cake = mix(</div><div class="line">                &#123; eggs: 2, large: true &#125;,</div><div class="line">                &#123; butter: 1, salted: true &#125;,</div><div class="line">                &#123; flour: &apos;3 cups&apos; &#125;,</div><div class="line">                &#123; sugar: &apos;sure!&apos; &#125;</div><div class="line">                );  </div><div class="line">console.dir(cake);</div></pre></td></tr></table></figure>
+<p>mix 函数将所传入的所有参数的子属性都复制到 child 对象里，以便产生一个新对象。</p>
+<p>那如何我们只想混入部分属性呢？该个如何做？其实我们可以使用多余的参数来定义需要混入的属性，例如 mix（child,parent,method1,method2)这样就可以只将 parent 里的 method1 和 method2 混入到 child 里。上代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line">// Car </div><div class="line">var Car = function (settings) &#123;</div><div class="line">    this.model = settings.model || &apos;no model provided&apos;;</div><div class="line">    this.colour = settings.colour || &apos;no colour provided&apos;;</div><div class="line">&#125;;  </div><div class="line">// Mixin</div><div class="line">var Mixin = function () &#123; &#125;;</div><div class="line">Mixin.prototype = &#123;</div><div class="line">    driveForward: function () &#123;</div><div class="line">        console.log(&apos;drive forward&apos;);</div><div class="line">    &#125;,</div><div class="line">    driveBackward: function () &#123;</div><div class="line">        console.log(&apos;drive backward&apos;);</div><div class="line">    &#125;</div><div class="line">&#125;;  </div><div class="line">// 定义的2个参数分别是被混入的对象（reciving）和从哪里混入的对象（giving)</div><div class="line">function augment(receivingObj, givingObj) &#123;</div><div class="line">    // 如果提供了指定的方法名称的话，也就是参数多余3个</div><div class="line">    if (arguments[2]) &#123;</div><div class="line">        for (var i = 2, len = arguments.length; i &lt; len; i++) &#123;</div><div class="line">            receivingObj.prototype[arguments[i]] = givingObj.prototype[arguments[i]];</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    // 如果不指定第3个参数，或者更多参数，就混入所有的方法</div><div class="line">    else &#123;</div><div class="line">        for (var methodName in givingObj.prototype) &#123;</div><div class="line">            // 检查receiving对象内部不包含要混入的名字，如何包含就不混入了</div><div class="line">            if (!receivingObj.prototype[methodName]) &#123;</div><div class="line">                receivingObj.prototype[methodName] = givingObj.prototype[methodName];</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;  </div><div class="line">// 给Car混入属性，但是值混入&apos;driveForward&apos; 和 &apos;driveBackward&apos;*/</div><div class="line">augment(Car, Mixin, &apos;driveForward&apos;, &apos;driveBackward&apos;);  </div><div class="line">// 创建新对象Car</div><div class="line">var vehicle = new Car(&#123; model: &apos;Ford Escort&apos;, colour: &apos;blue&apos; &#125;);  </div><div class="line">// 测试是否成功得到混入的方法</div><div class="line">vehicle.driveForward();</div><div class="line">vehicle.driveBackward();</div></pre></td></tr></table></figure>
+<p>该方法使用起来就比较灵活了。</p>
+<h2 id="模式-4：借用方法"><a href="#模式-4：借用方法" class="headerlink" title="模式 4：借用方法"></a>模式 4：借用方法</h2><p>一个对象借用另外一个对象的一个或两个方法，而这两个对象之间不会有什么直接联系。不用多解释，直接用代码解释吧：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div></pre></td><td class="code"><pre><div class="line">var one = &#123;</div><div class="line">    name: &apos;object&apos;,</div><div class="line">    say: function (greet) &#123;</div><div class="line">        return greet + &apos;, &apos; + this.name;</div><div class="line">    &#125;</div><div class="line">&#125;;  </div><div class="line">// 测试</div><div class="line">console.log(one.say(&apos;hi&apos;)); // &quot;hi, object&quot;  </div><div class="line">var two = &#123;</div><div class="line">    name: &apos;another object&apos;</div><div class="line">&#125;;  </div><div class="line">console.log(one.say.apply(two, [&apos;hello&apos;])); // &quot;hello, another object&quot;  </div><div class="line">// 将say赋值给一个变量，this将指向到全局变量</div><div class="line">var say = one.say;</div><div class="line">console.log(say(&apos;hoho&apos;)); // &quot;hoho, undefined&quot;  </div><div class="line">// 传入一个回调函数callback</div><div class="line">var yetanother = &#123;</div><div class="line">    name: &apos;Yet another object&apos;,</div><div class="line">    method: function (callback) &#123;</div><div class="line">        return callback(&apos;Hola&apos;);</div><div class="line">    &#125;</div><div class="line">&#125;;</div><div class="line">console.log(yetanother.method(one.say)); // &quot;Holla, undefined&quot;  </div><div class="line">function bind(o, m) &#123;</div><div class="line">    return function () &#123;</div><div class="line">        return m.apply(o, [].slice.call(arguments));</div><div class="line">    &#125;;</div><div class="line">&#125;  </div><div class="line">var twosay = bind(two, one.say);</div><div class="line">console.log(twosay(&apos;yo&apos;)); // &quot;yo, another object&quot;  </div><div class="line">// ECMAScript 5给Function.prototype添加了一个bind()方法，以便很容易使用apply()和call()。  </div><div class="line">if (typeof Function.prototype.bind === &apos;undefined&apos;) &#123;</div><div class="line">    Function.prototype.bind = function (thisArg) &#123;</div><div class="line">        var fn = this,</div><div class="line">slice = Array.prototype.slice,</div><div class="line">args = slice.call(arguments, 1);</div><div class="line">        return function () &#123;</div><div class="line">            return fn.apply(thisArg, args.concat(slice.call(arguments)));</div><div class="line">        &#125;;</div><div class="line">    &#125;;</div><div class="line">&#125;  </div><div class="line">var twosay2 = one.say.bind(two);</div><div class="line">console.log(twosay2(&apos;Bonjour&apos;)); // &quot;Bonjour, another object&quot;  </div><div class="line">var twosay3 = one.say.bind(two, &apos;Enchanté&apos;);</div><div class="line">console.log(twosay3()); // &quot;Enchanté, another object&quot;</div></pre></td></tr></table></figure>
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/2016/05/11/深入理解javascript/29设计模式之装饰者模式/"><span>设计模式之装饰者模式</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2016/05/11/深入理解javascript/29设计模式之装饰者模式/" rel="bookmark">
+        <time class="entry-date published" datetime="2016-05-11T05:03:03.000Z">
+          2016-05-11
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>装饰者提供比继承更有弹性的替代方案。 装饰者用用于包装同接口的对象，不仅允许你向方法添加行为，而且还可以将方法设置成原始对象调用（例如装饰者的构造函数）。</p>
+<p>装饰者用于通过重载方法的形式添加新功能，该模式可以在被装饰者前面或者后面加上自己的行为以达到特定的目的。</p>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><p>那么装饰者模式有什么好处呢？前面说了，装饰者是一种实现继承的替代方案。当脚本运行时，在子类中增加行为会影响原有类所有的实例，而装饰者却不然。取而代之的是它能给不同对象各自添加新行为。如下代码所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">//需要装饰的类（函数）</div><div class="line">function Macbook() &#123;</div><div class="line">    this.cost = function () &#123;</div><div class="line">        return 1000;</div><div class="line">    &#125;;</div><div class="line">&#125;</div><div class="line">function Memory(macbook) &#123;</div><div class="line">    this.cost = function () &#123;</div><div class="line">        return macbook.cost() + 75;</div><div class="line">    &#125;;</div><div class="line">&#125;</div><div class="line">function BlurayDrive(macbook) &#123;</div><div class="line">    this.cost = function () &#123;</div><div class="line">        return macbook.cost() + 300;</div><div class="line">    &#125;;</div><div class="line">&#125;</div><div class="line">function Insurance(macbook) &#123;</div><div class="line">    this.cost = function () &#123;</div><div class="line">        return macbook.cost() + 250;</div><div class="line">    &#125;;</div><div class="line">&#125;</div><div class="line">// 用法</div><div class="line">var myMacbook = new Insurance(new BlurayDrive(new Memory(new Macbook())));</div><div class="line">console.log(myMacbook.cost());</div></pre></td></tr></table></figure>
+<p>下面是另一个实例，当我们在装饰者对象上调用 performTask 时，它不仅具有一些装饰者的行为，同时也调用了下层对象的 performTask 函数。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">function ConcreteClass() &#123;</div><div class="line">    this.performTask = function () &#123;</div><div class="line">        this.preTask();</div><div class="line">        console.log(&apos;doing something&apos;);</div><div class="line">        this.postTask();</div><div class="line">    &#125;;</div><div class="line">&#125;</div><div class="line">function AbstractDecorator(decorated) &#123;</div><div class="line">    this.performTask = function () &#123;</div><div class="line">        decorated.performTask();</div><div class="line">    &#125;;</div><div class="line">&#125;</div><div class="line">function ConcreteDecoratorClass(decorated) &#123;</div><div class="line">    this.base = AbstractDecorator;</div><div class="line">    this.base(decorated);</div><div class="line">    decorated.preTask = function () &#123;</div><div class="line">        console.log(&apos;pre-calling..&apos;);</div><div class="line">    &#125;;</div><div class="line">    decorated.postTask = function () &#123;</div><div class="line">        console.log(&apos;post-calling..&apos;);</div><div class="line">    &#125;;</div><div class="line">&#125;</div><div class="line">var concrete = new ConcreteClass();</div><div class="line">var decorator1 = new ConcreteDecoratorClass(concrete);</div><div class="line">var decorator2 = new ConcreteDecoratorClass(decorator1);</div><div class="line">decorator2.performTask();</div></pre></td></tr></table></figure>
+<p>再来一个彻底的例子：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> tree = &#123;&#125;;</div><div class="line">tree.decorate = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'Make sure the tree won\'t fall'</span>);</div><div class="line">&#125;;</div><div class="line">tree.getDecorator = <span class="function"><span class="keyword">function</span> (<span class="params">deco</span>) </span>&#123;</div><div class="line">    tree[deco].prototype = <span class="keyword">this</span>;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">new</span> tree[deco];</div><div class="line">&#125;;</div><div class="line">tree.RedBalls = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">this</span>.decorate = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line">        <span class="keyword">this</span>.RedBalls.prototype.decorate(); <span class="comment">// 第7步：先执行原型（这时候是Angel了）的decorate方法</span></div><div class="line">        <span class="built_in">console</span>.log(<span class="string">'Put on some red balls'</span>); <span class="comment">// 第8步 再输出 red</span></div><div class="line">        <span class="comment">// 将这2步作为RedBalls的decorate方法</span></div><div class="line">    &#125;</div><div class="line">&#125;;</div><div class="line">tree.BlueBalls = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">this</span>.decorate = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line">        <span class="keyword">this</span>.BlueBalls.prototype.decorate(); <span class="comment">// 第1步：先执行原型的decorate方法，也就是tree.decorate()</span></div><div class="line">        <span class="built_in">console</span>.log(<span class="string">'Add blue balls'</span>); <span class="comment">// 第2步 再输出blue</span></div><div class="line">        <span class="comment">// 将这2步作为BlueBalls的decorate方法</span></div><div class="line">    &#125;</div><div class="line">&#125;;</div><div class="line">tree.Angel = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">this</span>.decorate = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line">        <span class="keyword">this</span>.Angel.prototype.decorate(); <span class="comment">// 第4步：先执行原型（这时候是BlueBalls了）的decorate方法</span></div><div class="line">        <span class="built_in">console</span>.log(<span class="string">'An angel on the top'</span>); <span class="comment">// 第5步 再输出angel</span></div><div class="line">        <span class="comment">// 将这2步作为Angel的decorate方法</span></div><div class="line">    &#125;</div><div class="line">&#125;;</div><div class="line">tree = tree.getDecorator(<span class="string">'BlueBalls'</span>); <span class="comment">// 第3步：将BlueBalls对象赋给tree，这时候父原型里的getDecorator依然可用</span></div><div class="line">tree = tree.getDecorator(<span class="string">'Angel'</span>); <span class="comment">// 第6步：将Angel对象赋给tree，这时候父原型的父原型里的getDecorator依然可用</span></div><div class="line">tree = tree.getDecorator(<span class="string">'RedBalls'</span>); <span class="comment">// 第9步：将RedBalls对象赋给tree</span></div><div class="line">tree.decorate(); <span class="comment">// 第10步：执行RedBalls对象的decorate方法</span></div></pre></td></tr></table></figure>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>装饰者模式是为已有功能动态地添加更多功能的一种方式，把每个要装饰的功能放在单独的函数里，然后用该函数包装所要装饰的已有函数对象，因此，当需要执行特殊行为的时候，调用代码就可以根据需要有选择地、按顺序地使用装饰功能来包装对象。优点是把类（函数）的核心职责和装饰功能区分开了。</p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/2016/04/26/深入理解javascript/24JavaScript 与 DOM（下）/"><span>JavaScript 与 DOM（下）</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2016/04/26/深入理解javascript/24JavaScript 与 DOM（下）/" rel="bookmark">
+        <time class="entry-date published" datetime="2016-04-26T14:12:02.000Z">
+          2016-04-26
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>上一章我们介绍了 JavaScript 的基本内容和 DOM 对象的各个方面，包括如何访问 node 节点。本章我们将讲解如何通过 DOM 操作元素并且讨论浏览器事件模型。</p>
+<h2 id="操作元素"><a href="#操作元素" class="headerlink" title="操作元素"></a>操作元素</h2><p>上一章节我们提到了 DOM 节点集合或单个节点的访问步骤，每个 DOM 节点都包括一个属性集合，大多数的属性都提供为相应的功能提供了抽象。例如，如果有一个带有 ID 属性 intro 的文本元素，你可以很容易地通过 DOM API 来改变该元素的颜色：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">document.getElementById(&apos;intro&apos;).style.color = &apos;#FF0000&apos;;</div></pre></td></tr></table></figure>
+<p>为了理解这个 API 的功能，我们一步一步分开来看就非常容易理解了：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">var myDocument = document;  </div><div class="line">var myIntro = myDocument.getElementById(&apos;intro&apos;);  </div><div class="line">var myIntroStyles = myIntro.style;  </div><div class="line">// 现在，我们可以设置颜色了:  </div><div class="line">myIntroStyles.color = &apos;#FF0000&apos;;</div></pre></td></tr></table></figure>
+<p>现在，我们有了该文本的 style 对象的引用了，所以我们可以添加其它的 CSS 样式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">myIntroStyles.padding = &apos;2px 3px 0 3px&apos;;  </div><div class="line">myIntroStyles.backgroundColor = &apos;#FFF&apos;;  </div><div class="line">myIntroStyles.marginTop = &apos;20px&apos;;</div></pre></td></tr></table></figure>
+<p>这里我们只是要了基本的 CSS 属性名称，唯一区别是 CSS 属性的名称如果带有-的话，就需要去除，比如用 marginTop 代替 margin-top。例如，下面的代码是不工作的，并且会抛出语法错误：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">myIntroStyles.padding-top = &apos;10em&apos;;     </div><div class="line">// 产生语法错误：</div><div class="line">// 在JavaScript里横线-是减法操作符</div><div class="line">// 而且也没有这样的属性名称</div></pre></td></tr></table></figure>
+<p>属性可以像数组一样访问，所以利用这个知识我们可以创建一个函数来改变任何给定元素的样式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">function changeStyle(elem, property, val) &#123;</div><div class="line">    elem.style[property] = val; // 使用[]来访问属性</div><div class="line">&#125;</div><div class="line">// 使用上述的函数：  </div><div class="line">var myIntro = document.getElementById(&apos;intro&apos;); // 获取intro文本对象</div><div class="line">changeStyle(myIntro, &apos;color&apos;, &apos;red&apos;);</div></pre></td></tr></table></figure>
+<p>这仅仅是个例子，所以该函数也许没什么用，语法上来说，直接用还是会快点，例如（elem.style.color = ‘red’）。除了 style 属性以外，一个节点（或元素）也还有其他很多属性可以操作，如果你使用 Firebug，点击 DOM 选项卡可以看到所有该节点（或元素）的所有属性：</p>
+<p><img src="http://wiki.jikexueyuan.com/project/javascript-depth-understanding/images/15.png" alt="img"></p>
+<p>所有的属性都可以通过点标示符来访问（例如：Element.tabIndex）。不是所有的属性都是原始数据类型（strings，numbers，Booleans 等等），sytle 属性也是一个包含自己属性的对象，很多元素的属性都是只读的，也就是说不能修改他们的值。例如，你不能直接修改一个节点的 parentNode 属性，如果你修改只读属性的时候浏览器会抛出错误：例如，抛出错误“setting a property that has only a getter”，只是我们需要注意的。</p>
+<p>通常 DOM 操作都是改变原始的内容，这里有几种方式来实现这个，最简单的是使用 innerHTML 属性，例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">var myIntro = document.getElementById(&apos;intro&apos;);  </div><div class="line">// 替换当前的内容</div><div class="line">myIntro.innerHTML = &apos;New content for the &lt;strong&gt;amazing&lt;/strong&gt; paragraph!&apos;;  </div><div class="line">// 添加内容到当前的内容里 </div><div class="line">myIntro.innerHTML += &apos;... some more content...&apos;;</div></pre></td></tr></table></figure>
+<p>唯一的问题是该方法没在规范里定义，而且在 DOM 规范里也没有定义，如果你不反感的话请继续使用，因为它比我们下面要讨论其它的方法快多了。</p>
+<h3 id="Node-节点"><a href="#Node-节点" class="headerlink" title="Node 节点"></a>Node 节点</h3><p>通过 DOM API 创建内容的时候需要注意 node 节点的 2 种类型，一种是元素节点，一种是 text 节点，上一章节已经列出了所有的节点类型，这两种需要我们现在特别注意。创建元素可以通过 createElement 方法，而创建 text 节点可以使用 createTextNode，相应代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">var myIntro = document.getElementById(&apos;intro&apos;);  </div><div class="line">// 添加内容</div><div class="line">var someText = &apos;This is the text I want to add&apos;;  </div><div class="line">var textNode = document.createTextNode(someText);  </div><div class="line">myIntro.appendChild(textNode);</div></pre></td></tr></table></figure>
+<p>这里我们使用了 appendChild 方法将新 text 节点附件到文本字段，这样做比非标准的 innerHTML 方法显得有点长，但了解这些原理依然很重要，这里有一个使用 DOM 方法的更详细例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">var myIntro = document.getElementById(&apos;intro&apos;);  </div><div class="line">// 添加新连接到文本节点</div><div class="line">// 首先，创建新连接元素</div><div class="line">var myNewLink = document.createElement(&apos;a&apos;); // &lt;a/&gt;  </div><div class="line">myNewLink.href = &apos;http://google.com&apos;; // &lt;a href=&quot;http://google.com&quot;/&gt;  </div><div class="line">myNewLink.appendChild(document.createTextNode(&apos;Visit Google&apos;)); </div><div class="line">// &lt;a href=&quot;http://google.com&quot;&gt;Visit Google&lt;/a&gt;  </div><div class="line">// 将内容附件到文本节点</div><div class="line">myIntro.appendChild(myNewLink);</div></pre></td></tr></table></figure>
+<p>另外 DOM 里还有一个 insertBefore 方法用于再节点前面附件内容，通过 insertBefore 和 appendChild 我们可以实现自己的 insertAfter 函数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">// &apos;Target&apos;是DOM里已经存在的元素</div><div class="line">// &apos;Bullet&apos;是要插入的新元素</div><div class="line">function insertAfter(target, bullet) &#123;  </div><div class="line">    target.nextSibling ?  </div><div class="line">        target.parentNode.insertBefore(bullet, target.nextSibling)  </div><div class="line">        : target.parentNode.appendChild(bullet);  </div><div class="line">&#125;  </div><div class="line">// 使用了3目表达式:  </div><div class="line">// 格式：条件?条件为true时的表达式：条件为false时的表达式</div></pre></td></tr></table></figure>
+<p>上面的函数首先检查 target 元素的同级下一个节点是否存在，如果存在就在该节点前面添加 bullet 节点，如果不存在，就说明 target 是最后一个节点了，直接在后面 append 新节点就可以了。DOM API 没有给提供 insertAfter 是因为真的没必要了——我们可以自己创建。</p>
+<p>DOM 操作有很多内容，上面你看到的只是其中一部分。</p>
+<h2 id="Event-事件"><a href="#Event-事件" class="headerlink" title="Event 事件"></a>Event 事件</h2><p>浏览器事件是所有 web 程序的核心，通过这些事件我们定义将要发生的行为，如果在页面里有个按钮，那点击此按钮之前你需要验证表单是否合法，这时候就可以使用 click 事件，下面列出的最标准的事件列表：</p>
+<p>注：正如我们上章所说的，DOM 和 JavaScript 语言是 2 个单独的东西，浏览器事件是 DOM API 的一部分，而不是 JavaScript 的一部分。</p>
+<h3 id="鼠标事件"><a href="#鼠标事件" class="headerlink" title="鼠标事件"></a>鼠标事件</h3><ol>
+<li>‘mousedown’ – 鼠标设备按下一个元素的时候触发 mousedown 事件。</li>
+<li>‘mouseup’ – 鼠标设备从按下的元素上弹起的时候触发 mouseup 事件。</li>
+<li>‘click’ – 鼠标点击元素的时候触发 click 事件。</li>
+<li>‘dblclick’ – 鼠标双击元素的时候触发 dblclick 事件。</li>
+<li>‘mouseover’ – 鼠标移动到某元素上的时候触发 mouseover 事件。</li>
+<li>‘mouseout’ – 鼠标从某元素离开的时候触发 mouseout 事件。</li>
+<li>‘mousemove’ – 鼠标在某元素上移动但未离开的时候触发 mousemove 事件。</li>
+</ol>
+<h3 id="键盘事件"><a href="#键盘事件" class="headerlink" title="键盘事件"></a>键盘事件</h3><ol>
+<li>‘keypress’ – 按键按下的时候触发该事件。</li>
+<li>‘keydown’ – 按键按下的时候触发该事件，并且在 keypress 事件之前。</li>
+<li>‘keyup’ – 按键松开的时候触发该事件，在 keydown 和 keypress 事件之后。</li>
+</ol>
+<h3 id="表单事件"><a href="#表单事件" class="headerlink" title="表单事件"></a>表单事件</h3><ol>
+<li>‘select’ – 文本字段（input, textarea等）的文本被选择的时候触发该事件。</li>
+<li>‘change’ – 控件失去 input 焦点的时候触发该事件（或者值被改变的时候）。</li>
+<li>‘submit’ – 表单提交的时候触发该事件。</li>
+<li>‘reset’ – 表单重置的时候触发该事件。</li>
+<li>‘focus’ – 元素获得焦点的时候触发该事件，通常来自鼠标设备或 Tab 导航。</li>
+<li>‘blur’ – 元素失去焦点的时候触发该事件，通常来自鼠标设备或 Tab 导航。</li>
+</ol>
+<h3 id="其它事件"><a href="#其它事件" class="headerlink" title="其它事件"></a>其它事件</h3><ol>
+<li>‘load’ – 页面加载完毕（包括内容、图片、frame、object）的时候触发该事件。</li>
+<li>‘resize’ – 页面大小改变的时候触发该事件（例如浏览器缩放）。</li>
+<li>‘scroll’ – 页面滚动的时候触发该事件。</li>
+<li>‘unload’ – 从页面或 frame 删除所有内容的时候触发该事件（例如离开一个页面）。</li>
+</ol>
+<p>还有很多各种各样的事件，上面展示的事件是我们在 JavaScript 里最常用的事件，有些事件在跨浏览器方面可能有所不同。还有其它浏览器实现的一些属性事件，例如 Gecko 实现的 DOMContentLoaded 或 DOMMouseScroll 等，Gecko 的详细事件列表请查看这里。</p>
+<h3 id="事件处理"><a href="#事件处理" class="headerlink" title="事件处理"></a>事件处理</h3><p>我们将了事件，但是还没有将到如何将处理函数和事件管理起来，使用这些事件之前，你首先要注册这些事件句柄，然后描述该事件发生的时候该如何处理，下面的例子展示了一个基本的事件注册模型：</p>
+<p>基本事件注册：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&lt;!-- HTML --&gt;  </div><div class="line">&lt;button id=&quot;my-button&quot;&gt;Click me!&lt;/button&gt;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">// JavaScript:  </div><div class="line">var myElement = document.getElementById(&apos;my-button&apos;);</div><div class="line">// 事件处理句柄:  </div><div class="line">function buttonClick() &#123;</div><div class="line">    alert(&apos;You just clicked the button!&apos;);</div><div class="line">&#125;</div><div class="line">// 注册事件</div><div class="line">myElement.onclick = buttonClick;</div></pre></td></tr></table></figure>
+<p>使用 document.getElementById 命令，通过 ID=my-button 获取该 button 对象，然后创建一个处理函数，随后将该函数赋值给该 DOM 的 onclick 属性。就这么简单！</p>
+<p>基本事件注册是非常简单的，在事件名称前面添加前缀 on 作为 DOM 的属性就可以使用了，这是事件处理的基本核心，但下面的代码我不推荐使用：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;button onclick=&quot;return buttonClick()&quot;&gt;Click me!&lt;/button&gt;</div></pre></td></tr></table></figure>
+<p>上述 Inline 的事件处理方式不利用页面维护，建议将这些处理函数都封装在单独的 js 文件，原因和CSS样式的一样的。</p>
+<p>高级事件注册：</p>
+<p>别被标题迷惑了，“高级”不意味着好用，实际上上面讨论的基本事件注册是我们大部分时候用的方式，但有一个限制：不能绑定多个处理函数到一个事件上。这也是我们要讲解该小节原因：</p>
+<p>该模型运行你绑定多个处理句柄到一个事件上，也就是说一个事件触发的时候多个函数都可以执行，另外，该模型也可以让你很容易里删除某个已经绑定的句柄。</p>
+<p>严格来说，有 2 种不同的模型：W3C 模型和微软模型，除 IE 之外 W3C 模型支持所有的现代浏览器，而微软模型只支持 IE，使用 W3C 模型的代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">// 格式：target.addEventListener( type, function, useCapture );  </div><div class="line">// 例子:  </div><div class="line">var myIntro = document.getElementById(&apos;intro&apos;);</div><div class="line">myIntro.addEventListener(&apos;click&apos;, introClick, false);</div></pre></td></tr></table></figure>
+<p>使用 IE 模型的代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">// 格式: target.attachEvent ( &apos;on&apos; + type, function );  </div><div class="line">// 例子:  </div><div class="line">var myIntro = document.getElementById(&apos;intro&apos;);</div><div class="line">myIntro.attachEvent(&apos;onclick&apos;, introClick);</div></pre></td></tr></table></figure>
+<p>introClick 的代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">function introClick() &#123;  </div><div class="line">    alert(&apos;You clicked the paragraph!&apos;);  </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>事实上，要做出通用的话，我们可以自定义一个函数以支持跨浏览器：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">function addEvent(elem, type, fn) &#123;</div><div class="line">    if (elem.attachEvent) &#123;</div><div class="line">        elem.attachEvent(&apos;on&apos; + type, fn);</div><div class="line">        return;</div><div class="line">    &#125;</div><div class="line">    if (elem.addEventListener) &#123;</div><div class="line">        elem.addEventListener(type, fn, false);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>该函数首先检查 attachEvent 和 addEventListener 属性，谁可以就用谁，这两种类型的模型都支持删除句柄功能，参考下面的 removeEvent 函数。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">function removeEvent(elem, type, fn) &#123;</div><div class="line">    if (elem.detachEvent) &#123;</div><div class="line">        elem.detachEvent(&apos;on&apos; + type, fn);</div><div class="line">        return;</div><div class="line">    &#125;</div><div class="line">    if (elem.removeEventListener) &#123;</div><div class="line">        elem.removeEventListener(type, fn, false);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>你可以这样使用：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">var myIntro = document.getElementById(&apos;intro&apos;);</div><div class="line">addEvent(myIntro, &apos;click&apos;, function () &#123;</div><div class="line">    alert(&apos;YOU CLICKED ME!!!&apos;);</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>注意到我们传入了一个匿名函数作为第三个参数，JavaScript 运行我们定义和执行匿名函数，这种匿名函数特别适合作为参数传递，实际上我们也可以传递有名的函数（代码如下），但是你们函数更容易做。</p>
+<p>如果你只想在第一次 click 的时候触发一个函数，你可以这么做：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">// 注意：前提是我们已经定于好了addEvent/removeEvent函数</div><div class="line">// (定义好了才能使用哦)  </div><div class="line">var myIntro = document.getElementById(&apos;intro&apos;);</div><div class="line">addEvent(myIntro, &apos;click&apos;, oneClickOnly);</div><div class="line">function oneClickOnly() &#123;</div><div class="line">    alert(&apos;WOW!&apos;);</div><div class="line">    removeEvent(myIntro, &apos;click&apos;, oneClickOnly);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>当第一次触发以后，我们就立即删除该句柄，但是有匿名函数的话却很难将自身的引用删除，不过实际上可以通过如下的形式来做（只不过有点麻烦）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">addEvent(myIntro, &apos;click&apos;, function () &#123;</div><div class="line">    alert(&apos;WOW!&apos;);</div><div class="line">    removeEvent(myIntro, &apos;click&apos;, arguments.callee);</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>这里我们是有了 arguments 对象的 callee 属性，arguments 对象包含了所有传递进来的参数以及该函数自身(callee)，这样我们就可以放心地删除自身的引用了。</p>
+<p>关于 W3C 和微软模型还有其他的少许差异，比如 this，在触发事件的时候函数中的 this 一般都是该元素上下文，，也就说 this 引用该元素自身，在基本事件注册和 W3C 模型中都没有问题，但在微软模型的实现里却可能出错，请参考如下代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">function myEventHandler() &#123;</div><div class="line">    this.style.display = &apos;none&apos;;</div><div class="line">&#125;</div><div class="line">// 正常工作，this是代表该元素</div><div class="line">myIntro.onclick = myEventHandler;</div><div class="line">// 正常工作，this是代表该元素</div><div class="line">myIntro.addEventListener(&apos;click&apos;, myEventHandler, false);</div><div class="line">// 不正常，这时候的this是代表Window对象</div><div class="line">myIntro.attachEvent(&apos;onclick&apos;, myEventHandler);</div></pre></td></tr></table></figure>
+<p>这里有一些方式可以避免这个问题，最简单的方式是使用前面的基本事件注册方式，或者是再做一个通用的 addEvent，通用代码请参考 <a href="http://ejohn.org/apps/jselect/event.html" target="_blank" rel="external">John Resig</a> 或 <a href="http://dean.edwards.name/weblog/2005/10/add-event2/" target="_blank" rel="external">Dean Edward</a> 的文章。</p>
+<h2 id="Event-对象"><a href="#Event-对象" class="headerlink" title="Event 对象"></a>Event 对象</h2><p>另外一个非常重要的内容是 Event 对象，当事件发生的时候出发某个函数，该 Event 对象将自动在函数内可用，该对象包含了很多事件触发时候的信息，但IE却没有这么实现，而是自己实现的，IE 浏览器是通过全局对象 window 下的 event 属性来包含这些信息，虽然不是大问题，但我们也需要注意一下，下面的代码是兼容性的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">function myEventHandler(e) &#123;</div><div class="line">    // 注意参数e</div><div class="line">    // 该函数调用的时候e是event对象（W3C实现）</div><div class="line">    // 兼容IE的代码</div><div class="line">    e = e || window.event;</div><div class="line">    // 现在e就可以兼容各种浏览器了</div><div class="line">&#125;</div><div class="line">// 这里可以自由地绑定事件了</div></pre></td></tr></table></figure>
+<p>这里判断 e 对象（Event 对象）是否存在我们使用了 OR 操作符：如果 e 不存在（为 null，undefined，0 等）的时候，将 window.event 赋值给 e，否则的话继续使用 e。通过这方式很快就能在多浏览器里得到真正的 Event 对象，如果你不喜欢这种方式的话，你可以使用 if 语句来处理：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">if (!e) &#123;</div><div class="line">    e = window.event;</div><div class="line">&#125; // 没有else语句，因为e在其它浏览器已经定义了</div></pre></td></tr></table></figure>
+<p>另外 Event 对象下的命令和属性都很有用，遗憾的是不不能全兼容浏览器，例如当你想取消默认的行为的时候你可以使用 Event 对象里的 preventDefault()方法，但 IE 里不得不使用对象的 returnValue 属性值来控制，兼容代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">function myEventHandler(e) &#123;</div><div class="line">    e = e || window.event;</div><div class="line">    // 防止默认行为</div><div class="line">    if (e.preventDefault) &#123;</div><div class="line">        e.preventDefault();</div><div class="line">    &#125; else &#123;</div><div class="line">        e.returnValue = false;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>例如，当你点击一个连接的时候，默认行为是导航到 href 里定义的地址，但有时候你想禁用这个默认行为，通过 returnValue 和 preventDefault 就可以实现，Event 对象里的很多属性在浏览器里都不兼容，所以很多时候需要处理这些兼容性代码。</p>
+<p>注意：现在很多 JS 类库都已经封装好了 e.preventDefault 代码，也就是说在 IE 里可用了，但是原理上依然是使用 returnValue 来实现的。</p>
+<h3 id="事件冒泡"><a href="#事件冒泡" class="headerlink" title="事件冒泡"></a>事件冒泡</h3><p>事件冒泡，就是事件触发的时候通过 DOM 向上冒泡，首先要知道不是所有的事件都有冒泡。事件在一个目标元素上触发的时候，该事件将触发一一触发祖先节点元素，直到最顶层的元素：</p>
+<p><img src="http://wiki.jikexueyuan.com/project/javascript-depth-understanding/images/16.png" alt="img"></p>
+<p>如图所示，如果 a 连接被点击，触发触发连接的 click 事件，然后触发 p 的 click 事件，以此再触发 div 和 body 的 click 事件。顺序不变，而且不一定是在同时触发的。</p>
+<p>这样你就可以利用该特性去处理自己的逻辑了，并且再任何时候都可以停止冒泡，比如，如果你只想冒泡到文本节点上，而不再进一步冒泡，你可以在 p 的 click 事件处理函数里丁停止冒泡：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">function myParagraphEventHandler(e) &#123;</div><div class="line">    e = e || window.event;</div><div class="line">    // 停止向上冒泡</div><div class="line">    if (e.stopPropagation) &#123;</div><div class="line">        // W3C实现  </div><div class="line">        e.stopPropagation();</div><div class="line">    &#125; else &#123;</div><div class="line">        // IE实现  </div><div class="line">        e.cancelBubble = true;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line">// 使用我们自定义的addEvent函数将myParagraphEventHandler绑定到click事件上：  </div><div class="line">addEvent(document.getElementsByTagName(&apos;p&apos;)[0], &apos;click&apos;, myParagraphEventHandler);</div></pre></td></tr></table></figure>
+<h3 id="事件委托"><a href="#事件委托" class="headerlink" title="事件委托"></a>事件委托</h3><p>举例来说，如果你有一个很多行的大表格，在每个  上绑定点击事件是个非常危险的想法，因为性能是个大问题。流行的做法是使用事件委托。事件委托描述的是将事件绑定在容器元素上，然后通过判断点击的 target 子元素的类型来触发相应的事件。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">var myTable = document.getElementById(&apos;my-table&apos;);</div><div class="line">myTable.onclick = function () &#123;</div><div class="line">    // 处理浏览器兼容</div><div class="line">    e = e || window.event;</div><div class="line">    var targetNode = e.target || e.srcElement;</div><div class="line">    // 测试如果点击的是TR就触发</div><div class="line">    if (targetNode.nodeName.toLowerCase() === &apos;tr&apos;) &#123;</div><div class="line">        alert(&apos;You clicked a table row!&apos;);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>事件委托依赖于事件冒泡，如果事件冒泡到 table 之前被禁用的话，那上面的代码就无法工作了。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本章我们覆盖到了 DOM 元素的操作以及相关的浏览器事件模型，希望大家能对 DOM 有了进一步的了解。</p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/2016/04/25/深入理解javascript/23JavaScript 与 DOM（上）——也适用于新手/"><span>JavaScript 与 DOM（上）——也适用于新手</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2016/04/25/深入理解javascript/23JavaScript 与 DOM（上）——也适用于新手/" rel="bookmark">
+        <time class="entry-date published" datetime="2016-04-25T12:02:02.000Z">
+          2016-04-25
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <h2 id="文档对象模型-Document-Object-Model"><a href="#文档对象模型-Document-Object-Model" class="headerlink" title="文档对象模型 Document Object Model"></a>文档对象模型 Document Object Model</h2><p>DOM（Document Object Model，文档对象模型）是一个通过和 JavaScript 进行内容交互的 API。Javascript 和 DOM 一般经常作为一个整体，因为 Javascript 通常都是用来进行 DOM 操作和交互的。</p>
+<p><img src="http://wiki.jikexueyuan.com/project/javascript-depth-understanding/images/12.png" alt="img"></p>
+<p>关于DOM，有些知识需要注意：</p>
+<ol>
+<li>window 对象作为全局对象，也就是说你可以通过 window 来访问全局对象。<ol>
+<li>属性在对象下面以变量的形式存放，在页面上创建的所有全局对象都会变成 window 对象的属性。</li>
+<li>方法在对象下面以函数的形式存放，因为左右的函数都存放在 window 对象下面，所以他们也可以称为方法。</li>
+</ol>
+</li>
+<li>DOM 为 web 文档创建带有层级的结果，这些层级是通过 node 节点组成，这里有几种 DOM node 类型，最重要的是 Element，Text，Document。<ol>
+<li>Element 节点在页面里展示的是一个元素，所以如果你有段落元素(``)，你可以通过这个 DOM 节点来访问。</li>
+<li>Text 节点在页面里展示的所有文本相关的元素，所以如果你的段落有文本在里面的话，你可以直接通过 DOM 的 Text 节点来访问这个文本</li>
+<li>Document 节点代表是整个文档，它是 DOM 的根节点。</li>
+</ol>
+</li>
+<li>每个引擎对 DOM 标准的实现有一些轻微的不同。例如，Firefox 浏览器使用的 Gecko 引擎有着很好的实现（尽管没有完全遵守 W3C 规范），但 IE 浏览器使用的 Trident 引擎的实现却不完整而且还有 bug，给开发人言带来了很多问题。</li>
+</ol>
+<p><code>如果你正在使用 Firefox，我推荐你立即下载 Firebug 插件，对于你了解 DOM 结构非常有用。</code></p>
+<h2 id="Web-上的-JavaScript"><a href="#Web-上的-JavaScript" class="headerlink" title="Web 上的 JavaScript"></a>Web 上的 JavaScript</h2><h3 id="Script-元素"><a href="#Script-元素" class="headerlink" title="Script 元素"></a>Script 元素</h3><p>当你在网站页面上使用 JavaScript 的时候，需要使用 `` 元素：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Strict//EN&quot; &quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd&quot;&gt;  </div><div class="line">&lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot; lang=&quot;en&quot;&gt;  </div><div class="line">    &lt;head&gt;  </div><div class="line">            &lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=UTF-8&quot; /&gt;  </div><div class="line">            &lt;title&gt;JavaScript!&lt;/title&gt;  </div><div class="line">    &lt;/head&gt;  </div><div class="line">    &lt;body&gt;        </div><div class="line">        &lt;script type=&quot;text/javascript&quot;&gt;  </div><div class="line">        // &lt;![CDATA[     </div><div class="line">        // ]]&gt;  </div><div class="line">        &lt;/script&gt;        </div><div class="line">    &lt;/body&gt;  </div><div class="line">&lt;/html&gt;</div></pre></td></tr></table></figure>
+<p>上述代码，严格来说 SCRIPT 的 TYPE 属性应该设置为 application/javascript，但是由于 IE 不支持这个，所以平时我们不得不写成 text/javascript 或者直接去掉 type。另外你也可以看到在 SCRIPT 元素里的注释行// &lt;![CDATA[ 是用来告诉支持 XHTML 的浏览器，这里面的代码是字符数据而不是 XHTML 标签，比如如果你在里面的数据使用了 &lt; 或 &gt;，浏览器就不会再解析成 XHTML 标签了。</p>
+<h3 id="Defer属性"><a href="#Defer属性" class="headerlink" title="Defer属性"></a>Defer属性</h3><p>任何在 SCRIPT 元素里声明的代码在页面加载的时候都会运行，唯一一个例外是给 SCRIPT 元素加上一个 defer 属性。defer 属性告诉浏览器加载完HTML文档以后再执行 JS 代码，但这个属性只能在 IE 下使用。</p>
+<h3 id="连接外部脚本"><a href="#连接外部脚本" class="headerlink" title="连接外部脚本"></a>连接外部脚本</h3><p>如果你想了解外部脚本，只需要简单地在 SCRIPT 上使用 SRC 属性就行了，使用单独的 JS 文件的好处是可以缓存，而且也不需要担心 CDATA 方面的问题：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;script type=&quot;text/javascript&quot; src=&quot;my-script.js&quot;&gt;&lt;/script&gt;</div></pre></td></tr></table></figure>
+<h3 id="JavaScript-必备"><a href="#JavaScript-必备" class="headerlink" title="JavaScript 必备"></a>JavaScript 必备</h3><p>在我们继续 DOM 之前，我们来复习一下 JavaScript 的核心必备知识，如果你还不了解，也没关系，我们在这一章节将稍微花点时间来回顾一下。</p>
+<p>JavaScript 有几种数据类型：Number，String，Boolean，Object，Undefined and Null。</p>
+<p>单行注释使用双斜杠//，双斜杠后面的所有文字都会被注释掉，多行注意使用<code>/*</code>和<code>*/</code>括住。</p>
+<h3 id="Number"><a href="#Number" class="headerlink" title="Number"></a>Number</h3><p>在 JavaScript 里所有的 Number 都是浮点型的，当声明一个数字变量的时候，记得不要使用任何引号。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">// 注：使用var类声明变量</div><div class="line">var leftSide = 100;  </div><div class="line">var topSide = 50;  </div><div class="line">var areaOfRectangle = leftSide * topSide; // = 5000  </div><div class="line">String</div></pre></td></tr></table></figure>
+<p>JavaScript 里声明字符串特别简单，和其它语言一样，在 JS 里使用单引号或双引号都可以。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">var firstPart = &apos;Hello&apos;;  </div><div class="line">var secondPart = &apos;World!&apos;;  </div><div class="line">var allOfIt = firstPart + &apos; &apos; + secondPart; // Hello World!  </div><div class="line">// +符合是字符连接符。也用于数字相加</div></pre></td></tr></table></figure>
+<h3 id="Boolean"><a href="#Boolean" class="headerlink" title="Boolean"></a>Boolean</h3><p>布尔类型用于条件判断，布尔类型是只有 2 个值：true 和 false。任何使用逻辑操作符的比较都会返回布尔值。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">5 === (3 + 2); // = true  </div><div class="line">// 你也可以将布尔值赋给一个变量</div><div class="line">var veryTired = true;</div><div class="line">// 这样使用</div><div class="line">if (veryTired) &#123;</div><div class="line">    // 执行代码 </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>===也是比较操作符，不仅比较数值，还比较类型。</p>
+<h3 id="Function"><a href="#Function" class="headerlink" title="Function"></a>Function</h3><p>函数是特殊的对象。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">// 使用function操作符来声明新函数  </div><div class="line">function myFunctionName(arg1, arg2) &#123;</div><div class="line">    // 函数代码</div><div class="line">&#125;</div><div class="line">// 你也可以声明匿名函数 </div><div class="line">function (arg1, arg2) &#123;</div><div class="line">    // Function code goes here.  </div><div class="line">&#125;</div><div class="line">// 运行函数很简单，直接在函数名称后面加上小括号就可以了</div><div class="line">// 或者也可以带上参数</div><div class="line">myFunctionName(); // 无参</div><div class="line">myFunctionName(&apos;foo&apos;, &apos;bar&apos;); // 有参数</div><div class="line">// 也可以使用自调用  </div><div class="line">(function () &#123;</div><div class="line">    // 这里自调用函数</div><div class="line">&#125;)();</div></pre></td></tr></table></figure>
+<h3 id="Array"><a href="#Array" class="headerlink" title="Array"></a>Array</h3><p>数组也是特殊的对象，它包含了一批值（或对象），访问这些数据的话需要使用数字索引：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">// 2种方式声明数组</div><div class="line">// 字面量:  </div><div class="line">var fruit = [&apos;apple&apos;, &apos;lemon&apos;, &apos;banana&apos;];</div><div class="line">// Array构造函数:  </div><div class="line">var fruit = new Array(&apos;apple&apos;, &apos;lemon&apos;, &apos;banana&apos;);</div><div class="line">fruit[0]; // 访问第1个项(apple)  </div><div class="line">fruit[1]; // 访问第2个项(lemon)  </div><div class="line">fruit[2]; // 访问第3个项(banana) </div><div class="line">Object</div></pre></td></tr></table></figure>
+<p>一个对象是一个 key-value 的集合，和数组相似，唯一的不同是你可以为每个数据定义一个名称。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">// 2种类型定义Object对象</div><div class="line">// 字面量（大括号）</div><div class="line">var profile = &#123;</div><div class="line">    name: &apos;Bob&apos;,</div><div class="line">    age: 99,</div><div class="line">    job: &apos;Freelance Hitman&apos;</div><div class="line">&#125;;</div><div class="line">// 使用Object构造函数</div><div class="line">var profile = new Object();</div><div class="line">profile.name = &apos;Bob&apos;;</div><div class="line">profile.age = 99;</div><div class="line">profile.job = &apos;Freelance Hitman&apos;;</div></pre></td></tr></table></figure>
+<h3 id="IF-Else-语句"><a href="#IF-Else-语句" class="headerlink" title="IF/Else 语句"></a>IF/Else 语句</h3><p>JS 里使用最多的语句莫过于条件语句了：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">var legalDrinkingAge = 21;  </div><div class="line">var yourAge = 29;  </div><div class="line">if ( yourAge &gt;= legalDrinkingAge ) &#123;   </div><div class="line">    alert(&apos;You can drink.&apos;);  </div><div class="line">&#125; else &#123;  </div><div class="line">    alert(&apos;Sorry, you cannot drink.&apos;);</div></pre></td></tr></table></figure>
+<h3 id="JavaScript-操作符"><a href="#JavaScript-操作符" class="headerlink" title="JavaScript 操作符"></a>JavaScript 操作符</h3><p>建议你访问这个页面来查看所有的 JS 操作符，这里我仅仅给出一些例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">// 加减乘除</div><div class="line">var someMaths = 2 + 3 + 4 - 10 * 100 / 2;     </div><div class="line">// 等于  </div><div class="line">if ( 2 == (5 - 3 ) &#123; /* 代码 */ &#125; // == 比较是否相等</div><div class="line">// 不等于 </div><div class="line">if ( 2 != (5 - 3 ) &#123; /* 代码 */ &#125;   </div><div class="line">// 严格等于（推荐） </div><div class="line">2 === 2 // 代替 2 == 2  </div><div class="line">2 !== 3 // 代替 2 != 3  </div><div class="line">// 赋值:  </div><div class="line">var numberOfFruit = 9;  </div><div class="line">numberOfFruit -= 2; // 等价于 &quot;numberOfFruit = numberOfFruit - 2&quot;  </div><div class="line">numberOfFruit += 2; // 等价于 &quot;numberOfFruit = numberOfFruit + 2&quot;</div></pre></td></tr></table></figure>
+<h3 id="Loop循环"><a href="#Loop循环" class="headerlink" title="Loop循环"></a>Loop循环</h3><p>Loop 循环在是遍历数组或者对象的所有成员的时候非常方便，JavaScript 里使用最多的是 FOR 和 WHILE 语句。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">var envatoTutSites = [&apos;NETTUTS&apos;, &apos;PSDTUTS&apos;, &apos;AUDIOTUTS&apos;, &apos;AETUTS&apos;, &apos;VECTORTUTS&apos;];</div><div class="line">// WHILE循环</div><div class="line">var counter = 0;</div><div class="line">var lengthOfArray = envatoTutSites.length;</div><div class="line">while (counter &lt; lengthOfArray) &#123;</div><div class="line">    alert(envatoTutSites[counter]);</div><div class="line">    counter++; // 等价于counter += 1;  </div><div class="line">&#125;</div><div class="line">// FOR循环</div><div class="line">// i只是用于迭代，可以任意取名 </div><div class="line">for (var i = 0, length = envatoTutSites.length; i &lt; length; i++) &#123;</div><div class="line">    alert(envatoTutSites[i]);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="DOM-正文"><a href="#DOM-正文" class="headerlink" title="DOM 正文"></a>DOM 正文</h2><h3 id="访问-DOM-节点"><a href="#访问-DOM-节点" class="headerlink" title="访问 DOM 节点"></a>访问 DOM 节点</h3><p>我们来个例子，一个 HTML 里包含一段文本和一个无序的列表。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Strict//EN&quot; &quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd&quot;&gt;  </div><div class="line">&lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot; lang=&quot;en&quot;&gt;  </div><div class="line">    &lt;head&gt;  </div><div class="line">            &lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=UTF-8&quot; /&gt;  </div><div class="line">            &lt;title&gt;JavaScript!&lt;/title&gt;  </div><div class="line">    &lt;/head&gt;  </div><div class="line">    &lt;body&gt;  </div><div class="line">        &lt;p id=&quot;intro&quot;&gt;My first paragraph...&lt;/p&gt;  </div><div class="line">        &lt;ul&gt;  </div><div class="line">            &lt;li&gt;List item 1&lt;/li&gt;  </div><div class="line">            &lt;li&gt;List item 1&lt;/li&gt;  </div><div class="line">            &lt;li&gt;List item 1&lt;/li&gt;  </div><div class="line">            &lt;li&gt;List item 1&lt;/li&gt;  </div><div class="line">            &lt;li&gt;List item 1&lt;/li&gt;  </div><div class="line">        &lt;/ul&gt;  </div><div class="line">        &lt;script type=&quot;text/javascript&quot;&gt;  </div><div class="line">        // &lt;![CDATA[  </div><div class="line">        // ]]&gt;  </div><div class="line">&lt;/script&gt;  </div><div class="line">    &lt;/body&gt;  </div><div class="line">&lt;/html&gt;</div></pre></td></tr></table></figure>
+<p>上面例子里，我们使用 getElementById DOM 方法来访问 p 段落，在 SCRIPT 里添加如下代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">var introParagraph = document.getElementById(&apos;intro&apos;);  </div><div class="line">// 现在有了该DOM节点，这个DOM节点展示的是该信息段落</div></pre></td></tr></table></figure>
+<p>变量 introParagraph 现在已经引用到该 DOM 节点上了，我们可以对该节点做很多事情，比如查询内容和属性，或者其它任何操作，甚至可以删除它，克隆它，或者将它移到到 DOM 树的其它节点上。</p>
+<p>文档上的任何内容，我们都可以使用 JavaScript 和 DOM API 来访问，所以类似地，我们也可以访问上面的无序列表，唯一的问题是该元素没有 ID 属性，如果 ID 的话就可以使用相同的方式，或者使用如下 getElementsByTagName 方式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">var allUnorderedLists = document.getElementsByTagName(&apos;ul&apos;);  </div><div class="line">// &apos;getElementsByTagName&apos;返回的是一个节点集合</div><div class="line">// - 和数组有点相似</div></pre></td></tr></table></figure>
+<h3 id="getElementsByTagName"><a href="#getElementsByTagName" class="headerlink" title="getElementsByTagName"></a>getElementsByTagName</h3><p>getElementsByTagName 方法返回的是一个节点集合，和数组类似也有 length 属性，重要的一个特性是他是 live 的——如果你在该元素里添加一个新的 li 元素，这个集合就会自动更新，介于他和数组类型，所以可以和访问数组一样的方法来访问，所以从 0 开始：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">// 访问无序列表: [0]索引</div><div class="line">var unorderedList = document.getElementsByTagName(&apos;ul&apos;)[0];</div><div class="line">// 获取所有的li集合:  </div><div class="line">var allListItems = unorderedList.getElementsByTagName(&apos;li&apos;);</div><div class="line">// 循环遍历</div><div class="line">for (var i = 0, length = allListItems.length; i &lt; length; i++) &#123;</div><div class="line">    // 弹出该节点的text内容</div><div class="line">    alert(allListItems[i].firstChild.data);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>以下图例更清晰地展示了 DOM 获取的知识：</p>
+<p><img src="http://wiki.jikexueyuan.com/project/javascript-depth-understanding/images/13.png" alt="img"></p>
+<h3 id="DOM-穿梭"><a href="#DOM-穿梭" class="headerlink" title="DOM 穿梭"></a>DOM 穿梭</h3><p>“穿梭”这个词主要是用来描述通过 DOM 查找节点，DOM API 提供了大量的节点属性让我们来往上或者往下查询节点。</p>
+<p>所有的节点都有这些属性，都是可以用于访问相关的 node 节点：</p>
+<ol>
+<li>Node.childNodes: 访问一个单元素下所有的直接子节点元素，可以是一个可循环的类数组对象。该节点集合可以保护不同的类型的子节点（比如 text 节点或其他元素节点）。</li>
+<li>Node.firstChild: 与‘childNodes’数组的第一个项(‘Element.childNodes[0]‘)是同样的效果，仅仅是快捷方式。</li>
+<li>Node.lastChild: 与‘childNodes’数组的最后一个项(‘Element.childNodes[Element.childNodes.length-1]‘)是同样的效果，仅仅是快捷方式。shortcut。</li>
+<li>Node.parentNode: 访问当前节点的父节点，父节点只能有一个，祖节点可以用‘Node.parentNode.parentNode’的形式来访问。</li>
+<li>Node.nextSibling: 访问 DOM 树上与当前节点同级别的下一个节点。</li>
+<li>Node.previousSibling: 访问 DOM 树上与当前节点同级别的上一个节点。</li>
+</ol>
+<p><img src="http://wiki.jikexueyuan.com/project/javascript-depth-understanding/images/14.png" alt="img"></p>
+<p>通过这张图，理解起来就简单多了，但有个非常重要的知识点：那就是元素之间不能有空格，如果 ul 和 li 之间有空格的话，就会被认为是内容为空的 text node 节点，这样 ul.childNodes[0]就不是第一个 li 元素了。相应地，</p><p>的下一个节点也不是<ul>，因为<p>和<ul>之间有一个空行的节点，一般遇到这种情况需要遍历所有的子节点然后判断 nodeType 类型，1 是元素，2 是属性，3 是 text 节点，详细的 type 类型可以通过此地址：</ul></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">Node.ELEMENT_NODE == 1</div><div class="line">Node.ATTRIBUTE_NODE == 2</div><div class="line">Node.TEXT_NODE == 3</div><div class="line">Node.CDATA_SECTION_NODE == 4</div><div class="line">Node.ENTITY_REFERENCE_NODE == 5</div><div class="line">Node.ENTITY_NODE == 6</div><div class="line">Node.PROCESSING_INSTRUCTION_NODE == 7</div><div class="line">Node.COMMENT_NODE == 8</div><div class="line">Node.DOCUMENT_NODE == 9</div><div class="line">Node.DOCUMENT_TYPE_NODE == 10</div><div class="line">Node.DOCUMENT_FRAGMENT_NODE == 11</div><div class="line">Node.NOTATION_NODE == 12</div></pre></td></tr></table></figure>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>原生的 DOM 方法和属性足够我们日常的应用了，本章节我们只列举了一些例子，下一章节我们列举更多的例子，还会包括浏览器事件模型。</p>
+</ul></p>
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/2016/04/13/深入理解javascript/27设计模式之建造者模式/"><span>设计模式之建造者模式</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2016/04/13/深入理解javascript/27设计模式之建造者模式/" rel="bookmark">
+        <time class="entry-date published" datetime="2016-04-13T04:31:02.000Z">
+          2016-04-13
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>在软件系统中，有时候面临着“一个复杂对象”的创建工作，其通常由各个部分的子对象用一定的算法构成；由于需求的变化，这个复杂对象的各个部分经常面临着剧烈的变化，但是将它们组合在一起的算法确相对稳定。如何应对这种变化？如何提供一种“封装机制”来隔离出“复杂对象的各个部分”的变化，从而保持系统中的“稳定构建算法”不随着需求改变而改变？这就是要说的建造者模式。</p>
+<p>建造者模式可以将一个复杂对象的构建与其表示相分离，使得同样的构建过程可以创建不同的表示。也就是说如果我们用了建造者模式，那么用户就需要指定需要建造的类型就可以得到它们，而具体建造的过程和细节就不需要知道了。</p>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><p>这个模式相对来说比较简单，先上代码，然后再解释</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">function getBeerById(id, callback) &#123;</div><div class="line">    // 使用ID来请求数据，然后返回数据.</div><div class="line">    asyncRequest(&apos;GET&apos;, &apos;beer.uri?id=&apos; + id, function (resp) &#123;</div><div class="line">        // callback调用 response</div><div class="line">        callback(resp.responseText);</div><div class="line">    &#125;);</div><div class="line">&#125;</div><div class="line">var el = document.querySelector(&apos;#test&apos;);</div><div class="line">el.addEventListener(&apos;click&apos;, getBeerByIdBridge, false);</div><div class="line">function getBeerByIdBridge(e) &#123;</div><div class="line">    getBeerById(this.id, function (beer) &#123;</div><div class="line">        console.log(&apos;Requested Beer: &apos; + beer);</div><div class="line">    &#125;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>根据建造者的定义，表相即是回调，也就是说获取数据以后如何显示和处理取决于回调函数，相应地回调函数在处理数据的时候不需要关注是如何获取数据的，同样的例子也可以在 jquery 的 ajax 方法里看到，有很多回调函数（比如 success，error 回调等），主要目的就是职责分离。</p>
+<p>同样再来一个 jQuery 的例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$(&apos;&lt;div class= &quot;foo&quot;&gt; bar &lt;/div&gt;&apos;);</div></pre></td></tr></table></figure>
+<p>我们只需要传入要生成的 HTML 字符，而不需要关系具体的 HTML 对象是如何生产的。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>建造者模式主要用于“分步骤构建一个复杂的对象”，在这其中“分步骤”是一个稳定的算法，而复杂对象的各个部分则经常变化，其优点是：建造者模式的“加工工艺”是暴露的，这样使得建造者模式更加灵活，并且建造者模式解耦了组装过程和创建具体部件，使得我们不用去关心每个部件是如何组装的。</p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/2016/04/12/深入理解javascript/28设计模式之工厂模式/"><span>设计模式之工厂模式</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2016/04/12/深入理解javascript/28设计模式之工厂模式/" rel="bookmark">
+        <time class="entry-date published" datetime="2016-04-12T06:02:02.000Z">
+          2016-04-12
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>与创建型模式类似，工厂模式创建对象（视为工厂里的产品）时无需指定创建对象的具体类。</p>
+<p>工厂模式定义一个用于创建对象的接口，这个接口由子类决定实例化哪一个类。该模式使一个类的实例化延迟到了子类。而子类可以重写接口方法以便创建的时候指定自己的对象类型。</p>
+<p>这个模式十分有用，尤其是创建对象的流程赋值的时候，比如依赖于很多设置文件等。并且，你会经常在程序里看到工厂方法，用于让子类类定义需要创建的对象类型。</p>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><p>下面这个例子中，是应用了工厂方法对第 26 章构造函数模式代码的改进版本：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">var Car = (function () &#123;</div><div class="line">    var Car = function (model, year, miles) &#123;</div><div class="line">        this.model = model;</div><div class="line">        this.year = year;</div><div class="line">        this.miles = miles;</div><div class="line">    &#125;;</div><div class="line">    return function (model, year, miles) &#123;</div><div class="line">        return new Car(model, year, miles);</div><div class="line">    &#125;;</div><div class="line">&#125;)();</div><div class="line">var tom = new Car(&quot;Tom&quot;, 2009, 20000);</div><div class="line">var dudu = new Car(&quot;Dudu&quot;, 2010, 5000);</div></pre></td></tr></table></figure>
+<p>不好理解的话，我们再给一个例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">var productManager = &#123;&#125;;</div><div class="line">productManager.createProductA = function () &#123;</div><div class="line">    console.log(&apos;ProductA&apos;);</div><div class="line">&#125;</div><div class="line">productManager.createProductB = function () &#123;</div><div class="line">    console.log(&apos;ProductB&apos;);</div><div class="line">&#125;      </div><div class="line">productManager.factory = function (typeType) &#123;</div><div class="line">    return new productManager[typeType];</div><div class="line">&#125;</div><div class="line">productManager.factory(&quot;createProductA&quot;);</div></pre></td></tr></table></figure>
+<p>如果还不理解的话，那我们就再详细一点咯，假如我们想在网页面里插入一些元素，而这些元素类型不固定，可能是图片，也有可能是连接，甚至可能是文本，根据工厂模式的定义，我们需要定义工厂类和相应的子类，我们先来定义子类的具体实现（也就是子函数）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">var page = page || &#123;&#125;;</div><div class="line">page.dom = page.dom || &#123;&#125;;</div><div class="line">//子函数1：处理文本</div><div class="line">page.dom.Text = function () &#123;</div><div class="line">    this.insert = function (where) &#123;</div><div class="line">        var txt = document.createTextNode(this.url);</div><div class="line">        where.appendChild(txt);</div><div class="line">    &#125;;</div><div class="line">&#125;;</div><div class="line">//子函数2：处理链接</div><div class="line">page.dom.Link = function () &#123;</div><div class="line">    this.insert = function (where) &#123;</div><div class="line">        var link = document.createElement(&apos;a&apos;);</div><div class="line">        link.href = this.url;</div><div class="line">        link.appendChild(document.createTextNode(this.url));</div><div class="line">        where.appendChild(link);</div><div class="line">    &#125;;</div><div class="line">&#125;;</div><div class="line">//子函数3：处理图片</div><div class="line">page.dom.Image = function () &#123;</div><div class="line">    this.insert = function (where) &#123;</div><div class="line">        var im = document.createElement(&apos;img&apos;);</div><div class="line">        im.src = this.url;</div><div class="line">        where.appendChild(im);</div><div class="line">    &#125;;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>那么我们如何定义工厂处理函数呢？其实很简单：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">page.dom.factory = function (type) &#123;</div><div class="line">    return new page.dom[type];</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>使用方式如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">var o = page.dom.factory(&apos;Link&apos;);</div><div class="line">o.url = &apos;http://www.cnblogs.com&apos;;</div><div class="line">o.insert(document.body);</div></pre></td></tr></table></figure>
+<p>至此，工厂模式的介绍相信大家都已经了然于心了，我就不再多叙述了。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><h3 id="什么时候使用工厂模式"><a href="#什么时候使用工厂模式" class="headerlink" title="什么时候使用工厂模式"></a>什么时候使用工厂模式</h3><p>以下几种情景下工厂模式特别有用：</p>
+<ol>
+<li>对象的构建十分复杂</li>
+<li>需要依赖具体环境创建不同实例</li>
+<li>处理大量具有相同属性的小对象</li>
+</ol>
+<h3 id="什么时候不该用工厂模式"><a href="#什么时候不该用工厂模式" class="headerlink" title="什么时候不该用工厂模式"></a>什么时候不该用工厂模式</h3><p>不滥用运用工厂模式，有时候仅仅只是给代码增加了不必要的复杂度，同时使得测试难以运行下去。</p>
+<p>。</p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/2016/04/08/深入理解javascript/6S.O.L.I.D 五大原则之单一职责 SRP/"><span>S.O.L.I.D 五大原则之单一职责 SRP</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2016/04/08/深入理解javascript/6S.O.L.I.D 五大原则之单一职责 SRP/" rel="bookmark">
+        <time class="entry-date published" datetime="2016-04-08T07:02:02.000Z">
+          2016-04-08
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>Bob 大叔提出并发扬了 S.O.L.I.D 五大原则，用来更好地进行面向对象编程，五大原则分别是：</p>
+<ol>
+<li>The Single Responsibility Principle（单一职责 SRP）</li>
+<li>The Open/Closed Principle（开闭原则 OCP）</li>
+<li>The Liskov Substitution Principle（里氏替换原则 LSP）</li>
+<li>The Interface Segregation Principle（接口分离原则 ISP）</li>
+<li>The Dependency Inversion Principle（依赖反转原则 DIP）</li>
+</ol>
+<p>五大原则，我相信在博客园已经被讨论烂了，尤其是 C# 的实现，但是相对于 JavaScript 这种以原型为 base 的动态类型语言来说还为数不多，该系列将分 5 篇文章以 JavaScript 编程语言为基础来展示五大原则的应用。 OK，开始我们的第一篇：单一职责。</p>
+<h2 id="单一职责"><a href="#单一职责" class="headerlink" title="单一职责"></a>单一职责</h2><p>单一职责的描述如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">A class should have only one reason to change</div><div class="line">类发生更改的原因应该只有一个</div></pre></td></tr></table></figure>
+<p>一个类（JavaScript 下应该是一个对象）应该有一组紧密相关的行为的意思是什么？遵守单一职责的好处是可以让我们很容易地来维护这个对象，当一个对象封装了很多职责的话，一旦一个职责需要修改，势必会影响该对象想的其它职责代码。通过解耦可以让每个职责工更加有弹性地变化。</p>
+<p>不过，我们如何知道一个对象的多个行为构造多个职责还是单个职责？我们可以通过参考<a href="http://www.amazon.com/Object-Design-Roles-Responsibilities-Collaborations/dp/0201379430" target="_blank" rel="external">Object Design: Roles, Responsibilies, and Collaborations</a>一书提出的 Role Stereotypes 概念来决定，该书提出了如下 Role Stereotypes 来区分职责：</p>
+<ol>
+<li>Information holder – 该对象设计为存储对象并提供对象信息给其它对象。</li>
+<li>Structurer – 该对象设计为维护对象和信息之间的关系</li>
+<li>Service provider – 该对象设计为处理工作并提供服务给其它对象</li>
+<li>Controller – 该对象设计为控制决策一系列负责的任务处理</li>
+<li>Coordinator – 该对象不做任何决策处理工作，只是delegate工作到其它对象上</li>
+<li>Interfacer – 该对象设计为在系统的各个部分转化信息（或请求）</li>
+</ol>
+<p>一旦你知道了这些概念，那就狠容易知道你的代码到底是多职责还是单一职责了。</p>
+<h2 id="实例代码"><a href="#实例代码" class="headerlink" title="实例代码"></a>实例代码</h2><p>该实例代码演示的是将商品添加到购物车，代码非常糟糕，代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line">function Product(id, description) &#123;</div><div class="line">    this.getId = function () &#123;</div><div class="line">        return id;</div><div class="line">    &#125;;</div><div class="line">    this.getDescription = function () &#123;</div><div class="line">        return description;</div><div class="line">    &#125;;</div><div class="line">&#125;</div><div class="line">function Cart(eventAggregator) &#123;</div><div class="line">    var items = [];</div><div class="line">    this.addItem = function (item) &#123;</div><div class="line">        items.push(item);</div><div class="line">    &#125;;</div><div class="line">&#125;</div><div class="line">(function () &#123;</div><div class="line">    var products = [new Product(1, &quot;Star Wars Lego Ship&quot;),</div><div class="line">            new Product(2, &quot;Barbie Doll&quot;),</div><div class="line">            new Product(3, &quot;Remote Control Airplane&quot;)],</div><div class="line">cart = new Cart();</div><div class="line">    function addToCart() &#123;</div><div class="line">        var productId = $(this).attr(&apos;id&apos;);</div><div class="line">        var product = $.grep(products, function (x) &#123;</div><div class="line">            return x.getId() == productId;</div><div class="line">        &#125;)[0];</div><div class="line">        cart.addItem(product);</div><div class="line">        var newItem = $(&apos;&lt;li&gt;&lt;/li&gt;&apos;).html(product.getDescription()).attr(&apos;id-cart&apos;, product.getId()).appendTo(&quot;#cart&quot;);</div><div class="line">    &#125;</div><div class="line">    products.forEach(function (product) &#123;</div><div class="line">        var newItem = $(&apos;&lt;li&gt;&lt;/li&gt;&apos;).html(product.getDescription())</div><div class="line">                                    .attr(&apos;id&apos;, product.getId())</div><div class="line">                                    .dblclick(addToCart)</div><div class="line">                                    .appendTo(&quot;#products&quot;);</div><div class="line">    &#125;);</div><div class="line">&#125;)();</div></pre></td></tr></table></figure>
+<p>该代码声明了 2 个 function 分别用来描述 product 和 cart，而匿名函数的职责是更新屏幕和用户交互，这还不是一个很复杂的例子，但匿名函数里却包含了很多不相关的职责，让我们来看看到底有多少职责：</p>
+<ol>
+<li>首先，有 product 的集合的声明</li>
+<li>其次，有一个将 product 集合绑定到 #product 元素的代码，而且还附件了一个添加到购物车的事件处理</li>
+<li>第三，有 Cart 购物车的展示功能</li>
+<li>第四，有添加 product item 到购物车并显示的功能</li>
+</ol>
+<h2 id="重构代码"><a href="#重构代码" class="headerlink" title="重构代码"></a>重构代码</h2><p>让我们来分解一下，以便代码各自存放到各自的对象里，为此，我们参考了 martinfowler 的事件聚合（Event Aggregator）理论在处理代码以便各对象之间进行通信。</p>
+<p>首先我们先来实现事件聚合的功能，该功能分为 2 部分，1 个是 Event，用于 Handler 回调的代码，1 个是 EventAggregator 用来订阅和发布 Event，代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div></pre></td><td class="code"><pre><div class="line">function Event(name) &#123;</div><div class="line">    var handlers = [];</div><div class="line">    this.getName = function () &#123;</div><div class="line">        return name;</div><div class="line">    &#125;;</div><div class="line">    this.addHandler = function (handler) &#123;</div><div class="line">        handlers.push(handler);</div><div class="line">    &#125;;</div><div class="line">    this.removeHandler = function (handler) &#123;</div><div class="line">        for (var i = 0; i &lt; handlers.length; i++) &#123;</div><div class="line">            if (handlers[i] == handler) &#123;</div><div class="line">                handlers.splice(i, 1);</div><div class="line">                break;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;;</div><div class="line">    this.fire = function (eventArgs) &#123;</div><div class="line">        handlers.forEach(function (h) &#123;</div><div class="line">            h(eventArgs);</div><div class="line">        &#125;);</div><div class="line">    &#125;;</div><div class="line">&#125;</div><div class="line">function EventAggregator() &#123;</div><div class="line">    var events = [];</div><div class="line">    function getEvent(eventName) &#123;</div><div class="line">        return $.grep(events, function (event) &#123;</div><div class="line">            return event.getName() === eventName;</div><div class="line">        &#125;)[0];</div><div class="line">    &#125;</div><div class="line">    this.publish = function (eventName, eventArgs) &#123;</div><div class="line">        var event = getEvent(eventName);</div><div class="line">        if (!event) &#123;</div><div class="line">            event = new Event(eventName);</div><div class="line">            events.push(event);</div><div class="line">        &#125;</div><div class="line">        event.fire(eventArgs);</div><div class="line">    &#125;;</div><div class="line">    this.subscribe = function (eventName, handler) &#123;</div><div class="line">        var event = getEvent(eventName);</div><div class="line">        if (!event) &#123;</div><div class="line">            event = new Event(eventName);</div><div class="line">            events.push(event);</div><div class="line">        &#125;</div><div class="line">        event.addHandler(handler);</div><div class="line">    &#125;;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>然后，我们来声明 Product 对象，代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">function Product(id, description) &#123;</div><div class="line">    this.getId = function () &#123;</div><div class="line">        return id;</div><div class="line">    &#125;;</div><div class="line">    this.getDescription = function () &#123;</div><div class="line">        return description;</div><div class="line">    &#125;;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>接着来声明 Cart 对象，该对象的 addItem 的 function 里我们要触发发布一个事件 itemAdded，然后将 item 作为参数传进去。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">function Cart(eventAggregator) &#123;</div><div class="line">    var items = [];</div><div class="line">    this.addItem = function (item) &#123;</div><div class="line">        items.push(item);</div><div class="line">        eventAggregator.publish(&quot;itemAdded&quot;, item);</div><div class="line">    &#125;;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>CartController 主要是接受 cart 对象和事件聚合器，通过订阅 itemAdded 来增加一个 li 元素节点，通过订阅 productSelected 事件来添加 product。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">function CartController(cart, eventAggregator) &#123;</div><div class="line">    eventAggregator.subscribe(&quot;itemAdded&quot;, function (eventArgs) &#123;</div><div class="line">        var newItem = $(&apos;&lt;li&gt;&lt;/li&gt;&apos;).html(eventArgs.getDescription()).attr(&apos;id-cart&apos;, eventArgs.getId()).appendTo(&quot;#cart&quot;);</div><div class="line">    &#125;);</div><div class="line">    eventAggregator.subscribe(&quot;productSelected&quot;, function (eventArgs) &#123;</div><div class="line">        cart.addItem(eventArgs.product);</div><div class="line">    &#125;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>Repository 的目的是为了获取数据（可以从 ajax 里获取），然后暴露 get 数据的方法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">function ProductRepository() &#123;</div><div class="line">    var products = [new Product(1, &quot;Star Wars Lego Ship&quot;),</div><div class="line">            new Product(2, &quot;Barbie Doll&quot;),</div><div class="line">            new Product(3, &quot;Remote Control Airplane&quot;)];</div><div class="line">    this.getProducts = function () &#123;</div><div class="line">        return products;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>ProductController 里定义了一个 onProductSelect 方法，主要是发布触发 productSelected 事件，forEach 主要是用于绑定数据到产品列表上，代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">function ProductController(eventAggregator, productRepository) &#123;</div><div class="line">    var products = productRepository.getProducts();</div><div class="line">    function onProductSelected() &#123;</div><div class="line">        var productId = $(this).attr(&apos;id&apos;);</div><div class="line">        var product = $.grep(products, function (x) &#123;</div><div class="line">            return x.getId() == productId;</div><div class="line">        &#125;)[0];</div><div class="line">        eventAggregator.publish(&quot;productSelected&quot;, &#123;</div><div class="line">            product: product</div><div class="line">        &#125;);</div><div class="line">    &#125;</div><div class="line">    products.forEach(function (product) &#123;</div><div class="line">        var newItem = $(&apos;&lt;li&gt;&lt;/li&gt;&apos;).html(product.getDescription())</div><div class="line">                                    .attr(&apos;id&apos;, product.getId())</div><div class="line">                                    .dblclick(onProductSelected)</div><div class="line">                                    .appendTo(&quot;#products&quot;);</div><div class="line">    &#125;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>最后声明匿名函数（需要确保 HTML 都加载完了才能执行这段代码，比如放在 jQuery 的 ready 方法里）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">(function () &#123;</div><div class="line">    var eventAggregator = new EventAggregator(),</div><div class="line">cart = new Cart(eventAggregator),</div><div class="line">cartController = new CartController(cart, eventAggregator),</div><div class="line">productRepository = new ProductRepository(),</div><div class="line">productController = new ProductController(eventAggregator, productRepository);</div><div class="line">&#125;)();</div></pre></td></tr></table></figure>
+<p>可以看到匿名函数的代码减少了很多，主要是一个对象的实例化代码，代码里我们介绍了 Controller 的概念，他接受信息然后传递到 action，我们也介绍了 Repository 的概念，主要是用来处理 product 的展示，重构的结果就是写了一大堆的对象声明，但是好处是每个对象有了自己明确的职责，该展示数据的展示数据，改处理集合的处理集合，这样耦合度就非常低了。</p>
+<p>最终代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div></pre></td><td class="code"><pre><div class="line">function Event(name) &#123;</div><div class="line">    var handlers = [];</div><div class="line">    this.getName = function () &#123;</div><div class="line">        return name;</div><div class="line">    &#125;;</div><div class="line">    this.addHandler = function (handler) &#123;</div><div class="line">        handlers.push(handler);</div><div class="line">    &#125;;</div><div class="line">    this.removeHandler = function (handler) &#123;</div><div class="line">        for (var i = 0; i &lt; handlers.length; i++) &#123;</div><div class="line">            if (handlers[i] == handler) &#123;</div><div class="line">                handlers.splice(i, 1);</div><div class="line">                break;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;;</div><div class="line">    this.fire = function (eventArgs) &#123;</div><div class="line">        handlers.forEach(function (h) &#123;</div><div class="line">            h(eventArgs);</div><div class="line">        &#125;);</div><div class="line">    &#125;;</div><div class="line">&#125;</div><div class="line">function EventAggregator() &#123;</div><div class="line">    var events = [];</div><div class="line">    function getEvent(eventName) &#123;</div><div class="line">        return $.grep(events, function (event) &#123;</div><div class="line">            return event.getName() === eventName;</div><div class="line">        &#125;)[0];</div><div class="line">    &#125;</div><div class="line">    this.publish = function (eventName, eventArgs) &#123;</div><div class="line">        var event = getEvent(eventName);</div><div class="line">        if (!event) &#123;</div><div class="line">            event = new Event(eventName);</div><div class="line">            events.push(event);</div><div class="line">        &#125;</div><div class="line">        event.fire(eventArgs);</div><div class="line">    &#125;;</div><div class="line">    this.subscribe = function (eventName, handler) &#123;</div><div class="line">        var event = getEvent(eventName);</div><div class="line">        if (!event) &#123;</div><div class="line">            event = new Event(eventName);</div><div class="line">            events.push(event);</div><div class="line">        &#125;</div><div class="line">        event.addHandler(handler);</div><div class="line">    &#125;;</div><div class="line">&#125;</div><div class="line">function Product(id, description) &#123;</div><div class="line">    this.getId = function () &#123;</div><div class="line">        return id;</div><div class="line">    &#125;;</div><div class="line">    this.getDescription = function () &#123;</div><div class="line">        return description;</div><div class="line">    &#125;;</div><div class="line">&#125;</div><div class="line">function Cart(eventAggregator) &#123;</div><div class="line">    var items = [];</div><div class="line">    this.addItem = function (item) &#123;</div><div class="line">        items.push(item);</div><div class="line">        eventAggregator.publish(&quot;itemAdded&quot;, item);</div><div class="line">    &#125;;</div><div class="line">&#125;</div><div class="line">function CartController(cart, eventAggregator) &#123;</div><div class="line">    eventAggregator.subscribe(&quot;itemAdded&quot;, function (eventArgs) &#123;</div><div class="line">        var newItem = $(&apos;&lt;li&gt;&lt;/li&gt;&apos;).html(eventArgs.getDescription()).attr(&apos;id-cart&apos;, eventArgs.getId()).appendTo(&quot;#cart&quot;);</div><div class="line">    &#125;);</div><div class="line">    eventAggregator.subscribe(&quot;productSelected&quot;, function (eventArgs) &#123;</div><div class="line">        cart.addItem(eventArgs.product);</div><div class="line">    &#125;);</div><div class="line">&#125;</div><div class="line">function ProductRepository() &#123;</div><div class="line">    var products = [new Product(1, &quot;Star Wars Lego Ship&quot;),</div><div class="line">    new Product(2, &quot;Barbie Doll&quot;),</div><div class="line">    new Product(3, &quot;Remote Control Airplane&quot;)];</div><div class="line">    this.getProducts = function () &#123;</div><div class="line">        return products;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line">function ProductController(eventAggregator, productRepository) &#123;</div><div class="line">    var products = productRepository.getProducts();</div><div class="line">    function onProductSelected() &#123;</div><div class="line">        var productId = $(this).attr(&apos;id&apos;);</div><div class="line">        var product = $.grep(products, function (x) &#123;</div><div class="line">            return x.getId() == productId;</div><div class="line">        &#125;)[0];</div><div class="line">        eventAggregator.publish(&quot;productSelected&quot;, &#123;</div><div class="line">            product: product</div><div class="line">        &#125;);</div><div class="line">    &#125;</div><div class="line">    products.forEach(function (product) &#123;</div><div class="line">        var newItem = $(&apos;&lt;li&gt;&lt;/li&gt;&apos;).html(product.getDescription())</div><div class="line">                            .attr(&apos;id&apos;, product.getId())</div><div class="line">                            .dblclick(onProductSelected)</div><div class="line">                            .appendTo(&quot;#products&quot;);</div><div class="line">    &#125;);</div><div class="line">&#125;</div><div class="line">(function () &#123;</div><div class="line">    var eventAggregator = new EventAggregator(),</div><div class="line">        cart = new Cart(eventAggregator),</div><div class="line">        cartController = new CartController(cart, eventAggregator),</div><div class="line">        productRepository = new ProductRepository(),</div><div class="line">        productController = new ProductController(eventAggregator, productRepository);</div><div class="line">&#125;)();</div></pre></td></tr></table></figure>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>如果你的项目是个是个非常小的项目，代码也不是很多，那其实是没有必要重构得这么复杂，但如果你的项目是个很复杂的大型项目，或者你的小项目将来可能增长得很快的话，那就在前期就得考虑 SRP 原则进行职责分离了，这样才有利于以后的维护。</p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/2016/04/05/深入理解javascript/26设计模式之构造函数模式/"><span>设计模式之构造函数模式</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2016/04/05/深入理解javascript/26设计模式之构造函数模式/" rel="bookmark">
+        <time class="entry-date published" datetime="2016-04-05T07:02:02.000Z">
+          2016-04-05
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>构造函数大家都很熟悉了，不过如果你是新手，还是有必要来了解一下什么叫构造函数的。构造函数用于创建特定类型的对象——不仅声明了使用的对象，构造函数还可以接受参数以便第一次创建对象的时候设置对象的成员值。你可以自定义自己的构造函数，然后在里面声明自定义类型对象的属性或方法。</p>
+<h2 id="基本用法"><a href="#基本用法" class="headerlink" title="基本用法"></a>基本用法</h2><p>在 JavaScript 里，构造函数通常是认为用来实现实例的，JavaScript 没有类的概念，但是有特殊的构造函数。通过 new 关键字来调用定义的否早函数，你可以告诉 JavaScript 你要创建一个新对象并且新对象的成员声明都是构造函数里定义的。在构造函数内部，this 关键字引用的是新创建的对象。基本用法如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">function Car(model, year, miles) &#123;</div><div class="line">    this.model = model;</div><div class="line">    this.year = year;</div><div class="line">    this.miles = miles;</div><div class="line">    this.output= function () &#123;</div><div class="line">        return this.model + &quot;走了&quot; + this.miles + &quot;公里&quot;;</div><div class="line">    &#125;;</div><div class="line">&#125;</div><div class="line">var tom= new Car(&quot;大叔&quot;, 2009, 20000);</div><div class="line">var dudu= new Car(&quot;Dudu&quot;, 2010, 5000);</div><div class="line">console.log(tom.output());</div><div class="line">console.log(dudu.output());</div></pre></td></tr></table></figure>
+<p>上面的例子是个非常简单的构造函数模式，但是有点小问题。首先是使用继承很麻烦了，其次 output()在每次创建对象的时候都重新定义了，最好的方法是让所有 Car 类型的实例都共享这个 output()方法，这样如果有大批量的实例的话，就会节约很多内存。</p>
+<p>解决这个问题，我们可以使用如下方式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">function Car(model, year, miles) &#123;</div><div class="line">    this.model = model;</div><div class="line">    this.year = year;</div><div class="line">    this.miles = miles;</div><div class="line">    this.output= formatCar;</div><div class="line">&#125;</div><div class="line">function formatCar() &#123;</div><div class="line">    return this.model + &quot;走了&quot; + this.miles + &quot;公里&quot;;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这个方式虽然可用，但是我们有如下更好的方式。</p>
+<h2 id="构造函数与原型"><a href="#构造函数与原型" class="headerlink" title="构造函数与原型"></a>构造函数与原型</h2><p>JavaScript 里函数有个原型属性叫 prototype，当调用构造函数创建对象的时候，所有该构造函数原型的属性在新创建对象上都可用。按照这样，多个 Car 对象实例可以共享同一个原型，我们再扩展一下上例的代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">function Car(model, year, miles) &#123;</div><div class="line">    this.model = model;</div><div class="line">    this.year = year;</div><div class="line">    this.miles = miles;</div><div class="line">&#125;</div><div class="line">/*</div><div class="line">注意：这里我们使用了Object.prototype.方法名，而不是Object.prototype</div><div class="line">主要是用来避免重写定义原型prototype对象</div><div class="line">*/</div><div class="line">Car.prototype.output= function () &#123;</div><div class="line">    return this.model + &quot;走了&quot; + this.miles + &quot;公里&quot;;</div><div class="line">&#125;;</div><div class="line">var tom = new Car(&quot;大叔&quot;, 2009, 20000);</div><div class="line">var dudu = new Car(&quot;Dudu&quot;, 2010, 5000);</div><div class="line">console.log(tom.output());</div><div class="line">console.log(dudu.output());</div></pre></td></tr></table></figure>
+<p>这里，output()单实例可以在所有 Car 对象实例里共享使用。</p>
+<p>另外：我们推荐构造函数以大写字母开头，以便区分普通的函数。</p>
+<h2 id="只能用-new-吗？"><a href="#只能用-new-吗？" class="headerlink" title="只能用 new 吗？"></a>只能用 new 吗？</h2><p>上面的例子对函数 car 都是用 new 来创建对象的，只有这一种方式么？其实还有别的方式，我们列举两种：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">function Car(model, year, miles) &#123;</div><div class="line">    this.model = model;</div><div class="line">    this.year = year;</div><div class="line">    this.miles = miles;</div><div class="line">    // 自定义一个output输出内容</div><div class="line">    this.output = function () &#123;</div><div class="line">        return this.model + &quot;走了&quot; + this.miles + &quot;公里&quot;;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line">//方法1：作为函数调用</div><div class="line">Car(&quot;大叔&quot;, 2009, 20000);  //添加到window对象上</div><div class="line">console.log(window.output());</div><div class="line">//方法2：在另外一个对象的作用域内调用</div><div class="line">var o = new Object();</div><div class="line">Car.call(o, &quot;Dudu&quot;, 2010, 5000);</div><div class="line">console.log(o.output());</div></pre></td></tr></table></figure>
+<p>该代码的方法 1 有点特殊，如果不适用 new 直接调用函数的话，this 指向的是全局对象 window，我们来验证一下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">//作为函数调用</div><div class="line">var tom = Car(&quot;大叔&quot;, 2009, 20000);</div><div class="line">console.log(typeof tom); // &quot;undefined&quot;</div><div class="line">console.log(window.output()); // &quot;大叔走了20000公里&quot;</div></pre></td></tr></table></figure>
+<p>这时候对象 tom 是 undefined，而 window.output()会正确输出结果，而如果使用 new 关键字则没有这个问题，验证如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">//使用new 关键字</div><div class="line">var tom = new Car(&quot;大叔&quot;, 2009, 20000);</div><div class="line">console.log(typeof tom); // &quot;object&quot;</div><div class="line">console.log(tom.output()); // &quot;大叔走了20000公里&quot;</div></pre></td></tr></table></figure>
+<h2 id="强制使用-new"><a href="#强制使用-new" class="headerlink" title="强制使用 new"></a>强制使用 new</h2><p>上述的例子展示了不使用 new 的问题，那么我们有没有办法让构造函数强制使用 new 关键字呢，答案是肯定的，上代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">function Car(model, year, miles) &#123;</div><div class="line">    if (!(this instanceof Car)) &#123;</div><div class="line">        return new Car(model, year, miles);</div><div class="line">    &#125;</div><div class="line">    this.model = model;</div><div class="line">    this.year = year;</div><div class="line">    this.miles = miles;</div><div class="line">    this.output = function () &#123;</div><div class="line">        return this.model + &quot;走了&quot; + this.miles + &quot;公里&quot;;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line">var tom = new Car(&quot;大叔&quot;, 2009, 20000);</div><div class="line">var dudu = Car(&quot;Dudu&quot;, 2010, 5000);</div><div class="line">console.log(typeof tom); // &quot;object&quot;</div><div class="line">console.log(tom.output()); // &quot;大叔走了20000公里&quot;</div><div class="line">console.log(typeof dudu); // &quot;object&quot;</div><div class="line">console.log(dudu.output()); // &quot;Dudu走了5000公里&quot;</div></pre></td></tr></table></figure>
+<p>通过判断 this 的 instanceof 是不是 Car 来决定返回 new Car 还是继续执行代码，如果使用的是 new 关键字，则(this instanceof Car)为真，会继续执行下面的参数赋值，如果没有用 new，(this instanceof Car)就为假，就会重新 new 一个实例返回。</p>
+<h2 id="原始包装函数"><a href="#原始包装函数" class="headerlink" title="原始包装函数"></a>原始包装函数</h2><p>JavaScript 里有 3 中原始包装函数：number，string，boolean，有时候两种都用：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">// 使用原始包装函数</div><div class="line">var s = new String(&quot;my string&quot;);</div><div class="line">var n = new Number(101);</div><div class="line">var b = new Boolean(true);</div><div class="line">// 推荐这种</div><div class="line">var s = &quot;my string&quot;;</div><div class="line">var n = 101;</div><div class="line">var b = true;</div></pre></td></tr></table></figure>
+<p>推荐，只有在想保留数值状态的时候使用这些包装函数，关于区别可以参考下面的代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">// 原始string</div><div class="line">var greet = &quot;Hello there&quot;;</div><div class="line">// 使用split()方法分割</div><div class="line">greet.split(&apos; &apos;)[0]; // &quot;Hello&quot;</div><div class="line">// 给原始类型添加新属性不会报错</div><div class="line">greet.smile = true;</div><div class="line">// 单没法获取这个值（18章ECMAScript实现里我们讲了为什么）</div><div class="line">console.log(typeof greet.smile); // &quot;undefined&quot;</div><div class="line">// 原始string</div><div class="line">var greet = new String(&quot;Hello there&quot;);</div><div class="line">// 使用split()方法分割</div><div class="line">greet.split(&apos; &apos;)[0]; // &quot;Hello&quot;</div><div class="line">// 给包装函数类型添加新属性不会报错</div><div class="line">greet.smile = true;</div><div class="line">// 可以正常访问新属性</div><div class="line">console.log(typeof greet.smile); // &quot;boolean&quot;</div></pre></td></tr></table></figure>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本章主要讲解了构造函数模式的使用方法、调用方法以及new关键字的区别，希望大家在使用的时候有所注意。</p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/2016/03/25/深入理解javascript/17面向对象编程之一般理论/"><span>面向对象编程之一般理论</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2016/03/25/深入理解javascript/17面向对象编程之一般理论/" rel="bookmark">
+        <time class="entry-date published" datetime="2016-03-25T07:52:02.000Z">
+          2016-03-25
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>在本篇文章，我们考虑在 ECMAScript 中的面向对象编程的各个方面（虽然以前在许多文章中已经讨论过这个话题）。我们将更多地从理论方面看这些问题。 特别是，我们会考虑对象的创建算法，对象（包括基本关系 - 继承）之间的关系是如何，也可以在讨论中使用（我希望将消除之前对于 JavaScript 中 OOP 的一些概念歧义）。</p>
+<h2 id="概论、范式与思想"><a href="#概论、范式与思想" class="headerlink" title="概论、范式与思想"></a>概论、范式与思想</h2><p>在进行 ECMAScript 中的 OOP 技术分析之前，我们有必要掌握一些 OOP 基本的特征，并澄清概论中的主要概念。</p>
+<p>ECMAScript 支持包括结构化、面向对象、函数式、命令式等多种编程方式，某些情况下还支持面向方面编程；但本文是讨论面向对象编程，所以来给出 ECMAScript 中面向对象编程的定义:</p>
+<blockquote>
+<p>ECMAScript 是基于原型实现的面向对象编程语言。</p>
+</blockquote>
+<p>基于原型的 OOP 和基于静态类的方式直接有很多差异。 让我们一起来看看他们直接详细的差异。</p>
+<h2 id="基于类特性和基于原型"><a href="#基于类特性和基于原型" class="headerlink" title="基于类特性和基于原型"></a>基于类特性和基于原型</h2><p>注意，在前面一句很重要的一点已经指出的那样-完全基于静态类。 随着“静态”一词，我们了解静态对象和静态类，强类型（虽然不是必需的）。</p>
+<p>关于这种情况，很多论坛上的文档都有强调这是他们反对将在 JavaScript 里将“类与原型”进行比较的主要原因，尽管他们在实现上的有所不同（例如基于动态类的 Python 和 Ruby）不是太反对的重点（某些条件写，尽管思想上有一定不同，但 JavaScript 没有变得那么另类），但他们反对的重点是静态类和动态原型(statics + classes vs. dynamics + prototypes)，确切地说，一个静态类（例如：C++，JAVA）和他的属下及方法定义的机制可以让我们看到它和基于原型实现的准确区别。</p>
+<p>但是，让我们来一个一个列举一下。 让我们考虑总则和这些范式的主要概念。</p>
+<h2 id="基于静态类"><a href="#基于静态类" class="headerlink" title="基于静态类"></a>基于静态类</h2><p>在基于类的模型中，有个关于类和实例的概念。 类的实例也常常被命名为对象或范例 。</p>
+<h3 id="类与对象"><a href="#类与对象" class="headerlink" title="类与对象"></a>类与对象</h3><p>类代表了一个实例（也就是对象）的抽象。在这方面有点像数学，但我们一把称之为类型（type）或分类（classification）。</p>
+<p>例如（这里和下面的例子都是伪代码）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">C = Class &#123;a, b, c&#125; // 类C, 包括特性a, b, c</div></pre></td></tr></table></figure>
+<p>实例的特点是：属性（对象描述 ）和方法（对象活动）。特性本身也可视为对象：即属性是否可写的，可配置，可设置的（getter/setter）等。因此，对象存储了状态 （即在一个类中描述的所有属性的具体值），类为他们的实例定义了严格不变的结构（属性）和严格不变的行为（方法）。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">C = Class &#123;a, b, c, method1, method2&#125;</div><div class="line">c1 = &#123;a: 10, b: 20, c: 30&#125; // 类C是实例：对象с1</div><div class="line">c2 = &#123;a: 50, b: 60, c: 70&#125; // 类C是实例：对象с2，拥有自己的状态（也就是属性值）</div></pre></td></tr></table></figure>
+<h3 id="层次继承"><a href="#层次继承" class="headerlink" title="层次继承"></a>层次继承</h3><p>为了提高代码重用，类可以从一个扩展为另一个，在加上额外的信息。 这种机制被称为（分层）继承 。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">D = Class extends C = &#123;d, e&#125; // &#123;a, b, c, d, e&#125;</div><div class="line">d1 = &#123;a: 10, b: 20, c: 30, d: 40, e: 50&#125;</div></pre></td></tr></table></figure>
+<p>在类的实例上调用方的时候，通常会现在原生类本书就查找该方法，如果没找到就到直接父类去查找，如果还没找到，就到父类的父类去查找（例如严格的继承链上），如果查到继承的顶部还没查到，那结果就是：该对象没有类似的行为，也没办法获取结果。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">d1.method1() // D.method1 (no) -&gt; C.method1 (yes)</div><div class="line">d1.method5() // D.method5 (no) -&gt; C.method5 (no) -&gt; no result</div></pre></td></tr></table></figure>
+<p>与在继承里方法不复制到一个子类相比，属性总是被复杂到子类里的。 我们可以看到子类D继承自父类C类：属性a，b，c是复制过去了，D 的结构是{a, b, c, d, e} } 。然而，方法{method1, method2}是没有复制过去，而是继承过去的。 因此，也就是说如果一个很深层次的类有一些对象根本不需要的属性的话，那子类也拥有这些属性。</p>
+<h3 id="基于类的关键概念"><a href="#基于类的关键概念" class="headerlink" title="基于类的关键概念"></a>基于类的关键概念</h3><p>因此，我们有如下关键概念：</p>
+<ol>
+<li>创建一个对象之前，必须声明类，首先有必要界定其类；</li>
+<li>因此，该对象将由抽象成自身“象形和相似性”（结构和行为）的类里创建；</li>
+<li>方法是通过了严格的，直接的，一成不变的继承链来处理；</li>
+<li>子类包含了继承链中所有的属性（即使其中的某些属性是子类不需要的）；</li>
+<li>创建类实例，类不能（因为静态模型）来改变其实例的特征（属性或方法）；</li>
+<li>实例（因为严格的静态模型）除了有该实例所对应类里声明的行为和属性以外，是不能额外的行为或属性的。</li>
+</ol>
+<p>让我们看看在 JavaScript 里如何替代 OOP 模型，也就是我们所建议的基于原型的 OOP。</p>
+<h3 id="基于原型"><a href="#基于原型" class="headerlink" title="基于原型"></a>基于原型</h3><p>这里的基本概念是动态可变对象。转换（完整转换，不仅包括值，还包括特性）和动态语言有直接关系。下面这样的对象可以独立存储他们所有的特性（属性，方法）而不需要的类。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">object = &#123;a: 10, b: 20, c: 30, method: fn&#125;;</div><div class="line">object.a; // 10</div><div class="line">object.c; // 30</div><div class="line">object.method();</div></pre></td></tr></table></figure>
+<p>此外，由于动态的，他们可以很容易地改变（添加，删除，修改）自己的特性：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">object.method5 = function () &#123;...&#125;; // 添加新方法</div><div class="line">object.d = 40; // 添加新属性 &quot;d&quot;</div><div class="line">delete object.c; // 删除属性 &quot;с&quot;</div><div class="line">object.a = 100; // 修改属性 &quot;а&quot;</div><div class="line">// 结果是: object: &#123;a: 100, b: 20, d: 40, method: fn, method5: fn&#125;;</div></pre></td></tr></table></figure>
+<p>也就是说，在赋值的时候，如果某些特性不存在，则创建它并且将赋值与它进行初始化，如果它存在，就只是更新。</p>
+<p>在这种情况下，代码重用不是通过扩展类来实现的，（请注意，我们没有说类没办法改变，因为这里根本没有类的概念），而是通过原型来实现的。</p>
+<p>原型是一个对象，它是用来作为其他对象的原始 copy，或者如果一些对象没有自己的必要特性，原型可以作为这些对象的一个委托而当成辅助对象。</p>
+<h3 id="基于委托"><a href="#基于委托" class="headerlink" title="基于委托"></a>基于委托</h3><p>任何对象都可以被用来作为另一个对象的原型对象，因为对象可以很容易地在运行时改变它的原型动态。</p>
+<p>注意，目前我们正在考虑的是概论而不是具体实现，当我们在 ECMAScript 中讨论具体实现时，我们将看到他们自身的一些特点。</p>
+<p>例（伪代码）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">x = &#123;a: 10, b: 20&#125;;</div><div class="line">y = &#123;a: 40, c: 50&#125;;</div><div class="line">y.[[Prototype]] = x; // x是y的原型 </div><div class="line">y.a; // 40, 自身特性</div><div class="line">y.c; // 50, 也是自身特性</div><div class="line">y.b; // 20 – 从原型中获取: y.b (no) -&gt; y.[[Prototype]].b (yes): 20</div><div class="line">delete y.a; // 删除自身的&quot;а&quot;</div><div class="line">y.a; // 10 – 从原型中获取</div><div class="line">z = &#123;a: 100, e: 50&#125;</div><div class="line">y.[[Prototype]] = z; // 将y的原型修改为z</div><div class="line">y.a; // 100 – 从原型z中获取</div><div class="line">y.e // 50, 也是从从原型z中获取</div><div class="line">z.q = 200 // 添加新属性到原型上</div><div class="line">y.q // 修改也适用于y</div></pre></td></tr></table></figure>
+<p>这个例子展示了原型作为辅助对象属性的重要功能和机制，就像是要自己的属性一下，和自身属性相比，这些属性是委托属性。这个机制被称为委托，并且基于它的原型模型是一个委托的原型（或基于委托的原型 ） 。引用的机制在这里称为发送信息到对象上，如果这个对象得不到响应就会委托给原型来查找（要求它尝试响应消息）。</p>
+<p>在这种情况下的代码重用被称为基于委托的继承或基于原型的继承。由于任何对象可以当成原型，也就是说原型也可以有自己的原型。 这些原型连接在一起形成一个所谓的原型链。 链也像静态类中分层次的，但是它可以很容易地重新排列，改变层次和结构。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">x = &#123;a: 10&#125;</div><div class="line">y = &#123;b: 20&#125;</div><div class="line">y.[[Prototype]] = x</div><div class="line">z = &#123;c: 30&#125;</div><div class="line">z.[[Prototype]] = y</div><div class="line">z.a // 10</div><div class="line">// z.a 在原型链里查到:</div><div class="line">// z.a (no) -&gt;</div><div class="line">// z.[[Prototype]].a (no) -&gt;</div><div class="line">// z.[[Prototype]].[[Prototype]].a (yes): 10</div></pre></td></tr></table></figure>
+<p>如果一个对象和它的原型链不能响应消息发送，该对象可以激活相应的系统信号，可能是由原型链上其它的委托进行处理。</p>
+<p>该系统信号，在许多实现里都是可用的，包括基于括动态类的系统：Smalltalk中的 ＃doesNotUnderstand，Ruby 中的​​ method_missing；Python 中的<strong>getattr</strong>，PHP 中的<strong>call；和 ECMAScript 中的</strong>noSuchMethod__实现，等等。</p>
+<p>例（SpiderMonkey 的 ECMAScript 的实现）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">var object = &#123;</div><div class="line">  // catch住不能响应消息的系统信号</div><div class="line">  __noSuchMethod__: function (name, args) &#123;</div><div class="line">    alert([name, args]);</div><div class="line">    if (name == &apos;test&apos;) &#123;</div><div class="line">      return &apos;.test() method is handled&apos;;</div><div class="line">    &#125;</div><div class="line">    return delegate[name].apply(this, args);</div><div class="line">  &#125;</div><div class="line">&#125;;</div><div class="line">var delegate = &#123;</div><div class="line">  square: function (a) &#123;</div><div class="line">    return a * a;</div><div class="line">  &#125;</div><div class="line">&#125;;</div><div class="line">alert(object.square(10)); // 100</div><div class="line">alert(object.test()); // .test() method is handled</div></pre></td></tr></table></figure>
+<p>也就是说，基于静态类的实现，在不能响应消息的情况下，得出的结论是：目前的对象不具有所要求的特性，但是如果尝试从原型链里获取，依然可能得到结果，或者该对象经过一系列变化以后拥有该特性。</p>
+<p>关于 ECMAScript，具体的实现就是：使用基于委托的原型。 然而，正如我们将从规范和实现里看到的，他们也有自身的特性。</p>
+<h3 id="Concatenative模型"><a href="#Concatenative模型" class="headerlink" title="Concatenative模型"></a>Concatenative模型</h3><p>老实说，有必要在说句话关于另外一种情况（尽快在 ECMASCript 没有用到）：当原型从其它对象复杂原来代替原生对象这种情况。这种情况代码重用是在对象创建阶段对一个对象的真正复制（克隆）而不是委托。这种原型被称为 concatenative 原型。复制对象所有原型的特性，可以进一步完全改变其属性和方法,同样作为原型可以改变自己（在基于委托的模型中，这个改变不会改变现有存在的对象行为，而是改变它的原型特性）。 这种方法的优点是可以减少调度和委托的时间，而缺点是内存使用率搞。</p>
+<h3 id="Duck类型"><a href="#Duck类型" class="headerlink" title="Duck类型"></a>Duck类型</h3><p>回来动态弱类型变化的对象，与基于静态类的模型相比，检验它是否可以做这些事和对象有什么类型（类）无关，而是是否能够相应消息有关（即在检查以后是否有能力做它是必须的） 。</p>
+<p>例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">// 在基于静态来的模型里</div><div class="line">if (object instanceof SomeClass) &#123;</div><div class="line">  // 一些行为是运行的</div><div class="line">&#125;</div><div class="line">// 在动态实现里</div><div class="line">// 对象在此时是什么类型并不重要</div><div class="line">// 因为突变、类型、特性可以自由重复的转变。</div><div class="line">// 重要的对象是否可以响应test消息 </div><div class="line">if (isFunction(object.test)) // ECMAScript</div><div class="line">if object.respond_to?(:test) // Ruby</div><div class="line">if hasattr(object, &apos;test&apos;): // Python</div></pre></td></tr></table></figure>
+<p>这就是所谓的 Dock类型。 也就是说，物体在 check 的时候可以通过自己的特性来识别，而不是对象在层次结构中的位置或他们属于任何具体类型。</p>
+<h3 id="基于原型的关键概念"><a href="#基于原型的关键概念" class="headerlink" title="基于原型的关键概念"></a>基于原型的关键概念</h3><p>让我们来看一下这种方式的主要特点：</p>
+<ol>
+<li>基本概念是对象</li>
+<li>对象是完全动态可变的（理论上完全可以从一个类型转化到另一个类型）</li>
+<li>对象没有描述自己的结构和行为的严格类，对象不需要类</li>
+<li>对象没有类类但可以可以有原型，他们如果不能响应消息的话可以委托给原型</li>
+<li>在运行时随时可以改变对象的原型;</li>
+<li>在基于委托的模型中，改变原型的特点，将影响到与该原型相关的所有对象;</li>
+<li>在 concatenative 原型模型中，原型是从其他对象克隆的原始副本，并进一步成为完全独立的副本原件，原型特性的变换不会影响从它克隆的对象</li>
+<li>如果不能响应消息，它的调用者可以采取额外的措施（例如，改变调度）</li>
+<li>对象的失败可以不由它们的层次和所属哪个类来决定，而是由当前特性来决定</li>
+</ol>
+<p>不过，还有一个模型，我们也应该考虑。</p>
+<h3 id="基于动态类"><a href="#基于动态类" class="headerlink" title="基于动态类"></a>基于动态类</h3><p>我们认为，在上面例子里展示的区别“类 VS 原型 ”在这个基于动态类的模型中不是那么重要，（尤其是如果原型链是不变的，为更准确区分，还是有必要考虑一个静态类）。 作为例子，它也可以使用 Python 或 Ruby（或其他类似的语言）。 这些语言都使用基于动态类的范式。 然而，在某些方面，我们是可以看到基于原型实现的某些功能。</p>
+<p>在下面例子中，我们可以看到仅仅是基于委托的原型，我们可以放大一个类（原型），从而影响到所有与这个类相关的对象，我们也可以在运行时动态地改变这个对象的类（为委托提供一个新对象）等等。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">\# Python</div><div class="line">class A(object):</div><div class="line">    def __init__(self, a):</div><div class="line">        self.a = a</div><div class="line">    def square(self):</div><div class="line">        return self.a * self.a</div><div class="line">a = A(10) # 创建实例</div><div class="line">print(a.a) # 10</div><div class="line">A.b = 20 # 为类提供一个新属性</div><div class="line">print(a.b) # 20 – 可以在&quot;a&quot;实例里访问到</div><div class="line">a.b = 30 # 创建a自身的属性</div><div class="line">print(a.b) # 30</div><div class="line">del a.b # 删除自身的属性</div><div class="line">print(a.b) # 20 - 再次从类里获取（原型）</div><div class="line">\# 就像基于原型的模型</div><div class="line">\# 可以在运行时改变对象的原型</div><div class="line">class B(object): # 空类B</div><div class="line">    pass</div><div class="line">b = B() # B的实例</div><div class="line">b.__class__ = A # 动态改变类（原型）</div><div class="line">b.a = 10 # 创建新属性</div><div class="line">print(b.square()) # 100 - A类的方法这时候可用</div><div class="line">\# 可以显示删除类上的引用</div><div class="line">del A</div><div class="line">del B</div><div class="line">\# 但对象依然有隐式的引用，并且这些方法依然可用</div><div class="line">print(b.square()) # 100</div><div class="line">\# 但这时候不能再改变类了</div><div class="line">\# 这是实现的特性</div><div class="line">b.__class__ = dict # error</div></pre></td></tr></table></figure>
+<p>Ruby 中的实现也是类似的：也使用了完全动态的类（顺便说一下在当前版本的 Python 中，与 Ruby 和 ECMAScript 的对比，放大类（原型）不行的），我们可以彻底改变对象（或类）的特性（在类上添加方法/属性，而这些变化会影响已经存在的对象），但是，它不能的动态改变一个对象的类。</p>
+<p>但是，这篇文章不是专门针对 Python 和 Ruby 的，因此我们不多说了，我们来继续讨论 ECMAScript 本身。</p>
+<p>但在此之前，我们还得再看一下在一些 OOP 里有的“语法糖”，因为很多之前关于 JavaScript 的文章往往会文这些问题。</p>
+<p>本节唯一需要注意的错误句子是：“JavaScript不是类，它有原型，可以代替类”。 非常有必要知道并非所有基于类的实现都是完全不一样的,即便我们可能会说“JavaScript是不同的”，但也有必要考虑（除了“类”的概念）还有其他相关的特性呢。</p>
+<h2 id="各种-OOP-实现的其它特性"><a href="#各种-OOP-实现的其它特性" class="headerlink" title="各种 OOP 实现的其它特性"></a>各种 OOP 实现的其它特性</h2><p>本节我们简要介绍一下其它特性和各种 OOP 实现中关于代码重用的方式，也包括 ECMAScript 中的 OOP 实现。 原因是，之前出现的关于 JavaScript 中关于 OOP 的实现是有一些习惯性的思维限制，唯一主要的要求是，应该在技术上和思想上加以证明。不能说没发现和其它 OOP 实现里的语法糖功能，就草率认为 JavaScript 不是不是纯粹的 OOP 语言，这是不对滴。</p>
+<h3 id="多态"><a href="#多态" class="headerlink" title="多态"></a>多态</h3><p>在 ECMAScript 中对象有几种含义的多态性。</p>
+<p>例如，一个函数可以应用于不同的对象，就像原生对象的特性（因为这个值在进入执行上下文时确定的）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">function test() &#123;</div><div class="line">  alert([this.a, this.b]);</div><div class="line">&#125;</div><div class="line">test.call(&#123;a: 10, b: 20&#125;); // 10, 20</div><div class="line">test.call(&#123;a: 100, b: 200&#125;); // 100, 200</div><div class="line">var a = 1;</div><div class="line">var b = 2;</div><div class="line">test(); // 1, 2</div></pre></td></tr></table></figure>
+<p>不过，也有例外：Date.prototype.getTime()方法，根据标准这个值总是应该有一个日期对象，否则就会抛出异常。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">alert(Date.prototype.getTime.call(new Date())); // time</div><div class="line">alert(Date.prototype.getTime.call(new String(&apos;&apos;))); // TypeError</div></pre></td></tr></table></figure>
+<p>所谓函数定义时的参数多态性也就等价于所有数据类型，只不过接受多态性参数（例如数组的 .sort 排序方法和它的参数——多态的排序功能）。顺便说一下，上面的例子也可以被视为是一种参数多态性。</p>
+<p>原型里方法可以被定义为空，所有创建的对象应重新定义（实现）该方法（即“一个接口（签名），多个实现”）。</p>
+<p>多态性和我们上面提到的Duck类型是有关的：即对象的类型和在层次结构中的位置不是那么重要，但如果它有所有必要的特征，它可以很容易地接受（即通用接口很重要，实现则可以多种多样）。</p>
+<h3 id="封装"><a href="#封装" class="headerlink" title="封装"></a>封装</h3><p>关于封装，往往会有错误的看法。本节我们讨论一下一些 OOP 实现里的语法糖——也就是众所周知的修饰符：在这种情况下，我们将讨论一些OOP实现便捷的“糖” -众所周知的修饰符：private，protected 和 public（或者称为对象的访问级别或访问修饰符）。</p>
+<p>在这里我要提醒一下封装的主要目的：封装是一个抽象的增加，而不是选拔个直接往你的类里写入一些东西的隐藏“恶意黑客”。</p>
+<p>这是一个很大的错误：为了隐藏使用隐藏。</p>
+<p>访问级别（private，protected 和 public），为了方便编程在很多面向对象里都已经实现了（真的是非常方便的语法糖），更抽象地描述和构建系统。</p>
+<p>这些可以在一些实现里看出（如已经提到的Python和Ruby）。一方面（在 Python 中），这些<strong>private _protected 属性（通过下划线这个命名规范），从外部不可访问。 另一方面，Python 可以通过特殊的规则从外部访问（_ClassName</strong>field_name）。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">class A(object):</div><div class="line">    def __init__(self):</div><div class="line">      self.public = 10</div><div class="line">      self.__private = 20</div><div class="line">    def get_private(self):</div><div class="line">        return self.__private</div><div class="line">\# outside:</div><div class="line">a = A() # A的实例</div><div class="line">print(a.public) # OK, 30</div><div class="line">print(a.get_private()) # OK, 20</div><div class="line">print(a.__private) # 失败，因为只能在A里可用</div><div class="line">\# 但在Python里，可以通过特殊规则来访问</div><div class="line">print(a._A__private) # OK, 20</div></pre></td></tr></table></figure>
+<p>在 Ruby 里：一方面有能力来定义 private 和 protected 的特性，另一方面，也有特殊的方法（ 例如 instance_variable_get，instance_variable_set，send 等）获取封装的数据。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">class A</div><div class="line">  def initialize</div><div class="line">    @a = 10</div><div class="line">  end</div><div class="line">  def public_method</div><div class="line">    private_method(20)</div><div class="line">  end</div><div class="line">private</div><div class="line">  def private_method(b)</div><div class="line">    return @a + b</div><div class="line">  end</div><div class="line">end</div><div class="line">a = A.new # 新实例</div><div class="line">a.public_method # OK, 30</div><div class="line">a.a # 失败, @a - 是私有的实例变量</div><div class="line">\# &quot;private_method&quot;是私有的，只能在A类里访问</div><div class="line">a.private_method # 错误</div><div class="line">\# 但是有特殊的元数据方法名，可以获取到数据</div><div class="line">a.send(:private_method, 20) # OK, 30</div><div class="line">a.instance_variable_get(:@a) # OK, 10</div></pre></td></tr></table></figure>
+<p>最主要的原因是，程序员自己想要获得的封装（请注意，我特别不使用“隐藏”）的数据。 如果这些数据会以某种方式不正确地更改或有任何错误,则全部责任都是程序员，但不是简单的“拼写错误”或“随便改变某些字段”。 但如果这种情况很频繁，那就是很不好的编程习惯和风格 ，因为通常值用公共的 API 来和对象“交谈”。</p>
+<p>重复一下，封装的基本目的是一个从辅助数据的用户中抽象出来，而不是一个防止黑客隐藏数据。 更严重的，封装不是用 private 修饰数据而达到软件安全的目的。</p>
+<p>封装辅助对象（局部），我们用最小的代价、本地化和预测性变化来问为公共接口的行为变化提供可行性，这也正是封装的目的。</p>
+<p>另外 setter 方法​​的重要目的是抽象复杂的计算。 例如，element.innerHTML 这个 setter ——抽象的语句——“现在这个元素内的 HTML 是如下内容”，而在 innerHTML 属性的 setter 函数将难以计算和检查。 在这种情况下，问题大多涉及到抽象 ，但封装也会发生。</p>
+<p>封装的概念不仅仅只与 OOP 相关。 例如，它可以是一个简单的功能，只封装了各种计算，使得其抽象（没有必要让用户知道，例如函数 Math.round（… …）是如何实现的，用户只是简单地调用它）。 它是一种封装，注意，我没有说他是“private, protected 和 public”。</p>
+<p>ECMAScript 规范的当前版本，没有定义 private，protected 和 public 修饰符。</p>
+<p>然而，在实践中是有可能看到有些东西被命名为“模仿 JS 封装”。 一般该上下文的目的是（作为一个规则，构造函数本身）使用。 不幸的是，经常实施这种“模仿”，程序员可以产生伪绝对非抽象的实体设置“getter/setter方法”（我再说一遍，它是错误的）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">function A() &#123;</div><div class="line">  var _a; // &quot;private&quot; a</div><div class="line">  this.getA = function _getA() &#123;</div><div class="line">    return _a;</div><div class="line">  &#125;;</div><div class="line">  this.setA = function _setA(a) &#123;</div><div class="line">    _a = a;</div><div class="line">  &#125;;</div><div class="line">&#125;</div><div class="line">var a = new A();</div><div class="line">a.setA(10);</div><div class="line">alert(a._a); // undefined, &quot;private&quot;</div><div class="line">alert(a.getA()); // 10</div></pre></td></tr></table></figure>
+<p>因此，每个人都明白，对于每个创建的对象，对于的 getA/setA 方法也创建了，这也是导致内存增加的原因（和原型定义相比）。 虽然，理论上第一种情况下可以对对象进行优化。</p>
+<p>另外，一些 JavaScript 的文章经常提到“私有方法”的概念，注意：ECMA-262-3 标准里没有定义任何关于“私有方法”的概念。</p>
+<p>但是，某些情况下它可以在构造函数中创建，因为JS是意识形态的语言——对象是完全可变的并且有独特的特性（在构造函数里某些条件下，有些对象可以得到额外的方法，而其他则不行）。</p>
+<p>此外，在 JavaScript 里，如果还是把封装曲解成为了不让恶意黑客在某些自动写入某些值的一种理解来代替使用 setter 方法，那所谓的“隐藏(hidden)”和“私有(private)”其实没有很“隐藏”，，有些实现可以通过调用上下文到 eval 函数（可以在 SpiderMonkey1.7 上测试）在相关的作用域链（以及相应的所有变量对象）上获取值）。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">eval(&apos;_a = 100&apos;, a.getA); // 或者a.setA,因为&quot;_a&quot;两个方法的[[Scope]]上</div><div class="line">a.getA(); // 100</div></pre></td></tr></table></figure>
+<p>或者，在实现中允许直接进入活动对象（例如 Rhino），通过访问该对象的相应属性可以改变内部变量的值：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">// Rhino</div><div class="line">var foo = (function () &#123;</div><div class="line">  var x = 10; // &quot;private&quot;</div><div class="line">  return function () &#123;</div><div class="line">    print(x);</div><div class="line">  &#125;;</div><div class="line">&#125;)();</div><div class="line">foo(); // 10</div><div class="line">foo.__parent__.x = 20;</div><div class="line">foo(); // 20</div></pre></td></tr></table></figure>
+<p>有时，在 JavaScript 里通过在变量前加下划线来达到“private”和“protected”数据的目的（但与 Python 相比，这里只是命名规范）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">var _myPrivateData = &apos;testString&apos;;</div></pre></td></tr></table></figure>
+<p>对于括号括住执行上下文是经常使用，但对于真正的辅助数据，则和对象没有直接关联，只是方便从外部的 API 抽象出来：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">(function () &#123;</div><div class="line">  // 初始化上下文</div><div class="line">&#125;)();</div></pre></td></tr></table></figure>
+<h3 id="多重继承"><a href="#多重继承" class="headerlink" title="多重继承"></a>多重继承</h3><p>多继承是代码重用改进的一个很方便的语法糖（如果我们一次能继承一个类，为什么不能一次继承 10 个？）。 然而由于多重继承有一些不足，才导致在实现中没有流行起来。</p>
+<p>ECMAScript 不支持多继承（即只有一个对象，可以用来作为一个直接原型），虽然其祖先自编程语言有这样的能力。 但在某些实现中(如 SpiderMonkey)使用<strong>noSuchMethod</strong>可以用于管理调度和委托来替代原型链。</p>
+<h3 id="Mixins"><a href="#Mixins" class="headerlink" title="Mixins"></a>Mixins</h3><p>Mixins 是代码重用的一种便捷方式。 Mixins 已建议作为多重继承的替代品。 这些独立的元素都可以与任何对象进行混合来扩展它们的功能（因此对象也可以混合多个 Mixins）。 ECMA-262-3 规范没有定义“Mixins”的概念，但根据 Mixins 定义以及 ECMAScript 拥有动态可变对象，所以使用 Mixins 简单地扩充特性是没有障碍的。</p>
+<p>典型的例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">// helper for augmentation</div><div class="line">Object.extend = function (destination, source) &#123;</div><div class="line">  for (property in source) if (source.hasOwnProperty(property)) &#123;</div><div class="line">    destination[property] = source[property];</div><div class="line">  &#125;</div><div class="line">  return destination;</div><div class="line">&#125;;</div><div class="line">var X = &#123;a: 10, b: 20&#125;;</div><div class="line">var Y = &#123;c: 30, d: 40&#125;;</div><div class="line">Object.extend(X, Y); // mix Y into X</div><div class="line">alert([X.a, X.b, X.c, X.d]); 10, 20, 30, 40</div></pre></td></tr></table></figure>
+<p>请注意，我采取在 ECMA-262-3 中被提及过的引号中的这些定义（“mixin”，“mix”），在规范里并没有这样的概念，而且不是 mix 而是常用的通过新特性去扩展对象。（Ruby 中 mixins 的概念是官方定义的，mixin 创建了一个包含模块的一个引用来代替简单复制该模块的所有属性到另外一个模块上——事实上是：为委托创建一个额外的对象（原型））。</p>
+<h3 id="Traits"><a href="#Traits" class="headerlink" title="Traits"></a>Traits</h3><p>Traits 和 mixins 的概念相似，但它有很多功能（根据定义，因为可以应用 mixins 所以不能包含状态，因为它有可能导致命名冲突）。 根据 ECMAScript 说明 Traits 和 mixins 遵循同样的原则，所以该规范没有定义“Traits”的概念。</p>
+<h3 id="接口"><a href="#接口" class="headerlink" title="接口"></a>接口</h3><p>在一些 OOP 中实现的接口和 mixins 及 traits 类似。然而，与 mixins 及 traits 相比，接口强制实现类必须实现其方法签名的行为。</p>
+<p>接口完全可以被视为抽象类。不过与抽象类相比（抽象类里的方法可以只实现一部分，另外一部分依然定义为签名），继承只能是单继承基类，但可以继承多个接口，节约这个原因，可以接口（多个混合）可以看做是多继承的替代方案。</p>
+<p>ECMA-262-3 标准既没有定义“接口”的概念，也没有定义“抽象类”的概念。 然而，作为模仿，它是可以由“空”的方法（或空方法中抛出异常，告诉开发人员这个方法需要被实现）的对象来实现。</p>
+<h3 id="对象组合"><a href="#对象组合" class="headerlink" title="对象组合"></a>对象组合</h3><p>对象组合也是一个动态代码重用技术之一。 对象组合不同于高灵活性的继承，它实现了一个动态可变的委托。而这，也是基于委托原型的基本。 除了动态可变原型，该对象可以为委托聚合对象（创建一个组合作为结果——聚合 ），并进一步发送消息到对象上，委托到该委托上。这可以两个以上的委托，因为它的动态特性决定着它可以在运行时改变。</p>
+<p>已经提到的<strong>noSuchMethod</strong>例子是这样，但也让我们展示了如何明确地使用委托：</p>
+<p>例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">var _delegate = &#123;</div><div class="line">  foo: function () &#123;</div><div class="line">    alert(&apos;_delegate.foo&apos;);</div><div class="line">  &#125;</div><div class="line">&#125;;</div><div class="line">var agregate = &#123;</div><div class="line">  delegate: _delegate,</div><div class="line">  foo: function () &#123;</div><div class="line">    return this.delegate.foo.call(this);</div><div class="line">  &#125;</div><div class="line">&#125;;</div><div class="line">agregate.foo(); // delegate.foo</div><div class="line">agregate.delegate = &#123;</div><div class="line">  foo: function () &#123;</div><div class="line">    alert(&apos;foo from new delegate&apos;);</div><div class="line">  &#125;</div><div class="line">&#125;;</div><div class="line">agregate.foo(); // foo from new delegate</div></pre></td></tr></table></figure>
+<p>这种对象关系称为“has-a”，而集成是“is-a”的关系。</p>
+<p>由于显示组合的缺乏（与继承相比的灵活性），增加中间代码也是可以的。</p>
+<h3 id="AOP-特性"><a href="#AOP-特性" class="headerlink" title="AOP 特性"></a>AOP 特性</h3><p>作为面向方面的一个功能，可以使用 function decorators。ECMA-262-3 规格没有明确定义的“function decorators”的概念（和 Python 相对，这个词是在 Python 官方定义了）。 不过，拥有函数式参数的函数在某些方面是可以装饰和激活的（通过应用所谓的建议）：</p>
+<p>最简单的装饰者例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">function checkDecorator(originalFunction) &#123;</div><div class="line">  return function () &#123;</div><div class="line">    if (fooBar != &apos;test&apos;) &#123;</div><div class="line">      alert(&apos;wrong parameter&apos;);</div><div class="line">      return false;</div><div class="line">    &#125;</div><div class="line">    return originalFunction();</div><div class="line">  &#125;;</div><div class="line">&#125;</div><div class="line">function test() &#123;</div><div class="line">  alert(&apos;test function&apos;);</div><div class="line">&#125;</div><div class="line">var testWithCheck = checkDecorator(test);</div><div class="line">var fooBar = false;</div><div class="line">test(); // &apos;test function&apos;</div><div class="line">testWithCheck(); // &apos;wrong parameter&apos;</div><div class="line">fooBar = &apos;test&apos;;</div><div class="line">test(); // &apos;test function&apos;</div><div class="line">testWithCheck(); // &apos;test function&apos;</div></pre></td></tr></table></figure>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>在这篇文章，我们理清了 OOP 的概论（我希望这些资料已经对你有用了），下一章节我们将继续面向对象编程之 ECMAScript 的实现 </p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/2016/03/25/深入理解javascript/20《你真懂 JavaScript 吗？》答案详解/"><span>《你真懂 JavaScript 吗？》答案详解</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2016/03/25/深入理解javascript/20《你真懂 JavaScript 吗？》答案详解/" rel="bookmark">
+        <time class="entry-date published" datetime="2016-03-25T04:17:02.000Z">
+          2016-03-25
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>昨天发的《大叔手记（19）：你真懂 JavaScript 吗？》里面的 5 个题目，有很多回答，发现强人还是很多的，很多人都全部答对了。</p>
+<p>今天我们来对这 5 个题目详细分析一下，希望对大家有所帮助。</p>
+<h2 id="题目1"><a href="#题目1" class="headerlink" title="题目1"></a>题目1</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">if (!(&quot;a&quot; in window)) &#123;</div><div class="line">    var a = 1;</div><div class="line">&#125;</div><div class="line">alert(a);</div></pre></td></tr></table></figure>
+<p>代码看起来是想说：如果 window 不包含属性 a，就声明一个变量 a，然后赋值为 1。</p>
+<p>你可能认为 alert 出来的结果是 1，然后实际结果是“undefined”。要了解为什么，我们需要知道 JavaScript 里的 3 个概念。</p>
+<p>首先，所有的全局变量都是 window 的属性，语句 var a = 1；等价于 window.a = 1；你可以用如下方式来检测全局变量是否声明：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&quot;变量名称&quot; in window</div></pre></td></tr></table></figure>
+<p>第二，所有的变量声明都在范围作用域的顶部，看一下相似的例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">alert(&quot;a&quot; in window);</div><div class="line">var a;</div></pre></td></tr></table></figure>
+<p>此时，尽管声明是在 alert 之后，alert 弹出的依然是 true，这是因为 JavaScript 引擎首先会扫墓所有的变量声明，然后将这些变量声明移动到顶部，最终的代码效果是这样的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">var a;</div><div class="line">alert(&quot;a&quot; in window);</div></pre></td></tr></table></figure>
+<p>这样看起来就很容易解释为什么 alert 结果是 true 了。</p>
+<p>第三，你需要理解该题目的意思是，变量声明被提前了，但变量赋值没有，因为这行代码包括了变量声明和变量赋值。</p>
+<p>你可以将语句拆分为如下代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">var a;    //声明</div><div class="line">a = 1;    //初始化赋值</div></pre></td></tr></table></figure>
+<p>当变量声明和赋值在一起用的时候，JavaScript 引擎会自动将它分为两部以便将变量声明提前，不将赋值的步骤提前是因为他有可能影响代码执行出不可预期的结果。</p>
+<p>所以，知道了这些概念以后，重新回头看一下题目的代码，其实就等价于：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">var a;</div><div class="line">if (!(&quot;a&quot; in window)) &#123;</div><div class="line">    a = 1;</div><div class="line">&#125;</div><div class="line">alert(a);</div></pre></td></tr></table></figure>
+<p>这样，题目的意思就非常清楚了：首先声明a，然后判断a是否在存在，如果不存在就赋值为 1，很明显 a 永远在 window 里存在，这个赋值语句永远不会执行，所以结果是 undefined。</p>
+<p>大叔注：提前这个词语显得有点迷惑了，其实就是执行上下文的关系，因为执行上下文分 2 个阶段：进入执行上下文和执行代码，在进入执行上下文的时候，创建变量对象 VO 里已经有了：函数的所有形参、所有的函数声明、所有的变量声明</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">VO(global) = &#123;</div><div class="line">    a: undefined</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这个时候 a 已经有了；</p>
+<p>然后执行代码的时候才开始走if语句，详细信息请查看<a href="http://www.cnblogs.com/TomXu/archive/2012/01/16/2309728.html" target="_blank" rel="external">《深入理解 JavaScript 系列（12）：变量对象（Variable Object）》</a>中的处理上下文代码的 2 个阶段小节。</p>
+<p>大叔注：相信很多人都是认为 a 在里面不可访问，结果才是 undefined 的吧，其实是已经有了，只不过初始值是 undefined，而不是不可访问。</p>
+<h2 id="题目-2"><a href="#题目-2" class="headerlink" title="题目 2"></a>题目 2</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">var a = 1,</div><div class="line">    b = function a(x) &#123;</div><div class="line">        x &amp;&amp; a(--x);</div><div class="line">    &#125;;</div><div class="line">alert(a);</div></pre></td></tr></table></figure>
+<p>这个题目看起来比实际复杂，alert 的结果是 1；这里依然有 3 个重要的概念需要我们知道。</p>
+<p>首先，在题目 1 里我们知道了变量声明在进入执行上下文就完成了；第二个概念就是函数声明也是提前的，所有的函数声明都在执行代码之前都已经完成了声明，和变量声明一样。澄清一下，函数声明是如下这样的代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">function functionName(arg1, arg2)&#123;</div><div class="line">    //函数体</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>如下不是函数，而是函数表达式，相当于变量赋值：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">var functionName = function(arg1, arg2)&#123;</div><div class="line">    //函数体</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>澄清一下，函数表达式没有提前，就相当于平时的变量赋值。</p>
+<p>第三需要知道的是，函数声明会覆盖变量声明，但不会覆盖变量赋值，为了解释这个，我们来看一个例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">function value()&#123;</div><div class="line">    return 1;</div><div class="line">&#125;</div><div class="line">var value;</div><div class="line">alert(typeof value);    //&quot;function&quot;</div></pre></td></tr></table></figure>
+<p>尽快变量声明在下面定义，但是变量 value 依然是 function，也就是说这种情况下，函数声明的优先级高于变量声明的优先级，但如果该变量 value 赋值了，那结果就完全不一样了：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">function value()&#123;</div><div class="line">    return 1;</div><div class="line">&#125;</div><div class="line">var value = 1;</div><div class="line">alert(typeof value);    //&quot;number&quot;</div></pre></td></tr></table></figure>
+<p>该 value 赋值以后，变量赋值初始化就覆盖了函数声明。</p>
+<p>重新回到题目，这个函数其实是一个有名函数表达式，函数表达式不像函数声明一样可以覆盖变量声明，但你可以注意到，变量 b 是包含了该函数表达式，而该函数表达式的名字是 a；不同的浏览器对a这个名词处理有点不一样，在 IE 里，会将 a 认为函数声明，所以它被变量初始化覆盖了，就是说如果调用 a(–x)的话就会出错，而其它浏览器在允许在函数内部调用 a(–x)，因为这时候 a 在函数外面依然是数字。基本上，IE 里调用 b(2)的时候会出错，但其它浏览器则返回 undefined。</p>
+<p>理解上述内容之后，该题目换成一个更准确和更容易理解的代码应该像这样：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">var a = 1,</div><div class="line">    b = function(x) &#123;</div><div class="line">        x &amp;&amp; b(--x);</div><div class="line">    &#125;;</div><div class="line">alert(a);</div></pre></td></tr></table></figure>
+<p>这样的话，就很清晰地知道为什么 alert 的总是 1 了，详细内容请参考<a href="http://www.cnblogs.com/TomXu/archive/2012/01/16/2309728.html" target="_blank" rel="external">《深入理解 JavaScript 系列（2）：揭秘命名函数表达式》</a>中的内容。</p>
+<p><code>大叔注：安装 ECMAScript 规范，作者对函数声明覆盖变量声明的解释其实不准确的，正确的理解应该是如下：</code></p>
+<p><strong>进入执行上下文：</strong> 这里出现了名字一样的情况，一个是函数申明，一个是变量申明。那么，根据深入理解 JavaScrip t系列（12）：变量对象（Variable Object）介绍的，填充 VO 的顺序是: 函数的形参 -&gt; 函数申明 -&gt; 变量申明。</p>
+<p>上述例子中，变量 a 在函数 a 后面，那么，变量 a 遇到函数 a 怎么办呢？还是根据变量对象中介绍的，当变量申明遇到 VO 中已经有同名的时候，不会影响已经存在的属性。而函数表达式不会影响 VO 的内容，所以 b 只有在执行的时候才会触发里面的内容。</p>
+<h2 id="题目-3"><a href="#题目-3" class="headerlink" title="题目 3"></a>题目 3</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">function a(x) &#123;</div><div class="line">    return x * 2;</div><div class="line">&#125;</div><div class="line">var a;</div><div class="line">alert(a);</div></pre></td></tr></table></figure>
+<p>这个题目就是题目 2 里的大叔加的注释了，也就是函数声明和变量声明的关系和影响，遇到同名的函数声明，VO 不会重新定义，所以这时候全局的 VO 应该是如下这样的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">VO(global) = &#123;</div><div class="line">    a: 引用了函数声明“a”</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>而执行 a 的时候，相应地就弹出了函数 a 的内容了。</p>
+<h2 id="题目-4"><a href="#题目-4" class="headerlink" title="题目 4"></a>题目 4</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">function b(x, y, a) &#123;</div><div class="line">    arguments[2] = 10;</div><div class="line">    alert(a);</div><div class="line">&#125;</div><div class="line">b(1, 2, 3);</div></pre></td></tr></table></figure>
+<p>关于这个题目，NC 搬出了 262-3 的规范出来解释，其实从<a href="http://www.cnblogs.com/TomXu/archive/2012/01/16/2309728.html" target="_blank" rel="external">《深入理解 JavaScript 系列（12）：变量对象（Variable Object）》</a>中的函数上下文中的变量对象一节就可以清楚地知道，活动对象是在进入函数上下文时刻被创建的，它通过函数的 arguments 属性初始化。arguments 属性的值是 Arguments 对象：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">AO = &#123;</div><div class="line">  arguments: &lt;ArgO&gt;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>Arguments 对象是活动对象的一个属性，它包括如下属性：</p>
+<ol>
+<li>callee — 指向当前函数的引用</li>
+<li>length — 真正传递的参数个数</li>
+<li>properties-indexes (字符串类型的整数) 属性的值就是函数的参数值(按参数列表从左到右排列)。 properties-indexes 内部元素的个数等于 arguments.length. properties-indexes 的值和实际传递进来的参数之间是<code>共享</code>的。</li>
+<li>这个共享其实不是真正的共享一个内存地址，而是 2 个不同的内存地址，使用 JavaScript 引擎来保证 2 个值是随时一样的，当然这也有一个前提，那就是这个索引值要小于你传入的参数个数，也就是说如果你只传入 2 个参数，而还继续使用 arguments[2]赋值的话，就会不一致，例如：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">function b(x, y, a) &#123;</div><div class="line">    arguments[2] = 10;</div><div class="line">    alert(a);</div><div class="line">&#125;</div><div class="line">b(1, 2);</div></pre></td></tr></table></figure>
+<p>这时候因为没传递第三个参数 a，所以赋值 10 以后，alert(a)的结果依然是 undefined，而不是 10，但如下代码弹出的结果依然是 10，因为和 a 没有关系。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">function b(x, y, a) &#123;</div><div class="line">    arguments[2] = 10;</div><div class="line">    alert(arguments[2]);</div><div class="line">&#125;</div><div class="line">b(1, 2);</div></pre></td></tr></table></figure>
+<h2 id="题目-5"><a href="#题目-5" class="headerlink" title="题目 5"></a>题目 5</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">function a() &#123;</div><div class="line">    alert(this);</div><div class="line">&#125;</div><div class="line">a.call(null);</div></pre></td></tr></table></figure>
+<p>这个题目可以说是最简单的，也是最诡异的，因为如果没学到它的定义的话，打死也不会知道结果的，关于这个题目，我们先来了解 2 个概念。</p>
+<p>首先，就是 this 值是如何定义的，当一个方法在对象上调用的时候，this 就指向到了该对象上，例如：</p>
+<p>var object = { method: function() { alert(this === object); //true } } object.method();</p>
+<p>上面的代码，调用 method() 的时候 this 被指向到调用它的 object 对象上，但在全局作用域里， this 是等价于 window（浏览器中，非浏览器里等价于 global），在如果一个 function 的定义不是属于一个对象属性的时候（也就是单独定义的函数），函数内部的 this 也是等价于 window 的，例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">function method() &#123;</div><div class="line">    alert(this === window);    //true</div><div class="line">&#125;</div><div class="line">method();</div></pre></td></tr></table></figure>
+<p>了解了上述概念之后，我们再来了解一下 call()是做什么的，call 方法作为一个 function 执行代表该方法可以让另外一个对象作为调用者来调用，call 方法的第一个参数是对象调用者，随后的其它参数是要传给调用 method 的参数（如果声明了的话），例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">function method() &#123;</div><div class="line">    alert(this === window);</div><div class="line">&#125;</div><div class="line">method();    //true</div><div class="line">method.call(document);   //false</div></pre></td></tr></table></figure>
+<p>第一个依然是 true 没什么好说的，第二个传入的调用对象是 document，自然不会等于 window，所以弹出了 false。</p>
+<p>另外，根据 ECMAScript262 规范规定：如果第一个参数传入的对象调用者是 null 或者 undefined 的话，call 方法将把全局对象（也就是 window）作为 this 的值。所以，不管你什么时候传入 null，其 this 都是全局对象 window，所以该题目可以理解成如下代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">function a() &#123;</div><div class="line">    alert(this);</div><div class="line">&#125;</div><div class="line">a.call(window);</div></pre></td></tr></table></figure>
+<p>所以弹出的结果是[object Window]就很容易理解了。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>这 5 个题目虽然貌似有点偏，但实际上考察的依然是基本概念，只有熟知了这些基本概念才能写出高质量代码。</p>
+<p>关于 JavaScript 的基本核心内容和理解基本上在该系列就到此为止了，接下来的章节除了把五大原则剩余的 2 篇补全依然，会再加两篇关于 DOM 的文章，然后就开始转向整理关于 JavaScript 模式与设计模式相关的文章了（大概10篇左右），随后再会花几个章节来一个实战系列。</p>
+<h2 id="更多题目"><a href="#更多题目" class="headerlink" title="更多题目"></a>更多题目</h2><p>如果大家有兴趣，可以继续研究下面的一些题目，详细通过这些题目也可以再次加深对 JavaScript 基础核心特性的理解。</p>
+<ol>
+<li>找出数字数组中最大的元素（使用 Match.max 函数）</li>
+<li>转化一个数字数组为 function 数组（每个 function 都弹出相应的数字）</li>
+<li>给 object 数组进行排序（排序条件是每个元素对象的属性个数）</li>
+<li>利用 JavaScript 打印出 Fibonacci 数（不使用全局变量）</li>
+<li>实现如下语法的功能：var a = (5).plus(3).minus(6); //2</li>
+<li>实现如下语法的功能：var a = add(2)(3)(4); //9</li>
+</ol>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+
+<nav class="pagination">
+  
+  <a href="/" class="pagination-prev">上一页</a>
+  
+  
+  <a href="/page/3/" class="pagination-next">下一页</a>
+  
+</nav>
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/xuhongbo" target="_blank">Xuhongbo</a>
+    </br>
+    
+    &copy; 2017 John Doe
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

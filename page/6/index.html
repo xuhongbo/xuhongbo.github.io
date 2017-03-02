@@ -1,0 +1,281 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>第 6 页 | Hexo</title>
+
+  
+  <meta name="author" content="John Doe">
+  
+
+  
+
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  
+
+  <meta property="og:site_name" content="Hexo"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">Hexo</a>
+    </h1>
+    <p class="site-description"></p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/2015/02/24/深入理解javascript/34设计模式之命令模式/"><span>设计模式之命令模式</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2015/02/24/深入理解javascript/34设计模式之命令模式/" rel="bookmark">
+        <time class="entry-date published" datetime="2015-02-24T08:02:02.000Z">
+          2015-02-24
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>命令模式(Command)的定义是：用于将一个请求封装成一个对象，从而使你可用不同的请求对客户进行参数化；对请求排队或者记录请求日志，以及执行可撤销的操作。也就是说改模式旨在将函数的调用、请求和操作封装成一个单一的对象，然后对这个对象进行一系列的处理。此外，可以通过调用实现具体函数的对象来解耦命令对象与接收对象。</p>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><p>我们来通过车辆购买程序来展示这个模式，首先定义车辆购买的具体操作类：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">$(function () &#123;</div><div class="line">    var CarManager = &#123;</div><div class="line">        // 请求信息</div><div class="line">        requestInfo: function (model, id) &#123;</div><div class="line">            return &apos;The information for &apos; + model +</div><div class="line">        &apos; with ID &apos; + id + &apos; is foobar&apos;;</div><div class="line">        &#125;,</div><div class="line">        // 购买汽车</div><div class="line">        buyVehicle: function (model, id) &#123;</div><div class="line">            return &apos;You have successfully purchased Item &apos;</div><div class="line">        + id + &apos;, a &apos; + model;</div><div class="line">        &#125;,</div><div class="line">        // 组织view</div><div class="line">        arrangeViewing: function (model, id) &#123;</div><div class="line">            return &apos;You have successfully booked a viewing of &apos;</div><div class="line">        + model + &apos; ( &apos; + id + &apos; ) &apos;;</div><div class="line">        &#125;</div><div class="line">    &#125;;</div><div class="line">&#125;)();</div></pre></td></tr></table></figure>
+<p>来看一下上述代码，通过调用函数来简单执行 manager 的命令，然而在一些情况下，我们并不想直接调用对象内部的方法。这样会增加对象与对象间的依赖。现在我们来扩展一下这个 CarManager 使其能够接受任何来自包括 model 和 car ID 的 CarManager 对象的处理请求。根据命令模式的定义，我们希望实现如下这种功能的调用：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">CarManager.execute(&#123; commandType: &quot;buyVehicle&quot;, operand1: &apos;Ford Escort&apos;, operand2: &apos;453543&apos; &#125;);</div></pre></td></tr></table></figure>
+<p>根据这样的需求，我们可以这样啦实现 CarManager.execute 方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">CarManager.execute = function (command) &#123;</div><div class="line">    return CarManager[command.request](command.model, command.carID);</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>改造以后，调用就简单多了，如下调用都可以实现（当然有些异常细节还是需要再完善一下的）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">CarManager.execute(&#123; request: &quot;arrangeViewing&quot;, model: &apos;Ferrari&apos;, carID: &apos;145523&apos; &#125;);</div><div class="line">CarManager.execute(&#123; request: &quot;requestInfo&quot;, model: &apos;Ford Mondeo&apos;, carID: &apos;543434&apos; &#125;);</div><div class="line">CarManager.execute(&#123; request: &quot;requestInfo&quot;, model: &apos;Ford Escort&apos;, carID: &apos;543434&apos; &#125;);</div><div class="line">CarManager.execute(&#123; request: &quot;buyVehicle&quot;, model: &apos;Ford Escort&apos;, carID: &apos;543434&apos; &#125;);</div></pre></td></tr></table></figure>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>命令模式比较容易设计一个命令队列，在需求的情况下比较容易将命令计入日志，并且允许接受请求的一方决定是否需要调用，而且可以实现对请求的撤销和重设，而且由于新增的具体类不影响其他的类，所以很容易实现。</p>
+<p>但敏捷开发原则告诉我们，不要为代码添加基于猜测的、实际不需要的功能，如果不清楚一个系统是否需要命令模式，一般就不要着急去实现它，事实上，在需求的时通过重构实现这个模式并不困难，只有在真正需求如撤销、恢复操作等功能时，把原来的代码重构为命令模式才有意义。</p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/2015/02/23/深入理解javascript/32设计模式之观察者模式/"><span>设计模式之观察者模式</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2015/02/23/深入理解javascript/32设计模式之观察者模式/" rel="bookmark">
+        <time class="entry-date published" datetime="2015-02-23T11:02:02.000Z">
+          2015-02-23
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>观察者模式又叫发布订阅模式（Publish/Subscribe），它定义了一种一对多的关系，让多个观察者对象同时监听某一个主题对象，这个主题对象的状态发生变化时就会通知所有的观察者对象，使得它们能够自动更新自己。</p>
+<p>使用观察者模式的好处：</p>
+<ol>
+<li>支持简单的广播通信，自动通知所有已经订阅过的对象。</li>
+<li>页面载入后目标对象很容易与观察者存在一种动态关联，增加了灵活性。</li>
+<li>目标对象与观察者之间的抽象耦合关系能够单独扩展以及重用。</li>
+</ol>
+<h2 id="正文（版本一）"><a href="#正文（版本一）" class="headerlink" title="正文（版本一）"></a>正文（版本一）</h2><p>JS 里对观察者模式的实现是通过回调来实现的，我们来先定义一个 pubsub 对象，其内部包含了 3 个方法：订阅、退订、发布。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div></pre></td><td class="code"><pre><div class="line">var pubsub = &#123;&#125;;</div><div class="line">(function (q) &#123;</div><div class="line">    var topics = &#123;&#125;, // 回调函数存放的数组</div><div class="line">        subUid = -1;</div><div class="line">    // 发布方法</div><div class="line">    q.publish = function (topic, args) &#123;</div><div class="line">        if (!topics[topic]) &#123;</div><div class="line">            return false;</div><div class="line">        &#125;</div><div class="line">        setTimeout(function () &#123;</div><div class="line">            var subscribers = topics[topic],</div><div class="line">                len = subscribers ? subscribers.length : 0;</div><div class="line">            while (len--) &#123;</div><div class="line">                subscribers[len].func(topic, args);</div><div class="line">            &#125;</div><div class="line">        &#125;, 0);</div><div class="line">        return true;</div><div class="line">    &#125;;</div><div class="line">    //订阅方法</div><div class="line">    q.subscribe = function (topic, func) &#123;</div><div class="line">        if (!topics[topic]) &#123;</div><div class="line">            topics[topic] = [];</div><div class="line">        &#125;</div><div class="line">        var token = (++subUid).toString();</div><div class="line">        topics[topic].push(&#123;</div><div class="line">            token: token,</div><div class="line">            func: func</div><div class="line">        &#125;);</div><div class="line">        return token;</div><div class="line">    &#125;;</div><div class="line">    //退订方法</div><div class="line">    q.unsubscribe = function (token) &#123;</div><div class="line">        for (var m in topics) &#123;</div><div class="line">            if (topics[m]) &#123;</div><div class="line">                for (var i = 0, j = topics[m].length; i &lt; j; i++) &#123;</div><div class="line">                    if (topics[m][i].token === token) &#123;</div><div class="line">                        topics[m].splice(i, 1);</div><div class="line">                        return token;</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        return false;</div><div class="line">    &#125;;</div><div class="line">&#125; (pubsub));</div></pre></td></tr></table></figure>
+<p>使用方式如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">//来，订阅一个</div><div class="line">pubsub.subscribe(&apos;example1&apos;, function (topics, data) &#123;</div><div class="line">    console.log(topics + &quot;: &quot; + data);</div><div class="line">&#125;);</div><div class="line">//发布通知</div><div class="line">pubsub.publish(&apos;example1&apos;, &apos;hello world!&apos;);</div><div class="line">pubsub.publish(&apos;example1&apos;, [&apos;test&apos;, &apos;a&apos;, &apos;b&apos;, &apos;c&apos;]);</div><div class="line">pubsub.publish(&apos;example1&apos;, [&#123; &apos;color&apos;: &apos;blue&apos; &#125;, &#123; &apos;text&apos;: &apos;hello&apos;&#125;]);</div></pre></td></tr></table></figure>
+<p>怎么样？用起来是不是很爽？但是这种方式有个问题，就是没办法退订订阅，要退订的话必须指定退订的名称，所以我们再来一个版本：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">//将订阅赋值给一个变量，以便退订</div><div class="line">var testSubscription = pubsub.subscribe(&apos;example1&apos;, function (topics, data) &#123;</div><div class="line">    console.log(topics + &quot;: &quot; + data);</div><div class="line">&#125;);</div><div class="line">//发布通知</div><div class="line">pubsub.publish(&apos;example1&apos;, &apos;hello world!&apos;);</div><div class="line">pubsub.publish(&apos;example1&apos;, [&apos;test&apos;, &apos;a&apos;, &apos;b&apos;, &apos;c&apos;]);</div><div class="line">pubsub.publish(&apos;example1&apos;, [&#123; &apos;color&apos;: &apos;blue&apos; &#125;, &#123; &apos;text&apos;: &apos;hello&apos;&#125;]);</div><div class="line">//退订</div><div class="line">setTimeout(function () &#123;</div><div class="line">    pubsub.unsubscribe(testSubscription);</div><div class="line">&#125;, 0);</div><div class="line">//再发布一次，验证一下是否还能够输出信息</div><div class="line">pubsub.publish(&apos;example1&apos;, &apos;hello again! (this will fail)&apos;);</div></pre></td></tr></table></figure>
+<h2 id="版本二"><a href="#版本二" class="headerlink" title="版本二"></a>版本二</h2><p>我们也可以利用原型的特性实现一个观察者模式，代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">function Observer() &#123;</div><div class="line">    this.fns = [];</div><div class="line">&#125;</div><div class="line">Observer.prototype = &#123;</div><div class="line">    subscribe: function (fn) &#123;</div><div class="line">        this.fns.push(fn);</div><div class="line">    &#125;,</div><div class="line">    unsubscribe: function (fn) &#123;</div><div class="line">        this.fns = this.fns.filter(</div><div class="line">                        function (el) &#123;</div><div class="line">                            if (el !== fn) &#123;</div><div class="line">                                return el;</div><div class="line">                            &#125;</div><div class="line">                        &#125;</div><div class="line">                    );</div><div class="line">    &#125;,</div><div class="line">    update: function (o, thisObj) &#123;</div><div class="line">        var scope = thisObj || window;</div><div class="line">        this.fns.forEach(</div><div class="line">                        function (el) &#123;</div><div class="line">                            el.call(scope, o);</div><div class="line">                        &#125;</div><div class="line">                    );</div><div class="line">    &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">//测试</div><div class="line">var o = new Observer;</div><div class="line">var f1 = function (data) &#123;</div><div class="line">    console.log(&apos;Robbin: &apos; + data + &apos;, 赶紧干活了！&apos;);</div><div class="line">&#125;;</div><div class="line">var f2 = function (data) &#123;</div><div class="line">    console.log(&apos;Randall: &apos; + data + &apos;, 找他加点工资去！&apos;);</div><div class="line">&#125;;</div><div class="line">o.subscribe(f1);</div><div class="line">o.subscribe(f2);</div><div class="line">o.update(&quot;Tom回来了！&quot;)</div><div class="line">//退订f1</div><div class="line">o.unsubscribe(f1);</div><div class="line">//再来验证</div><div class="line">o.update(&quot;Tom回来了！&quot;);</div></pre></td></tr></table></figure>
+<p>如果提示找不到 filter 或者 forEach 函数，可能是因为你的浏览器还不够新，暂时不支持新标准的函数，你可以使用如下方式自己定义：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">if (!Array.prototype.forEach) &#123;</div><div class="line">    Array.prototype.forEach = function (fn, thisObj) &#123;</div><div class="line">        var scope = thisObj || window;</div><div class="line">        for (var i = 0, j = this.length; i &lt; j; ++i) &#123;</div><div class="line">            fn.call(scope, this[i], i, this);</div><div class="line">        &#125;</div><div class="line">    &#125;;</div><div class="line">&#125;</div><div class="line">if (!Array.prototype.filter) &#123;</div><div class="line">    Array.prototype.filter = function (fn, thisObj) &#123;</div><div class="line">        var scope = thisObj || window;</div><div class="line">        var a = [];</div><div class="line">        for (var i = 0, j = this.length; i &lt; j; ++i) &#123;</div><div class="line">            if (!fn.call(scope, this[i], i, this)) &#123;</div><div class="line">                continue;</div><div class="line">            &#125;</div><div class="line">            a.push(this[i]);</div><div class="line">        &#125;</div><div class="line">        return a;</div><div class="line">    &#125;;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="版本三"><a href="#版本三" class="headerlink" title="版本三"></a>版本三</h2><p>如果想让多个对象都具有观察者发布订阅的功能，我们可以定义一个通用的函数，然后将该函数的功能应用到需要观察者功能的对象上，代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">//通用代码</div><div class="line">var observer = &#123;</div><div class="line">    //订阅</div><div class="line">    addSubscriber: function (callback) &#123;</div><div class="line">        this.subscribers[this.subscribers.length] = callback;</div><div class="line">    &#125;,</div><div class="line">    //退订</div><div class="line">    removeSubscriber: function (callback) &#123;</div><div class="line">        for (var i = 0; i &lt; this.subscribers.length; i++) &#123;</div><div class="line">            if (this.subscribers[i] === callback) &#123;</div><div class="line">                delete (this.subscribers[i]);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;,</div><div class="line">    //发布</div><div class="line">    publish: function (what) &#123;</div><div class="line">        for (var i = 0; i &lt; this.subscribers.length; i++) &#123;</div><div class="line">            if (typeof this.subscribers[i] === &apos;function&apos;) &#123;</div><div class="line">                this.subscribers[i](what);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;,</div><div class="line">    // 将对象o具有观察者功能</div><div class="line">    make: function (o) &#123; </div><div class="line">        for (var i in this) &#123;</div><div class="line">            o[i] = this[i];</div><div class="line">            o.subscribers = [];</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>然后订阅 2 个对象 blogger 和 user，使用 observer.make 方法将这 2 个对象具有观察者功能，代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">var blogger = &#123;</div><div class="line">    recommend: function (id) &#123;</div><div class="line">        var msg = &apos;dudu 推荐了的帖子:&apos; + id;</div><div class="line">        this.publish(msg);</div><div class="line">    &#125;</div><div class="line">&#125;;</div><div class="line">var user = &#123;</div><div class="line">    vote: function (id) &#123;</div><div class="line">        var msg = &apos;有人投票了!ID=&apos; + id;</div><div class="line">        this.publish(msg);</div><div class="line">    &#125;</div><div class="line">&#125;;</div><div class="line">observer.make(blogger);</div><div class="line">observer.make(user);</div></pre></td></tr></table></figure>
+<p>使用方法就比较简单了，订阅不同的回调函数，以便可以注册到不同的观察者对象里（也可以同时注册到多个观察者对象里）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">var tom = &#123;</div><div class="line">    read: function (what) &#123;</div><div class="line">        console.log(&apos;Tom看到了如下信息：&apos; + what)</div><div class="line">    &#125;</div><div class="line">&#125;;</div><div class="line">var mm = &#123;</div><div class="line">    show: function (what) &#123;</div><div class="line">        console.log(&apos;mm看到了如下信息：&apos; + what)</div><div class="line">    &#125;</div><div class="line">&#125;;</div><div class="line">// 订阅</div><div class="line">blogger.addSubscriber(tom.read);</div><div class="line">blogger.addSubscriber(mm.show);</div><div class="line">blogger.recommend(123); //调用发布\</div><div class="line">//退订</div><div class="line">blogger.removeSubscriber(mm.show);</div><div class="line">blogger.recommend(456); //调用发布</div><div class="line">//另外一个对象的订阅</div><div class="line">user.addSubscriber(mm.show);</div><div class="line">user.vote(789); //调用发布</div></pre></td></tr></table></figure>
+<h2 id="jQuery-版本"><a href="#jQuery-版本" class="headerlink" title="jQuery 版本"></a>jQuery 版本</h2><p>根据 jQuery1.7 版新增的 on/off 功能，我们也可以定义 jQuery 版的观察者：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">(function ($) &#123;</div><div class="line">    var o = $(&#123;&#125;);</div><div class="line">    $.subscribe = function () &#123;</div><div class="line">        o.on.apply(o, arguments);</div><div class="line">    &#125;;</div><div class="line">    $.unsubscribe = function () &#123;</div><div class="line">        o.off.apply(o, arguments);</div><div class="line">    &#125;;</div><div class="line">    $.publish = function () &#123;</div><div class="line">        o.trigger.apply(o, arguments);</div><div class="line">    &#125;;</div><div class="line">&#125; (jQuery));</div></pre></td></tr></table></figure>
+<p>调用方法比上面 3 个版本都简单：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">//回调函数</div><div class="line">function handle(e, a, b, c) &#123;</div><div class="line">    // `e`是事件对象，不需要关注</div><div class="line">    console.log(a + b + c);</div><div class="line">&#125;;</div><div class="line">//订阅</div><div class="line">$.subscribe(&quot;/some/topic&quot;, handle);</div><div class="line">//发布</div><div class="line">$.publish(&quot;/some/topic&quot;, [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;]); // 输出abc      </div><div class="line">$.unsubscribe(&quot;/some/topic&quot;, handle); // 退订</div><div class="line">//订阅</div><div class="line">$.subscribe(&quot;/some/topic&quot;, function (e, a, b, c) &#123;</div><div class="line">    console.log(a + b + c);</div><div class="line">&#125;);</div><div class="line">$.publish(&quot;/some/topic&quot;, [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;]); // 输出abc</div><div class="line">//退订（退订使用的是/some/topic名称，而不是回调函数哦，和版本一的例子不一样</div><div class="line">$.unsubscribe(&quot;/some/topic&quot;);</div></pre></td></tr></table></figure>
+<p>可以看到，他的订阅和退订使用的是字符串名称，而不是回调函数名称，所以即便传入的是匿名函数，我们也是可以退订的。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>观察者的使用场合就是：当一个对象的改变需要同时改变其它对象，并且它不知道具体有多少对象需要改变的时候，就应该考虑使用观察者模式。</p>
+<p>总的来说，观察者模式所做的工作就是在解耦，让耦合的双方都依赖于抽象，而不是依赖于具体。从而使得各自的变化都不会影响到另一边的变化。</p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/2014/12/07/深入理解javascript/39设计模式之适配器模式/"><span>设计模式之适配器模式</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2014/12/07/深入理解javascript/39设计模式之适配器模式/" rel="bookmark">
+        <time class="entry-date published" datetime="2014-12-07T14:02:02.000Z">
+          2014-12-07
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>适配器模式（Adapter）是将一个类（对象）的接口（方法或属性）转化成客户希望的另外一个接口（方法或属性），适配器模式使得原本由于接口不兼容而不能一起工作的那些类（对象）可以一些工作。速成包装器（wrapper）。</p>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><p>我们来举一个例子，鸭子（Dock）有飞（fly）和嘎嘎叫（quack）的行为，而火鸡虽然也有飞（fly）的行为，但是其叫声是咯咯的（gobble）。如果你非要火鸡也要实现嘎嘎叫（quack）这个动作，那我们可以复用鸭子的 quack 方法，但是具体的叫还应该是咯咯的，此时，我们就可以创建一个火鸡的适配器，以便让火鸡也支持 quack 方法，其内部还是要调用 gobble。</p>
+<p>OK，我们开始一步一步实现，首先要先定义鸭子和火鸡的抽象行为，也就是各自的方法函数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">//鸭子</div><div class="line">var Duck = function()&#123;</div><div class="line">&#125;;</div><div class="line">Duck.prototype.fly = function()&#123;</div><div class="line">throw new Error(&quot;该方法必须被重写!&quot;);</div><div class="line">&#125;;</div><div class="line">Duck.prototype.quack = function()&#123;</div><div class="line">throw new Error(&quot;该方法必须被重写!&quot;);</div><div class="line">&#125;</div><div class="line">//火鸡</div><div class="line">var Turkey = function()&#123;</div><div class="line">&#125;;</div><div class="line">Turkey.prototype.fly = function()&#123;</div><div class="line">    throw new Error(&quot; 该方法必须被重写 !&quot;);</div><div class="line">&#125;;</div><div class="line">Turkey.prototype.gobble = function()&#123;</div><div class="line">    throw new Error(&quot; 该方法必须被重写 !&quot;);</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>然后再定义具体的鸭子和火鸡的构造函数，分别为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">//鸭子</div><div class="line">var MallardDuck = function () &#123;</div><div class="line">    Duck.apply(this);</div><div class="line">&#125;;</div><div class="line">MallardDuck.prototype = new Duck(); //原型是Duck</div><div class="line">MallardDuck.prototype.fly = function () &#123;</div><div class="line">    console.log(&quot;可以飞翔很长的距离!&quot;);</div><div class="line">&#125;;</div><div class="line">MallardDuck.prototype.quack = function () &#123;</div><div class="line">    console.log(&quot;嘎嘎！嘎嘎！&quot;);</div><div class="line">&#125;;</div><div class="line">//火鸡</div><div class="line">var WildTurkey = function () &#123;</div><div class="line">    Turkey.apply(this);</div><div class="line">&#125;;</div><div class="line">WildTurkey.prototype = new Turkey(); //原型是Turkey</div><div class="line">WildTurkey.prototype.fly = function () &#123;</div><div class="line">    console.log(&quot;飞翔的距离貌似有点短!&quot;);</div><div class="line">&#125;;</div><div class="line">WildTurkey.prototype.gobble = function () &#123;</div><div class="line">    console.log(&quot;咯咯！咯咯！&quot;);</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>为了让火鸡也支持 quack 方法，我们创建了一个新的火鸡适配器 TurkeyAdapter：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">var TurkeyAdapter = function(oTurkey)&#123;</div><div class="line">    Duck.apply(this);</div><div class="line">    this.oTurkey = oTurkey;</div><div class="line">&#125;;</div><div class="line">TurkeyAdapter.prototype = new Duck();</div><div class="line">TurkeyAdapter.prototype.quack = function()&#123;</div><div class="line">    this.oTurkey.gobble();</div><div class="line">&#125;;</div><div class="line">TurkeyAdapter.prototype.fly = function()&#123;</div><div class="line">    var nFly = 0;</div><div class="line">    var nLenFly = 5;</div><div class="line">    for(; nFly &lt; nLenFly;)&#123;</div><div class="line">        this.oTurkey.fly();</div><div class="line">        nFly = nFly + 1;</div><div class="line">    &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>该构造函数接受一个火鸡的实例对象，然后使用 Duck 进行 apply，其适配器原型是 Duck，然后要重新修改其原型的 quack 方法，以便内部调用 oTurkey.gobble()方法。其 fly 方法也做了一些改变，让火鸡连续飞 5 次（内部也是调用自身的 oTurkey.fly()方法）。</p>
+<p>调用方法，就很明了了，测试一下便可以知道结果了：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">var oMallardDuck = new MallardDuck();</div><div class="line">var oWildTurkey = new WildTurkey();</div><div class="line">var oTurkeyAdapter = new TurkeyAdapter(oWildTurkey);</div><div class="line">//原有的鸭子行为</div><div class="line">oMallardDuck.fly();</div><div class="line">oMallardDuck.quack();</div><div class="line">//原有的火鸡行为</div><div class="line">oWildTurkey.fly();</div><div class="line">oWildTurkey.gobble();</div><div class="line">//适配器火鸡的行为（火鸡调用鸭子的方法名称）</div><div class="line">oTurkeyAdapter.fly();</div><div class="line">oTurkeyAdapter.quack();</div></pre></td></tr></table></figure>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>那合适使用适配器模式好呢？如果有以下情况出现时，建议使用：</p>
+<ol>
+<li>使用一个已经存在的对象，但其方法或属性接口不符合你的要求；</li>
+<li>你想创建一个可复用的对象，该对象可以与其它不相关的对象或不可见对象（即接口方法或属性不兼容的对象）协同工作；</li>
+<li>想使用已经存在的对象，但是不能对每一个都进行原型继承以匹配它的接口。对象适配器可以适配它的父对象接口方法或属性。</li>
+</ol>
+<p>另外，适配器模式和其它几个模式可能容易让人迷惑，这里说一下大概的区别：</p>
+<ol>
+<li>适配器和桥接模式虽然类似，但桥接的出发点不同，桥接的目的是将接口部分和实现部分分离，从而对他们可以更为容易也相对独立的加以改变。而适配器则意味着改变一个已有对象的接口。</li>
+<li>装饰者模式增强了其它对象的功能而同时又不改变它的接口，因此它对应程序的透明性比适配器要好，其结果是装饰者支持递归组合，而纯粹使用适配器则是不可能的。</li>
+<li>代理模式在不改变它的接口的条件下，为另外一个对象定义了一个代理。</li>
+</ol>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+
+<nav class="pagination">
+  
+  <a href="/page/5/" class="pagination-prev">上一页</a>
+  
+  
+</nav>
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/xuhongbo" target="_blank">Xuhongbo</a>
+    </br>
+    
+    &copy; 2017 John Doe
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>设计模式之组合模式 | Hexo</title>
+
+  
+  <meta name="author" content="John Doe">
+  
+
+  
+  <meta name="description" content="组合模式（Composite）将对象组合成树形结构以表示“部分-整体”的层次结构，组合模式使得用户对单个对象和组合对象的使用具有一致性。
+常见的场景有 asp.net 里的控件机制（即 control 里可以包含子 control，可以递归操作、添加、删除子 control），类似的还有 DOM 的">
+  
+
+  
+  
+  <meta name="keywords" content="">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="设计模式之组合模式"/>
+
+  <meta property="og:site_name" content="Hexo"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">Hexo</a>
+    </h1>
+    <p class="site-description"></p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
+
+  
+    
+    <h3 class="article-title"><span>设计模式之组合模式</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2015/10/19/深入理解javascript/40设计模式之组合模式/" rel="bookmark">
+        <time class="entry-date published" datetime="2015-10-19T12:02:02.000Z">
+          2015-10-19
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>组合模式（Composite）将对象组合成树形结构以表示“部分-整体”的层次结构，组合模式使得用户对单个对象和组合对象的使用具有一致性。</p>
+<p>常见的场景有 asp.net 里的控件机制（即 control 里可以包含子 control，可以递归操作、添加、删除子 control），类似的还有 DOM 的机制，一个 DOM 节点可以包含子节点，不管是父节点还是子节点都有添加、删除、遍历子节点的通用功能。所以说组合模式的关键是要有一个抽象类，它既可以表示子元素，又可以表示父元素。</p>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><p>举个例子，有家餐厅提供了各种各样的菜品，每个餐桌都有一本菜单，菜单上列出了该餐厅所偶的菜品，有早餐糕点、午餐、晚餐等等，每个餐都有各种各样的菜单项，假设不管是菜单项还是整个菜单都应该是可以打印的，而且可以添加子项，比如午餐可以添加新菜品，而菜单项咖啡也可以添加糖啊什么的。</p>
+<p>这种情况，我们就可以利用组合的方式将这些内容表示为层次结构了。我们来逐一分解一下我们的实现步骤。</p>
+<h3 id="第一步，先实现我们的“抽象类”函数-MenuComponent"><a href="#第一步，先实现我们的“抽象类”函数-MenuComponent" class="headerlink" title="第一步，先实现我们的“抽象类”函数 MenuComponent"></a>第一步，先实现我们的“抽象类”函数 MenuComponent</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">var MenuComponent = function () &#123;</div><div class="line">&#125;;</div><div class="line">MenuComponent.prototype.getName = function () &#123;</div><div class="line">    throw new Error(&quot;该方法必须重写!&quot;);</div><div class="line">&#125;;</div><div class="line">MenuComponent.prototype.getDescription = function () &#123;</div><div class="line">    throw new Error(&quot;该方法必须重写!&quot;);</div><div class="line">&#125;;</div><div class="line">MenuComponent.prototype.getPrice = function () &#123;</div><div class="line">    throw new Error(&quot;该方法必须重写!&quot;);</div><div class="line">&#125;;</div><div class="line">MenuComponent.prototype.isVegetarian = function () &#123;</div><div class="line">    throw new Error(&quot;该方法必须重写!&quot;);</div><div class="line">&#125;;</div><div class="line">MenuComponent.prototype.print = function () &#123;</div><div class="line">    throw new Error(&quot;该方法必须重写!&quot;);</div><div class="line">&#125;;</div><div class="line">MenuComponent.prototype.add = function () &#123;</div><div class="line">    throw new Error(&quot;该方法必须重写!&quot;);</div><div class="line">&#125;;</div><div class="line">MenuComponent.prototype.remove = function () &#123;</div><div class="line">    throw new Error(&quot;该方法必须重写!&quot;);</div><div class="line">&#125;;</div><div class="line">MenuComponent.prototype.getChild = function () &#123;</div><div class="line">    throw new Error(&quot;该方法必须重写!&quot;);</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>该函数提供了 2 种类型的方法，一种是获取信息的，比如价格，名称等，另外一种是通用操作方法，比如打印、添加、删除、获取子菜单。</p>
+<h3 id="第二步，创建基本的菜品项"><a href="#第二步，创建基本的菜品项" class="headerlink" title="第二步，创建基本的菜品项"></a>第二步，创建基本的菜品项</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">var MenuItem = function (sName, sDescription, bVegetarian, nPrice) &#123;</div><div class="line">    MenuComponent.apply(this);</div><div class="line">    this.sName = sName;</div><div class="line">    this.sDescription = sDescription;</div><div class="line">    this.bVegetarian = bVegetarian;</div><div class="line">    this.nPrice = nPrice;</div><div class="line">&#125;;</div><div class="line">MenuItem.prototype = new MenuComponent();</div><div class="line">MenuItem.prototype.getName = function () &#123;</div><div class="line">    return this.sName;</div><div class="line">&#125;;</div><div class="line">MenuItem.prototype.getDescription = function () &#123;</div><div class="line">    return this.sDescription;</div><div class="line">&#125;;</div><div class="line">MenuItem.prototype.getPrice = function () &#123;</div><div class="line">    return this.nPrice;</div><div class="line">&#125;;</div><div class="line">MenuItem.prototype.isVegetarian = function () &#123;</div><div class="line">    return this.bVegetarian;</div><div class="line">&#125;;</div><div class="line">MenuItem.prototype.print = function () &#123;</div><div class="line">    console.log(this.getName() + &quot;: &quot; + this.getDescription() + &quot;, &quot; + this.getPrice() + &quot;euros&quot;);</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>由代码可以看出，我们只重新了原型的 4 个获取信息的方法和 print 方法，没有重载其它3个操作方法，因为基本菜品不包含添加、删除、获取子菜品的方式。</p>
+<h3 id="第三步，创建菜品"><a href="#第三步，创建菜品" class="headerlink" title="第三步，创建菜品"></a>第三步，创建菜品</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div></pre></td><td class="code"><pre><div class="line">var Menu = function (sName, sDescription) &#123;</div><div class="line">    MenuComponent.apply(this);</div><div class="line">    this.aMenuComponents = [];</div><div class="line">    this.sName = sName;</div><div class="line">    this.sDescription = sDescription;</div><div class="line">    this.createIterator = function () &#123;</div><div class="line">        throw new Error(&quot;This method must be overwritten!&quot;);</div><div class="line">    &#125;;</div><div class="line">&#125;;</div><div class="line">Menu.prototype = new MenuComponent();</div><div class="line">Menu.prototype.add = function (oMenuComponent) &#123;</div><div class="line">    // 添加子菜品</div><div class="line">    this.aMenuComponents.push(oMenuComponent);</div><div class="line">&#125;;</div><div class="line">Menu.prototype.remove = function (oMenuComponent) &#123;</div><div class="line">    // 删除子菜品</div><div class="line">    var aMenuItems = [];</div><div class="line">    var nMenuItem = 0;</div><div class="line">    var nLenMenuItems = this.aMenuComponents.length;</div><div class="line">    var oItem = null;</div><div class="line">    for (; nMenuItem &lt; nLenMenuItems; ) &#123;</div><div class="line">        oItem = this.aMenuComponents[nMenuItem];</div><div class="line">        if (oItem !== oMenuComponent) &#123;</div><div class="line">            aMenuItems.push(oItem);</div><div class="line">        &#125;</div><div class="line">        nMenuItem = nMenuItem + 1;</div><div class="line">    &#125;</div><div class="line">    this.aMenuComponents = aMenuItems;</div><div class="line">&#125;;</div><div class="line">Menu.prototype.getChild = function (nIndex) &#123;</div><div class="line">    //获取指定的子菜品</div><div class="line">    return this.aMenuComponents[nIndex];</div><div class="line">&#125;;</div><div class="line">Menu.prototype.getName = function () &#123;</div><div class="line">    return this.sName;</div><div class="line">&#125;;</div><div class="line">Menu.prototype.getDescription = function () &#123;</div><div class="line">    return this.sDescription;</div><div class="line">&#125;;</div><div class="line">Menu.prototype.print = function () &#123;</div><div class="line">    // 打印当前菜品以及所有的子菜品</div><div class="line">    console.log(this.getName() + &quot;: &quot; + this.getDescription());</div><div class="line">    console.log(&quot;--------------------------------------------&quot;);</div><div class="line">    var nMenuComponent = 0;</div><div class="line">    var nLenMenuComponents = this.aMenuComponents.length;</div><div class="line">    var oMenuComponent = null;</div><div class="line">    for (; nMenuComponent &lt; nLenMenuComponents; ) &#123;</div><div class="line">        oMenuComponent = this.aMenuComponents[nMenuComponent];</div><div class="line">        oMenuComponent.print();</div><div class="line">        nMenuComponent = nMenuComponent + 1;</div><div class="line">    &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>注意上述代码，除了实现了添加、删除、获取方法外，打印 print 方法是首先打印当前菜品信息，然后循环遍历打印所有子菜品信息。</p>
+<h3 id="第四步，创建指定的菜品"><a href="#第四步，创建指定的菜品" class="headerlink" title="第四步，创建指定的菜品"></a>第四步，创建指定的菜品</h3><p>我们可以创建几个真实的菜品，比如晚餐、咖啡、糕点等等，其都是用 Menu 作为其原型，代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">var DinnerMenu = function () &#123;</div><div class="line">    Menu.apply(this);</div><div class="line">&#125;;</div><div class="line">DinnerMenu.prototype = new Menu();</div><div class="line">var CafeMenu = function () &#123;</div><div class="line">    Menu.apply(this);</div><div class="line">&#125;;</div><div class="line">CafeMenu.prototype = new Menu();</div><div class="line">var PancakeHouseMenu = function () &#123;</div><div class="line">    Menu.apply(this);</div><div class="line">&#125;;</div><div class="line">PancakeHouseMenu.prototype = new Menu();</div></pre></td></tr></table></figure>
+<h3 id="第五步，创建最顶级的菜单容器——菜单本"><a href="#第五步，创建最顶级的菜单容器——菜单本" class="headerlink" title="第五步，创建最顶级的菜单容器——菜单本"></a>第五步，创建最顶级的菜单容器——菜单本</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">var Mattress = function (aMenus) &#123;</div><div class="line">    this.aMenus = aMenus;</div><div class="line">&#125;;</div><div class="line">Mattress.prototype.printMenu = function () &#123;</div><div class="line">    this.aMenus.print();</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>该函数接收一个菜单数组作为参数，并且值提供了 printMenu 方法用于打印所有的菜单内容。</p>
+<h3 id="第六步，调用方式"><a href="#第六步，调用方式" class="headerlink" title="第六步，调用方式"></a>第六步，调用方式</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">var oPanCakeHouseMenu = new Menu(&quot;Pancake House Menu&quot;, &quot;Breakfast&quot;);</div><div class="line">var oDinnerMenu = new Menu(&quot;Dinner Menu&quot;, &quot;Lunch&quot;);</div><div class="line">var oCoffeeMenu = new Menu(&quot;Cafe Menu&quot;, &quot;Dinner&quot;);</div><div class="line">var oAllMenus = new Menu(&quot;ALL MENUS&quot;, &quot;All menus combined&quot;);</div><div class="line">oAllMenus.add(oPanCakeHouseMenu);</div><div class="line">oAllMenus.add(oDinnerMenu);</div><div class="line">oDinnerMenu.add(new MenuItem(&quot;Pasta&quot;, &quot;Spaghetti with Marinara Sauce, and a slice of sourdough bread&quot;, true, 3.89));</div><div class="line">oDinnerMenu.add(oCoffeeMenu);</div><div class="line">oCoffeeMenu.add(new MenuItem(&quot;Express&quot;, &quot;Coffee from machine&quot;, false, 0.99));</div><div class="line">var oMattress = new Mattress(oAllMenus);</div><div class="line">console.log(&quot;---------------------------------------------&quot;);</div><div class="line">oMattress.printMenu();</div><div class="line">console.log(&quot;---------------------------------------------&quot;);</div></pre></td></tr></table></figure>
+<p>熟悉 asp.net 控件开发的同学，是不是看起来很熟悉？</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>组合模式的使用场景非常明确：</p>
+<ol>
+<li>你想表示对象的部分-整体层次结构时；</li>
+<li>你希望用户忽略组合对象和单个对象的不同，用户将统一地使用组合结构中的所有对象（方法）</li>
+</ol>
+<p>另外该模式经常和装饰者一起使用，它们通常有一个公共的父类（也就是原型），因此装饰必须支持具有 add、remove、getChild 操作的 component 接口。</p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/xuhongbo" target="_blank">Xuhongbo</a>
+    </br>
+    
+    &copy; 2017 John Doe
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

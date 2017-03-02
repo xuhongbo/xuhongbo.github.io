@@ -1,0 +1,164 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Function 模式（上篇） | Hexo</title>
+
+  
+  <meta name="author" content="John Doe">
+  
+
+  
+  <meta name="description" content="本篇主要是介绍 Function 方面使用的一些技巧（上篇），利用 Function 特性可以编写出很多非常有意思的代码，本篇主要包括：回调模式、配置对象、返回函数、分布程序、柯里化（Currying）。
+回调函数在 JavaScript 中，当一个函数 A 作为另外一个函数 B 的其中一个参数时，">
+  
+
+  
+  
+  <meta name="keywords" content="">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="Function 模式（上篇）"/>
+
+  <meta property="og:site_name" content="Hexo"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">Hexo</a>
+    </h1>
+    <p class="site-description"></p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
+
+  
+    
+    <h3 class="article-title"><span>Function 模式（上篇）</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2016/08/02/深入理解javascript/49Function 模式（上篇）/" rel="bookmark">
+        <time class="entry-date published" datetime="2016-08-02T09:02:02.000Z">
+          2016-08-02
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>本篇主要是介绍 Function 方面使用的一些技巧（上篇），利用 Function 特性可以编写出很多非常有意思的代码，本篇主要包括：回调模式、配置对象、返回函数、分布程序、柯里化（Currying）。</p>
+<h2 id="回调函数"><a href="#回调函数" class="headerlink" title="回调函数"></a>回调函数</h2><p>在 JavaScript 中，当一个函数 A 作为另外一个函数 B 的其中一个参数时，则函数 A 称为回调函数，即 A 可以在函数 B 的周期内执行（开始、中间、结束时均可）。</p>
+<p>举例来说，有一个函数用于生成 node</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">var complexComputation = function () &#123; /* 内部处理，并返回一个node*/&#125;;</div><div class="line">有一个findNodes函数声明用于查找所有的节点，然后通过callback回调进行执行代码。  </div><div class="line">var findNodes = function (callback) &#123;</div><div class="line">var nodes = [];  </div><div class="line">var node = complexComputation();  </div><div class="line">// 如果回调函数可用，则执行它</div><div class="line">if (typeof callback === &quot;function&quot;) &#123;</div><div class="line">callback(node);</div><div class="line">&#125;  </div><div class="line">nodes.push(node);</div><div class="line">return nodes;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>关于 callback 的定义，我们可以事先定义好来用：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">// 定义callback</div><div class="line">var hide = function (node) &#123;</div><div class="line">node.style.display = &quot;none&quot;;</div><div class="line">&#125;; </div><div class="line">// 查找node，然后隐藏所有的node</div><div class="line">var hiddenNodes = findNodes(hide);</div><div class="line">也可以直接在调用的时候使用匿名定义，如下：  </div><div class="line">// 使用匿名函数定义callback</div><div class="line">var blockNodes = findNodes(function (node) &#123;</div><div class="line">node.style.display = &apos;block&apos;;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>我们平时用的最多的，估计就数 jQuery 的 ajax 方法的调用了，通过在 done/faild 上定义 callback，以便在 ajax 调用成功或者失败的时候做进一步处理，代码如下(本代码基于 jquery1.8 版)：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">var menuId = $(&quot;ul.nav&quot;).first().attr(&quot;id&quot;);</div><div class="line">var request = $.ajax(&#123;</div><div class="line">  url: &quot;script.php&quot;,</div><div class="line">  type: &quot;POST&quot;,</div><div class="line">  data: &#123;id : menuId&#125;,</div><div class="line">  dataType: &quot;html&quot;</div><div class="line">&#125;);  </div><div class="line">//调用成功时的回调处理</div><div class="line">request.done(function(msg) &#123;</div><div class="line">  $(&quot;#log&quot;).html( msg );</div><div class="line">&#125;);  </div><div class="line">//调用失败时的回调处理</div><div class="line">request.fail(function(jqXHR, textStatus) &#123;</div><div class="line">  alert( &quot;Request failed: &quot; + textStatus );</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<h2 id="配置对象"><a href="#配置对象" class="headerlink" title="配置对象"></a>配置对象</h2><p>如果一个函数（或方法）的参数只有一个参数，并且参数为对象字面量，我们则称这种模式为配置对象模式。例如，如下代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">var conf = &#123;</div><div class="line">    username:&quot;shichuan&quot;,</div><div class="line">    first:&quot;Chuan&quot;,</div><div class="line">    last:&quot;Shi&quot;</div><div class="line">&#125;;</div><div class="line">addPerson(conf);</div></pre></td></tr></table></figure>
+<p>则在 addPerson 内部，就可以随意使用 conf 的值了，一般用于初始化工作，例如 jquery 里的 ajaxSetup 也就是这种方式来实现的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">// 事先设置好初始值</div><div class="line">$.ajaxSetup(&#123;</div><div class="line">   url: &quot;/xmlhttp/&quot;,</div><div class="line">   global: false,</div><div class="line">   type: &quot;POST&quot;</div><div class="line"> &#125;);  </div><div class="line">// 然后再调用</div><div class="line"> $.ajax(&#123; data: myData &#125;);</div></pre></td></tr></table></figure>
+<p>另外，很多 jquery 的插件也有这种形式的传参，只不过也可以不传，不传的时候则就使用默认值了。</p>
+<h2 id="返回函数"><a href="#返回函数" class="headerlink" title="返回函数"></a>返回函数</h2><p>返回函数，则是指在一个函数的返回值为另外一个函数，或者根据特定的条件灵活创建的新函数，示例代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">var setup = function () &#123;</div><div class="line">    console.log(1);</div><div class="line">    return function () &#123;</div><div class="line">        console.log(2);</div><div class="line">    &#125;;</div><div class="line">&#125;;  </div><div class="line">// 调用setup 函数</div><div class="line">var my = setup(); // 输出 1</div><div class="line">my(); // 输出 2</div><div class="line">// 或者直接调用也可</div><div class="line">setup()();</div></pre></td></tr></table></figure>
+<p>或者你可以利用闭包的特性，在 setup 函数里记录一个私有的计数器数字，通过每次调用来增加计数器，代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">var setup = function () &#123;</div><div class="line">    var count = 0;</div><div class="line">    return function () &#123;</div><div class="line">        return ++count;</div><div class="line">    &#125;;</div><div class="line">&#125;;   </div><div class="line">// 用法</div><div class="line">var next = setup();</div><div class="line">next(); // 返回 1</div><div class="line">next(); // 返回 2</div><div class="line">next(); // 返回 3</div></pre></td></tr></table></figure>
+<h2 id="偏应用"><a href="#偏应用" class="headerlink" title="偏应用"></a>偏应用</h2><p>这里的偏应用，其实是将参数的传入工作分开进行，在有的时候一系列的操作可能会有某一个或几个参数始终完全一样，那么我们就可以先定义一个偏函数，然后再去执行这个函数（执行时传入剩余的不同参数）。</p>
+<p>举个例子，代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">var partialAny = (function (aps) &#123;</div><div class="line">    // 该函数是你们自执行函数表达式的结果，并且赋值给了partialAny变量</div><div class="line">    function func(fn) &#123;</div><div class="line">        var argsOrig = aps.call(arguments, 1);</div><div class="line">        return function () &#123;</div><div class="line">            var args = [],</div><div class="line">                argsPartial = aps.call(arguments),</div><div class="line">                i = 0;  </div><div class="line">            // 变量所有的原始参数集，</div><div class="line">            // 如果参数是partialAny._ 占位符，则使用下一个函数参数对应的值</div><div class="line">            // 否则使用原始参数里的值</div><div class="line">            for (; i &lt; argsOrig.length; i++) &#123;</div><div class="line">                args[i] = argsOrig[i] === func._</div><div class="line">                            ? argsPartial.shift()</div><div class="line">                            : argsOrig[i];</div><div class="line">            &#125;  </div><div class="line">            // 如果有任何多余的参数，则添加到尾部</div><div class="line">            return fn.apply(this, args.concat(argsPartial));</div><div class="line">        &#125;;</div><div class="line">    &#125;  </div><div class="line">    // 用于占位符设置</div><div class="line">    func._ = &#123;&#125;;  </div><div class="line">    return func;</div><div class="line">&#125;)(Array.prototype.slice);</div></pre></td></tr></table></figure>
+<p>使用方式如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">// 定义处理函数</div><div class="line">function hex(r, g, b) &#123;</div><div class="line">    return &apos;#&apos; + r + g + b;</div><div class="line">&#125;  </div><div class="line">//定义偏函数, 将hex的第一个参数r作为不变的参数值ff</div><div class="line">var redMax = partialAny(hex, &apos;ff&apos;, partialAny._, partialAny._);  </div><div class="line">// 新函数redMax的调用方式如下，只需要传入2个参数了：</div><div class="line">console.log(redMax(&apos;11&apos;, &apos;22&apos;)); // &quot;#ff1122&quot;</div></pre></td></tr></table></figure>
+<p>如果觉得 partialAny._太长，可以用__代替哦。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">var __ = partialAny._;</div><div class="line">var greenMax = partialAny(hex, __, &apos;ff&apos;);</div><div class="line">console.log(greenMax(&apos;33&apos;, &apos;44&apos;));</div><div class="line">var blueMax = partialAny(hex, __, __, &apos;ff&apos;);</div><div class="line">console.log(blueMax(&apos;55&apos;, &apos;66&apos;));</div><div class="line">var magentaMax = partialAny(hex, &apos;ff&apos;, __, &apos;ff&apos;);</div><div class="line">console.log(magentaMax(&apos;77&apos;));</div></pre></td></tr></table></figure>
+<p>这样使用，就简洁多了吧。</p>
+<h2 id="Currying"><a href="#Currying" class="headerlink" title="Currying"></a>Currying</h2><p>Currying 是函数式编程的一个特性，将多个参数的处理转化成单个参数的处理，类似链式调用。</p>
+<p>举一个简单的 add 函数的例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">function add(x, y) &#123;</div><div class="line">    var oldx = x, oldy = y;</div><div class="line">    if (typeof oldy === &quot;undefined&quot;) &#123; // partial</div><div class="line">        return function (newy) &#123;</div><div class="line">            return oldx + newy;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    return x + y;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这样调用方式就可以有多种了，比如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">// 测试</div><div class="line">typeof add(5); // &quot;function&quot;</div><div class="line">add(3)(4); // 7  </div><div class="line">// 也可以这样调用</div><div class="line">var add2000 = add(2000);</div><div class="line">add2000(10); // 2010</div></pre></td></tr></table></figure>
+<p>接下来，我们来定义一个比较通用的 currying 函数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">// 第一个参数为要应用的function，第二个参数是需要传入的最少参数个数</div><div class="line">function curry(func, minArgs) &#123;</div><div class="line">    if (minArgs == undefined) &#123;</div><div class="line">        minArgs = 1;</div><div class="line">    &#125;  </div><div class="line">    function funcWithArgsFrozen(frozenargs) &#123;</div><div class="line">        return function () &#123;</div><div class="line">            // 优化处理，如果调用时没有参数，返回该函数本身</div><div class="line">            var args = Array.prototype.slice.call(arguments);</div><div class="line">            var newArgs = frozenargs.concat(args);</div><div class="line">            if (newArgs.length &gt;= minArgs) &#123;</div><div class="line">                return func.apply(this, newArgs);</div><div class="line">            &#125; else &#123;</div><div class="line">                return funcWithArgsFrozen(newArgs);</div><div class="line">            &#125;</div><div class="line">        &#125;;</div><div class="line">    &#125;  </div><div class="line">    return funcWithArgsFrozen([]);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这样，我们就可以随意定义我们的业务行为了，比如定义加法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">var plus = curry(function () &#123;</div><div class="line">    var result = 0;</div><div class="line">    for (var i = 0; i &lt; arguments.length; ++i) &#123;</div><div class="line">        result += arguments[i];</div><div class="line">    &#125;</div><div class="line">    return result;</div><div class="line">&#125;, 2);</div></pre></td></tr></table></figure>
+<p>使用方式，真实多种多样哇。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">plus(3, 2) // 正常调用</div><div class="line">plus(3) // 偏应用，返回一个函数（返回值为3+参数值）</div><div class="line">plus(3)(2) // 完整应用（返回5）</div><div class="line">plus()(3)()()(2) // 返回 5</div><div class="line">plus(3, 2, 4, 5) // 可以接收多个参数</div><div class="line">plus(3)(2, 3, 5) // 同理</div></pre></td></tr></table></figure>
+<p>如下是减法的例子</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">var minus = curry(function (x) &#123;</div><div class="line">    var result = x;</div><div class="line">    for (var i = 1; i &lt; arguments.length; ++i) &#123;</div><div class="line">        result -= arguments[i];</div><div class="line">    &#125;</div><div class="line">    return result;</div><div class="line">&#125;, 2);</div></pre></td></tr></table></figure>
+<p>或者如果你想交换参数的顺序，你可以这样定义</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">var flip = curry(function (func) &#123;</div><div class="line">    return curry(function (a, b) &#123;</div><div class="line">        return func(b, a);</div><div class="line">    &#125;, 2);</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>JavaScript 里的 Function 有很多特殊的功效，可以利用闭包以及 arguments 参数特性实现很多不同的技巧，下一篇我们将继续介绍利用 Function 进行初始化的技巧。</p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/xuhongbo" target="_blank">Xuhongbo</a>
+    </br>
+    
+    &copy; 2017 John Doe
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

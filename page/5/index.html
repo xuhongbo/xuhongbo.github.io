@@ -1,0 +1,1221 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>第 5 页 | Hexo</title>
+
+  
+  <meta name="author" content="John Doe">
+  
+
+  
+
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  
+
+  <meta property="og:site_name" content="Hexo"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">Hexo</a>
+    </h1>
+    <p class="site-description"></p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/2015/09/25/深入理解javascript/4立即调用的函数表达式/"><span>立即调用的函数表达式</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2015/09/25/深入理解javascript/4立即调用的函数表达式/" rel="bookmark">
+        <time class="entry-date published" datetime="2015-09-25T07:02:02.000Z">
+          2015-09-25
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>大家学 JavaScript 的时候，经常遇到自执行匿名函数的代码，今天我们主要就来想想说一下自执行。</p>
+<p>在详细了解这个之前，我们来谈了解一下“自执行”这个叫法，本文对这个功能的叫法也不一定完全对，主要是看个人如何理解，因为有的人说立即调用，有的人说自动执行，所以你完全可以按照你自己的理解来取一个名字，不过我听很多人都叫它为“自执行”，但作者后面说了很多，来说服大家称呼为“立即调用的函数表达式”。</p>
+<h2 id="什么是自执行？"><a href="#什么是自执行？" class="headerlink" title="什么是自执行？"></a>什么是自执行？</h2><p>在 JavaScript 里，任何 function 在执行的时候都会创建一个执行上下文，因为为 function 声明的变量和 function 有可能只在该 function 内部，这个上下文，在调用 function 的时候，提供了一种简单的方式来创建自由变量或私有子 function。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">// 由于该function里返回了另外一个function，其中这个function可以访问自由变量i</div><div class="line">// 所有说，这个内部的function实际上是有权限可以调用内部的对象。</div><div class="line">function makeCounter() &#123;</div><div class="line">    // 只能在makeCounter内部访问i</div><div class="line">    var i = 0;</div><div class="line">    return function () &#123;</div><div class="line">        console.log(++i);</div><div class="line">    &#125;;</div><div class="line">&#125;</div><div class="line">// 注意，counter和counter2是不同的实例，分别有自己范围内的i。</div><div class="line">var counter = makeCounter();</div><div class="line">counter(); // logs: 1</div><div class="line">counter(); // logs: 2</div><div class="line">var counter2 = makeCounter();</div><div class="line">counter2(); // logs: 1</div><div class="line">counter2(); // logs: 2</div><div class="line">alert(i); // 引用错误：i没有defind（因为i是存在于makeCounter内部）。</div></pre></td></tr></table></figure>
+<p>很多情况下，我们不需要 makeCounter 多个实例，甚至某些 case 下，我们也不需要显示的返回值，OK，往下看。</p>
+<h2 id="问题的核心"><a href="#问题的核心" class="headerlink" title="问题的核心"></a>问题的核心</h2><p>当你声明类似 function foo(){}或 var foo = function(){}函数的时候，通过在后面加个括弧就可以实现自执行，例如 foo()，看代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">// 因为想下面第一个声明的function可以在后面加一个括弧()就可以自己执行了，比如foo()，</div><div class="line">// 因为foo仅仅是function() &#123; /* code */ &#125;这个表达式的一个引用</div><div class="line">var foo = function()&#123; /* code */ &#125;</div><div class="line">// ...是不是意味着后面加个括弧都可以自动执行？</div><div class="line">function()&#123; /* code */ &#125;(); // SyntaxError: Unexpected token (</div><div class="line">//</div></pre></td></tr></table></figure>
+<p>上述代码，如果甚至运行，第 2 个代码会出错，因为在解析器解析全局的 function 或者 function 内部 function 关键字的时候，默认是认为 function 声明，而不是 function 表达式，如果你不显示告诉编译器，它默认会声明成一个缺少名字的 function，并且抛出一个语法错误信息，因为 function 声明需要一个名字。</p>
+<h2 id="旁白：函数-function-，括弧-paren-，语法错误-SyntaxError"><a href="#旁白：函数-function-，括弧-paren-，语法错误-SyntaxError" class="headerlink" title="旁白：函数(function)，括弧(paren)，语法错误(SyntaxError)"></a>旁白：函数(function)，括弧(paren)，语法错误(SyntaxError)</h2><p>有趣的是，即便你为上面那个错误的代码加上一个名字，他也会提示语法错误，只不过和上面的原因不一样。在一个表达式后面加上括号()，该表达式会立即执行，但是在一个语句后面加上括号()，是完全不一样的意思，他的只是分组操作符。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">// 下面这个function在语法上是没问题的，但是依然只是一个语句</div><div class="line">// 加上括号()以后依然会报错，因为分组操作符需要包含表达式</div><div class="line">function foo()&#123; /* code */ &#125;(); // SyntaxError: Unexpected token )</div><div class="line">// 但是如果你在括弧()里传入一个表达式，将不会有异常抛出</div><div class="line">// 但是foo函数依然不会执行</div><div class="line">function foo()&#123; /* code */ &#125;( 1 ); </div><div class="line">// 因为它完全等价于下面这个代码，一个function声明后面，又声明了一个毫无关系的表达式： </div><div class="line">function foo()&#123; /* code */ &#125; </div><div class="line">( 1 );</div></pre></td></tr></table></figure>
+<p>你可以访问 <a href="http://dmitrysoshnikov.com/ecmascript/chapter-5-functions/#question-about-surrounding-parentheses" target="_blank" rel="external">ECMA-262-3 in detail. Chapter 5. Functions</a> 获取进一步的信息。</p>
+<h2 id="自执行函数表达式"><a href="#自执行函数表达式" class="headerlink" title="自执行函数表达式"></a>自执行函数表达式</h2><p>要解决上述问题，非常简单，我们只需要用大括弧将代码的代码全部括住就行了，因为 JavaScript 里括弧()里面不能包含语句，所以在这一点上，解析器在解析 function 关键字的时候，会将相应的代码解析成 function 表达式，而不是 function 声明。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">// 下面2个括弧()都会立即执行</div><div class="line">(function () &#123; /* code */ &#125; ()); // 推荐使用这个</div><div class="line">(function () &#123; /* code */ &#125;)(); // 但是这个也是可以用的</div><div class="line">// 由于括弧()和JS的&amp;&amp;，异或，逗号等操作符是在函数表达式和函数声明上消除歧义的</div><div class="line">// 所以一旦解析器知道其中一个已经是表达式了，其它的也都默认为表达式了</div><div class="line">// 不过，请注意下一章节的内容解释</div><div class="line">var i = function () &#123; return 10; &#125; ();</div><div class="line">true &amp;&amp; function () &#123; /* code */ &#125; ();</div><div class="line">0, function () &#123; /* code */ &#125; ();</div><div class="line">// 如果你不在意返回值，或者不怕难以阅读</div><div class="line">// 你甚至可以在function前面加一元操作符号</div><div class="line">!function () &#123; /* code */ &#125; ();</div><div class="line">~function () &#123; /* code */ &#125; ();</div><div class="line">-function () &#123; /* code */ &#125; ();</div><div class="line">+function () &#123; /* code */ &#125; ();</div><div class="line">// 还有一个情况，使用new关键字,也可以用，但我不确定它的效率</div><div class="line">// http://twitter.com/kuvos/status/18209252090847232</div><div class="line">new function () &#123; /* code */ &#125;</div><div class="line">new function () &#123; /* code */ &#125; () // 如果需要传递参数，只需要加上括弧()</div></pre></td></tr></table></figure>
+<p>上面所说的括弧是消除歧义的，其实压根就没必要，因为括弧本来内部本来期望的就是函数表达式，但是我们依然用它，主要是为了方便开发人员阅读，当你让这些已经自动执行的表达式赋值给一个变量的时候，我们看到开头有括弧(，很快就能明白，而不需要将代码拉到最后看看到底有没有加括弧。</p>
+<h2 id="用闭包保存状态"><a href="#用闭包保存状态" class="headerlink" title="用闭包保存状态"></a>用闭包保存状态</h2><p>和普通 function 执行的时候传参数一样，自执行的函数表达式也可以这么传参，因为闭包直接可以引用传入的这些参数，利用这些被 lock 住的传入参数，自执行函数表达式可以有效地保存状态。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">// 这个代码是错误的，因为变量i从来就没背locked住</div><div class="line">// 相反，当循环执行以后，我们在点击的时候i才获得数值</div><div class="line">// 因为这个时候i操真正获得值</div><div class="line">// 所以说无论点击那个连接，最终显示的都是I am link #10（如果有10个a元素的话）</div><div class="line">var elems = document.getElementsByTagName(&apos;a&apos;);</div><div class="line">for (var i = 0; i &lt; elems.length; i++) &#123;</div><div class="line">    elems[i].addEventListener(&apos;click&apos;, function (e) &#123;</div><div class="line">        e.preventDefault();</div><div class="line">        alert(&apos;I am link #&apos; + i);</div><div class="line">    &#125;, &apos;false&apos;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">// 这个是可以用的，因为他在自执行函数表达式闭包内部</div><div class="line">// i的值作为locked的索引存在，在循环执行结束以后，尽管最后i的值变成了a元素总数（例如10）</div><div class="line">// 但闭包内部的lockedInIndex值是没有改变，因为他已经执行完毕了</div><div class="line">// 所以当点击连接的时候，结果是正确的</div><div class="line">var elems = document.getElementsByTagName(&apos;a&apos;);</div><div class="line">for (var i = 0; i &lt; elems.length; i++) &#123;</div><div class="line">    (function (lockedInIndex) &#123;</div><div class="line">        elems[i].addEventListener(&apos;click&apos;, function (e) &#123;</div><div class="line">            e.preventDefault();</div><div class="line">            alert(&apos;I am link #&apos; + lockedInIndex);</div><div class="line">        &#125;, &apos;false&apos;);</div><div class="line">    &#125;)(i);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">// 你也可以像下面这样应用，在处理函数那里使用自执行函数表达式</div><div class="line">// 而不是在addEventListener外部</div><div class="line">// 但是相对来说，上面的代码更具可读性</div><div class="line">var elems = document.getElementsByTagName(&apos;a&apos;);</div><div class="line">for (var i = 0; i &lt; elems.length; i++) &#123;</div><div class="line">    elems[i].addEventListener(&apos;click&apos;, (function (lockedInIndex) &#123;</div><div class="line">        return function (e) &#123;</div><div class="line">            e.preventDefault();</div><div class="line">            alert(&apos;I am link #&apos; + lockedInIndex);</div><div class="line">        &#125;;</div><div class="line">    &#125;)(i), &apos;false&apos;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>其实，上面 2 个例子里的 lockedInIndex 变量，也可以换成 i，因为和外面的 i 不在一个作用于，所以不会出现问题，这也是匿名函数+闭包的威力。</p>
+<h2 id="自执行匿名函数和立即执行的函数表达式区别"><a href="#自执行匿名函数和立即执行的函数表达式区别" class="headerlink" title="自执行匿名函数和立即执行的函数表达式区别"></a>自执行匿名函数和立即执行的函数表达式区别</h2><p>在这篇帖子里，我们一直叫自执行函数，确切的说是自执行匿名函数（Self-executing anonymous function），但英文原文作者一直倡议使用立即调用的函数表达式（Immediately-Invoked Function Expression）这一名称，作者又举了一堆例子来解释，好吧，我们来看看：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">// 这是一个自执行的函数，函数内部执行自身，递归</div><div class="line">function foo() &#123; foo(); &#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">// 这是一个自执行的匿名函数，因为没有标示名称</div><div class="line">// 必须使用arguments.callee属性来执行自己</div><div class="line">var foo = function () &#123; arguments.callee(); &#125;;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">// 这可能也是一个自执行的匿名函数，仅仅是foo标示名称引用它自身</div><div class="line">// 如果你将foo改变成其它的，你将得到一个used-to-self-execute匿名函数</div><div class="line">var foo = function () &#123; foo(); &#125;;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">// 有些人叫这个是自执行的匿名函数（即便它不是），因为它没有调用自身，它只是立即执行而已。</div><div class="line">(function () &#123; /* code */ &#125; ());</div><div class="line">// 为函数表达式添加一个标示名称，可以方便Debug</div><div class="line">// 但一定命名了，这个函数就不再是匿名的了</div><div class="line">(function foo() &#123; /* code */ &#125; ());</div><div class="line">// 立即调用的函数表达式（IIFE）也可以自执行，不过可能不常用罢了</div><div class="line">(function () &#123; arguments.callee(); &#125; ());</div><div class="line">(function foo() &#123; foo(); &#125; ());</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">// 另外，下面的代码在黑莓5里执行会出错，因为在一个命名的函数表达式里，他的名称是undefined</div><div class="line">// 呵呵，奇怪</div><div class="line">(function foo() &#123; foo(); &#125; ());</div></pre></td></tr></table></figure>
+<p>希望这里的一些例子，可以让大家明白，什么叫自执行，什么叫立即调用。</p>
+<p><em>注：arguments.callee在 ECMAScript 5 strict mode 里被废弃了，所以在这个模式下，其实是不能用的。</em></p>
+<h2 id="最后的旁白：Module-模式"><a href="#最后的旁白：Module-模式" class="headerlink" title="最后的旁白：Module 模式"></a>最后的旁白：Module 模式</h2><p>在讲到这个立即调用的函数表达式的时候，我又想起来了 Module 模式，如果你还不熟悉这个模式，我们先来看看代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">// 创建一个立即调用的匿名函数表达式</div><div class="line">// return一个变量，其中这个变量里包含你要暴露的东西</div><div class="line">// 返回的这个变量将赋值给counter，而不是外面声明的function自身</div><div class="line">var counter = (function () &#123;</div><div class="line">    var i = 0;</div><div class="line">    return &#123;</div><div class="line">        get: function () &#123;</div><div class="line">            return i;</div><div class="line">        &#125;,</div><div class="line">        set: function (val) &#123;</div><div class="line">            i = val;</div><div class="line">        &#125;,</div><div class="line">        increment: function () &#123;</div><div class="line">            return ++i;</div><div class="line">        &#125;</div><div class="line">    &#125;;</div><div class="line">&#125; ());</div><div class="line">// counter是一个带有多个属性的对象，上面的代码对于属性的体现其实是方法</div><div class="line">counter.get(); // 0</div><div class="line">counter.set(3);</div><div class="line">counter.increment(); // 4</div><div class="line">counter.increment(); // 5</div><div class="line">counter.i; // undefined 因为i不是返回对象的属性</div><div class="line">i; // 引用错误: i 没有定义（因为i只存在于闭包）</div></pre></td></tr></table></figure>
+<p>关于更多Module模式的介绍，请访问我的上一篇帖子：深入理解JavaScript系列（2）：全面解析 Module 模式 。</p>
+<h2 id="更多阅读"><a href="#更多阅读" class="headerlink" title="更多阅读"></a>更多阅读</h2><p>希望上面的一些例子，能让你对立即调用的函数表达（也就是我们所说的自执行函数）有所了解，如果你想了解更多关于 function 和 Module 模式的信息，请继续访问下面列出的网站：</p>
+<ol>
+<li><a href="http://dmitrysoshnikov.com/ecmascript/chapter-5-functions/#question-about-surrounding-parentheses" target="_blank" rel="external">ECMA-262-3 in detail. Chapter 5. Functions. </a>- Dmitry A. Soshnikov</li>
+<li><a href="https://developer.mozilla.org/en/JavaScript/Reference/Functions_and_function_scope" target="_blank" rel="external">Functions and function scope</a> - Mozilla Developer Network</li>
+<li><a href="http://kangax.github.com/nfe/" target="_blank" rel="external">Named function expressions</a> - Juriy “kangax” Zaytsev</li>
+<li><a href="http://www.cnblogs.com/TomXu/archive/2011/12/30/2288372.html" target="_blank" rel="external">全面解析 Module 模式</a>- Ben Cherry（大叔翻译整理）</li>
+<li><a href="http://skilldrick.co.uk/2011/04/closures-explained-with-javascript/" target="_blank" rel="external">Closures explained with JavaScript</a> - Nick Morgan</li>
+</ol>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/2015/09/12/深入理解javascript/37设计模式之享元模式/"><span>设计模式之享元模式</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2015/09/12/深入理解javascript/37设计模式之享元模式/" rel="bookmark">
+        <time class="entry-date published" datetime="2015-09-12T09:02:02.000Z">
+          2015-09-12
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>享元模式（Flyweight），运行共享技术有效地支持大量细粒度的对象，避免大量拥有相同内容的小类的开销(如耗费内存)，使大家共享一个类(元类)。</p>
+<p>享元模式可以避免大量非常相似类的开销，在程序设计中，有时需要生产大量细粒度的类实例来表示数据，如果能发现这些实例除了几个参数以外，开销基本相同的 话，就可以大幅度较少需要实例化的类的数量。如果能把那些参数移动到类实例的外面，在方法调用的时候将他们传递进来，就可以通过共享大幅度第减少单个实例 的数目。</p>
+<p>那么如果在 JavaScript 中应用享元模式呢？有两种方式，第一种是应用在数据层上，主要是应用在内存里大量相似的对象上；第二种是应用在 DOM 层上，享元可以用在中央事件管理器上用来避免给父容器里的每个子元素都附加事件句柄。</p>
+<h2 id="享元与数据层"><a href="#享元与数据层" class="headerlink" title="享元与数据层"></a>享元与数据层</h2><p>Flyweight 中有两个重要概念–内部状态 intrinsic 和外部状态 extrinsic 之分，内部状态就是在对象里通过内部方法管理，而外部信息可以在通过外部删除或者保存。</p>
+<p>说白点,就是先捏一个的原始模型，然后随着不同场合和环境,再产生各具特征的具体模型，很显然,在这里需要产生不同的新对象，所以 Flyweight 模式中常出现 Factory 模式，Flyweight 的内部状态是用来共享的，Flyweight factory 负责维护一个 Flyweight pool(模式池)来存放内部状态的对象。</p>
+<h3 id="使用享元模式"><a href="#使用享元模式" class="headerlink" title="使用享元模式"></a>使用享元模式</h3><p>让我们来演示一下如果通过一个类库让系统来管理所有的书籍，每个书籍的元数据暂定为如下内容：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">ID</div><div class="line">Title</div><div class="line">Author</div><div class="line">Genre</div><div class="line">Page count</div><div class="line">Publisher ID</div><div class="line">ISBN</div></pre></td></tr></table></figure>
+<p>我们还需要定义每本书被借出去的时间和借书人，以及退书日期和是否可用状态：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">checkoutDate</div><div class="line">checkoutMember</div><div class="line">dueReturnDate</div><div class="line">availability</div></pre></td></tr></table></figure>
+<p>因为 book 对象设置成如下代码，注意该代码还未被优化：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div></pre></td><td class="code"><pre><div class="line">var Book = function( id, title, author, genre, pageCount,publisherID, ISBN, checkoutDate, checkoutMember, dueReturnDate,availability )&#123;</div><div class="line">   this.id = id;</div><div class="line">   this.title = title;</div><div class="line">   this.author = author;</div><div class="line">   this.genre = genre;</div><div class="line">   this.pageCount = pageCount;</div><div class="line">   this.publisherID = publisherID;</div><div class="line">   this.ISBN = ISBN;</div><div class="line">   this.checkoutDate = checkoutDate;</div><div class="line">   this.checkoutMember = checkoutMember;</div><div class="line">   this.dueReturnDate = dueReturnDate;</div><div class="line">   this.availability = availability;</div><div class="line">&#125;;</div><div class="line">Book.prototype = &#123;</div><div class="line">   getTitle:function()&#123;</div><div class="line">       return this.title;</div><div class="line">   &#125;,</div><div class="line">   getAuthor: function()&#123;</div><div class="line">       return this.author;</div><div class="line">   &#125;,</div><div class="line">   getISBN: function()&#123;</div><div class="line">       return this.ISBN;</div><div class="line">   &#125;,</div><div class="line">/*其它get方法在这里就不显示了*/</div><div class="line">// 更新借出状态</div><div class="line">updateCheckoutStatus: function(bookID, newStatus, checkoutDate,checkoutMember, newReturnDate)&#123;</div><div class="line">   this.id  = bookID;</div><div class="line">   this.availability = newStatus;</div><div class="line">   this.checkoutDate = checkoutDate;</div><div class="line">   this.checkoutMember = checkoutMember;</div><div class="line">   this.dueReturnDate = newReturnDate;</div><div class="line">&#125;,</div><div class="line">//续借</div><div class="line">extendCheckoutPeriod: function(bookID, newReturnDate)&#123;</div><div class="line">    this.id =  bookID;</div><div class="line">    this.dueReturnDate = newReturnDate;</div><div class="line">&#125;,</div><div class="line">//是否到期</div><div class="line">isPastDue: function(bookID)&#123;</div><div class="line">   var currentDate = new Date();</div><div class="line">   return currentDate.getTime() &gt; Date.parse(this.dueReturnDate);</div><div class="line"> &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>程序刚开始可能没问题，但是随着时间的增加，图书可能大批量增加，并且每种图书都有不同的版本和数量，你将会发现系统变得越来越慢。几千个 book 对象在内存里可想而知，我们需要用享元模式来优化。</p>
+<p>我们可以将数据分成内部和外部两种数据，和 book 对象相关的数据（title，author 等）可以归结为内部属性，而（checkoutMember，dueReturnDate 等）可以归结为外部属性。这样，如下代码就可以在同一本书里共享同一个对象了，因为不管谁借的书，只要书是同一本书，基本信息是一样的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">/*享元模式优化代码*/</div><div class="line">var Book = function(title, author, genre, pageCount, publisherID, ISBN)&#123;</div><div class="line">   this.title = title;</div><div class="line">   this.author = author;</div><div class="line">   this.genre = genre;</div><div class="line">   this.pageCount = pageCount;</div><div class="line">   this.publisherID = publisherID;</div><div class="line">   this.ISBN = ISBN;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<h3 id="定义基本工厂"><a href="#定义基本工厂" class="headerlink" title="定义基本工厂"></a>定义基本工厂</h3><p>让我们来定义一个基本工厂，用来检查之前是否创建该 book 的对象，如果有就返回，没有就重新创建并存储以便后面可以继续访问，这确保我们为每一种书只创建一个对象：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">/* Book工厂 单例 */</div><div class="line">var BookFactory = (function()&#123;</div><div class="line">   var existingBooks = &#123;&#125;;</div><div class="line">   return&#123;</div><div class="line">       createBook: function(title, author, genre,pageCount,publisherID,ISBN)&#123;</div><div class="line">       /*查找之前是否创建*/</div><div class="line">           var existingBook = existingBooks[ISBN];</div><div class="line">           if(existingBook)&#123;</div><div class="line">                   return existingBook;</div><div class="line">               &#125;else&#123;</div><div class="line">               /* 如果没有，就创建一个，然后保存*/</div><div class="line">               var book = new Book(title, author, genre,pageCount,publisherID,ISBN);</div><div class="line">               existingBooks[ISBN] =  book;</div><div class="line">               return book;</div><div class="line">           &#125;</div><div class="line">       &#125;</div><div class="line">   &#125;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<h3 id="管理外部状态"><a href="#管理外部状态" class="headerlink" title="管理外部状态"></a>管理外部状态</h3><p>外部状态，相对就简单了，除了我们封装好的 book，其它都需要在这里管理：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line">/*BookRecordManager 借书管理类 单例*/</div><div class="line">var BookRecordManager = (function()&#123;</div><div class="line">   var bookRecordDatabase = &#123;&#125;;</div><div class="line">   return&#123;</div><div class="line">       /*添加借书记录*/</div><div class="line">       addBookRecord: function(id, title, author, genre,pageCount,publisherID,ISBN, checkoutDate, checkoutMember, dueReturnDate, availability)&#123;</div><div class="line">           var book = bookFactory.createBook(title, author, genre,pageCount,publisherID,ISBN);</div><div class="line">            bookRecordDatabase[id] =&#123;</div><div class="line">               checkoutMember: checkoutMember,</div><div class="line">               checkoutDate: checkoutDate,</div><div class="line">               dueReturnDate: dueReturnDate,</div><div class="line">               availability: availability,</div><div class="line">               book: book;</div><div class="line">           &#125;;</div><div class="line">       &#125;,</div><div class="line">    updateCheckoutStatus: function(bookID, newStatus, checkoutDate, checkoutMember,     newReturnDate)&#123;</div><div class="line">        var record = bookRecordDatabase[bookID];</div><div class="line">        record.availability = newStatus;</div><div class="line">        record.checkoutDate = checkoutDate;</div><div class="line">        record.checkoutMember = checkoutMember;</div><div class="line">        record.dueReturnDate = newReturnDate;</div><div class="line">   &#125;,</div><div class="line">   extendCheckoutPeriod: function(bookID, newReturnDate)&#123;</div><div class="line">       bookRecordDatabase[bookID].dueReturnDate = newReturnDate;</div><div class="line">   &#125;,</div><div class="line">   isPastDue: function(bookID)&#123;</div><div class="line">       var currentDate = new Date();</div><div class="line">       return currentDate.getTime() &gt; Date.parse(bookRecordDatabase[bookID].dueReturnDate);</div><div class="line">   &#125;</div><div class="line"> &#125;;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>通过这种方式，我们做到了将同一种图书的相同信息保存在一个 bookmanager 对象里，而且只保存一份；相比之前的代码，就可以发现节约了很多内存。</p>
+<h2 id="享元模式与-DOM"><a href="#享元模式与-DOM" class="headerlink" title="享元模式与 DOM"></a>享元模式与 DOM</h2><p>关于 DOM 的事件冒泡，在这里就不多说了，相信大家都已经知道了，我们举两个例子。</p>
+<h3 id="例-1：事件集中管理"><a href="#例-1：事件集中管理" class="headerlink" title="例 1：事件集中管理"></a>例 1：事件集中管理</h3><p>举例来说，如果我们又很多相似类型的元素或者结构（比如菜单，或者 ul 里的多个 li）都需要监控他的 click 事件的话，那就需要多每个元素进行事件绑定，如果元素有非常非常多，那性能就可想而知了，而结合冒泡的知识，任何一个子元素有事件触发的话，那触发以后事件将冒泡到上一级元素，所以利用这个特性，我们可以使用享元模式，我们可以对这些相似元素的父级元素进行事件监控，然后再判断里面哪个子元素有事件触发了，再进行进一步的操作。</p>
+<p>在这里我们结合一下 jQuery 的 bind/unbind 方法来举例。</p>
+<h4 id="HTML"><a href="#HTML" class="headerlink" title="HTML"></a>HTML</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">&lt;div id=&quot;container&quot;&gt;</div><div class="line">   &lt;div class=&quot;toggle&quot; href=&quot;#&quot;&gt;更多信息 (地址)</div><div class="line">       &lt;span class=&quot;info&quot;&gt;</div><div class="line">          这里是更多信息</div><div class="line">       &lt;/span&gt;&lt;/div&gt;</div><div class="line">   &lt;div class=&quot;toggle&quot; href=&quot;#&quot;&gt;更多信息 (地图)</div><div class="line">       &lt;span class=&quot;info&quot;&gt;</div><div class="line">          &lt;iframe src=&quot;http://www.map-generator.net/extmap.php?name=London&amp;amp;address=london%2C%20england&amp;amp;width=500...gt;&quot;&lt;/iframe&gt;</div><div class="line">       &lt;/span&gt;</div><div class="line">   &lt;/div&gt;</div><div class="line">&lt;/div&gt;</div></pre></td></tr></table></figure>
+<h4 id="JavaScript"><a href="#JavaScript" class="headerlink" title="JavaScript"></a>JavaScript</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">stateManager = &#123;</div><div class="line">   fly: function()&#123;</div><div class="line">       var self =  this;</div><div class="line">       $(&apos;#container&apos;).unbind().bind(&quot;click&quot;, function(e)&#123;</div><div class="line">           var target = $(e.originalTarget || e.srcElement);</div><div class="line">           // 判断是哪一个子元素</div><div class="line">           if(target.is(&quot;div.toggle&quot;))&#123;</div><div class="line">               self.handleClick(target);</div><div class="line">           &#125;</div><div class="line">       &#125;);</div><div class="line">   &#125;,</div><div class="line">   handleClick: function(elem)&#123;</div><div class="line">       elem.find(&apos;span&apos;).toggle(&apos;slow&apos;);</div><div class="line">   &#125;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<h3 id="例-2：应用享元模式提升性能"><a href="#例-2：应用享元模式提升性能" class="headerlink" title="例 2：应用享元模式提升性能"></a>例 2：应用享元模式提升性能</h3><p>另外一个例子，依然和 jQuery 有关，一般我们在事件的回调函数里使用元素对象是会后，经常会用到$(this)这种形式，其实它重复创建了新对象，因为本身回调函数里的 this 已经是 DOM 元素自身了，我们必要必要使用如下这样的代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">$(&apos;div&apos;).bind(&apos;click&apos;, function()&#123;</div><div class="line"> console.log(&apos;You clicked: &apos; + $(this).attr(&apos;id&apos;));</div><div class="line">&#125;);</div><div class="line">// 上面的代码，要避免使用，避免再次对DOM元素进行生成jQuery对象，因为这里可以直接使用DOM元素自身了。</div><div class="line">$(&apos;div&apos;).bind(&apos;click&apos;, function()&#123;</div><div class="line"> console.log(&apos;You clicked: &apos; + this.id);</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>其实，如果非要用 $(this)这样的形式，我们也可以实现自己版本的单实例模式，比如我们来实现一个 jQuery.signle(this)这样的函数以便返回DOM元素自身：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">jQuery.single = (function(o)&#123;</div><div class="line">   var collection = jQuery([1]);</div><div class="line">   return function(element) &#123;</div><div class="line">       // 将元素放到集合里</div><div class="line">       collection[0] = element;</div><div class="line">        // 返回集合</div><div class="line">       return collection;</div><div class="line">   &#125;;</div><div class="line"> &#125;);</div></pre></td></tr></table></figure>
+<p>使用方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">$(&apos;div&apos;).bind(&apos;click&apos;, function()&#123;</div><div class="line">   var html = jQuery.single(this).next().html();</div><div class="line">   console.log(html);</div><div class="line"> &#125;);</div></pre></td></tr></table></figure>
+<p>这样，就是原样返回 DOM 元素自身了，而且不进行 jQuery 对象的创建。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>Flyweight 模式是一个提高程序效率和性能的模式,会大大加快程序的运行速度.应用场合很多:比如你要从一个数据库中读取一系列字符串,这些字符串中有许多是重复的,那么我们可以将这些字符串储存在 Flyweight 池(pool)中。</p>
+<p>如果一个应用程序使用了大量的对象，而这些大量的对象造成了很大的存储开心时就应该考虑使用享元模式；还有就是对象的大多数状态可以外部状态，如果删除对象的外部状态，那么就可以用相对较少的共享对象取代很多组对象，此时可以考虑使用享元模式。</p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/2015/08/23/深入理解javascript/36设计模式之中介者模式/"><span>设计模式之中介者模式</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2015/08/23/深入理解javascript/36设计模式之中介者模式/" rel="bookmark">
+        <time class="entry-date published" datetime="2015-08-23T09:02:02.000Z">
+          2015-08-23
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>中介者模式（Mediator），用一个中介对象来封装一系列的对象交互。中介者使各对象不需要显式地相互引用，从而使其耦合松散，而且可以独立地改变它们之间的交互。</p>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><p>软件开发中，中介者是一个行为设计模式，通过提供一个统一的接口让系统的不同部分进行通信。一般，如果系统有很多子模块需要直接沟通，都要创建一个中央控制点让其各模块通过该中央控制点进行交互。中介者模式可以让这些子模块不需要直接沟通，而达到进行解耦的目的。</p>
+<p>打个比方，平时常见的机场交通控制系统，塔台就是中介者，它控制着飞机（子模块）的起飞和降落，因为所有的沟通都是从飞机向塔台汇报来完成的，而不是飞机之前相互沟通。中央控制系统就是该系统的关键，也就是软件设计中扮演的中介者角色。</p>
+<p>我们先用伪代码来理解一下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">// 如下代码是伪代码，请不要过分在意代码</div><div class="line">// 这里app命名空间就相当于扮演中介者的角色</div><div class="line">var app = app || &#123;&#125;;</div><div class="line">// 通过app中介者来进行Ajax请求</div><div class="line">app.sendRequest = function ( options ) &#123;</div><div class="line">    return $.ajax($.extend(&#123;&#125;, options);</div><div class="line">&#125;</div><div class="line">// 请求URL以后，展示View</div><div class="line">app.populateView = function( url, view )&#123;</div><div class="line">  $.when(app.sendRequest(&#123;url: url, method: &apos;GET&apos;&#125;)</div><div class="line">     .then(function()&#123;</div><div class="line">         //显示内容</div><div class="line">     &#125;);</div><div class="line">&#125;</div><div class="line">// 清空内容</div><div class="line">app.resetView = function( view )&#123;</div><div class="line">   view.html(&apos;&apos;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在 JavaScript 里，中介者非常常见，相当于观察者模式上的消息 Bus，只不过不像观察者那样通过调用 pub/sub 的形式来实现，而是通过中介者统一来管理，让我们在观察者的基础上来给出一个例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">var mediator = (function () &#123;</div><div class="line">    // 订阅一个事件，并且提供一个事件触发以后的回调函数</div><div class="line">    var subscribe = function (channel, fn) &#123;</div><div class="line">        if (!mediator.channels[channel]) mediator.channels[channel] = [];</div><div class="line">        mediator.channels[channel].push(&#123; context: this, callback: fn &#125;);</div><div class="line">        return this;</div><div class="line">    &#125;,</div><div class="line">    // 广播事件</div><div class="line">    publish = function (channel) &#123;</div><div class="line">        if (!mediator.channels[channel]) return false;</div><div class="line">        var args = Array.prototype.slice.call(arguments, 1);</div><div class="line">        for (var i = 0, l = mediator.channels[channel].length; i &lt; l; i++) &#123;</div><div class="line">            var subscription = mediator.channels[channel][i];</div><div class="line">            subscription.callback.apply(subscription.context, args);</div><div class="line">        &#125;</div><div class="line">        return this;</div><div class="line">    &#125;;</div><div class="line">    return &#123;</div><div class="line">        channels: &#123;&#125;,</div><div class="line">        publish: publish,</div><div class="line">        subscribe: subscribe,</div><div class="line">        installTo: function (obj) &#123;</div><div class="line">            obj.subscribe = subscribe;</div><div class="line">            obj.publish = publish;</div><div class="line">        &#125;</div><div class="line">    &#125;;</div><div class="line">&#125; ());</div></pre></td></tr></table></figure>
+<p>调用代码，相对就简单了：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">(function (Mediator) &#123;</div><div class="line">    function initialize() &#123;</div><div class="line">        // 默认值</div><div class="line">        mediator.name = &quot;dudu&quot;;</div><div class="line">        // 订阅一个事件nameChange</div><div class="line">        // 回调函数显示修改前后的信息</div><div class="line">        mediator.subscribe(&apos;nameChange&apos;, function (arg) &#123;</div><div class="line">            console.log(this.name);</div><div class="line">            this.name = arg;</div><div class="line">            console.log(this.name);</div><div class="line">        &#125;);</div><div class="line">    &#125;</div><div class="line">    function updateName() &#123;</div><div class="line">        // 广播触发事件，参数为新数据</div><div class="line">        mediator.publish(&apos;nameChange&apos;, &apos;tom&apos;); // dudu, tom</div><div class="line">    &#125;</div><div class="line">    initialize(); // 初始化</div><div class="line">    updateName(); // 调用</div><div class="line">&#125;)(mediator);</div></pre></td></tr></table></figure>
+<h3 id="中介者和观察者"><a href="#中介者和观察者" class="headerlink" title="中介者和观察者"></a>中介者和观察者</h3><p>到这里，大家可能迷糊了，中介者和观察者貌似差不多，有什么不同呢？其实是有点类似，但是我们来看看具体的描述：</p>
+<p>观察者模式，没有封装约束的单个对象，相反，观察者 Observer 和具体类 Subject 是一起配合来维护约束的，沟通是通过多个观察者和多个具体类来交互的：每个具体类通常包含多个观察者，而有时候具体类里的一个观察者也是另一个观察者的具体类。</p>
+<p>而中介者模式所做的不是简单的分发，却是扮演着维护这些约束的职责。</p>
+<h3 id="中介者和外观模式"><a href="#中介者和外观模式" class="headerlink" title="中介者和外观模式"></a>中介者和外观模式</h3><p>很多人可能也比较迷糊中介者和外观模式的区别，他们都是对现有各模块进行抽象，但有一些微妙的区别。</p>
+<p>中介者所做的是在模块之间进行通信，是多向的，但外观模式只是为某一个模块或系统定义简单的接口而不添加额外的功能。系统中的其它模块和外观模式这个概念没有直接联系，可以认为是单向性。</p>
+<h2 id="完整的例子"><a href="#完整的例子" class="headerlink" title="完整的例子"></a>完整的例子</h2><p>再给出一个完整的例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div></pre></td><td class="code"><pre><div class="line">&lt;!doctype html&gt;</div><div class="line">&lt;html lang=&quot;en&quot;&gt;</div><div class="line">&lt;head&gt;</div><div class="line">    &lt;title&gt;JavaScript Patterns&lt;/title&gt;</div><div class="line">    &lt;meta charset=&quot;utf-8&quot;&gt;</div><div class="line">&lt;/head&gt;</div><div class="line">&lt;body&gt;</div><div class="line">&lt;div id=&quot;results&quot;&gt;&lt;/div&gt;</div><div class="line">    &lt;script&gt;</div><div class="line">        function Player(name) &#123;</div><div class="line">            this.points = 0;</div><div class="line">            this.name = name;</div><div class="line">        &#125;</div><div class="line">        Player.prototype.play = function () &#123;</div><div class="line">            this.points += 1;</div><div class="line">            mediator.played();</div><div class="line">        &#125;;</div><div class="line">        var scoreboard = &#123;</div><div class="line">            // 显示内容的容器</div><div class="line">            element: document.getElementById(&apos;results&apos;),</div><div class="line">            // 更新分数显示</div><div class="line">            update: function (score) &#123;</div><div class="line">                var i, msg = &apos;&apos;;</div><div class="line">                for (i in score) &#123;</div><div class="line">                    if (score.hasOwnProperty(i)) &#123;</div><div class="line">                        msg += &apos;&lt;p&gt;&lt;strong&gt;&apos; + i + &apos;&lt;\/strong&gt;: &apos;;</div><div class="line">                        msg += score[i];</div><div class="line">                        msg += &apos;&lt;\/p&gt;&apos;;</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">                this.element.innerHTML = msg;</div><div class="line">            &#125;</div><div class="line">        &#125;;</div><div class="line">        var mediator = &#123;</div><div class="line">            // 所有的player</div><div class="line">            players: &#123;&#125;,</div><div class="line">            // 初始化</div><div class="line">            setup: function () &#123;</div><div class="line">                var players = this.players;</div><div class="line">                players.home = new Player(&apos;Home&apos;);</div><div class="line">                players.guest = new Player(&apos;Guest&apos;);</div><div class="line">            &#125;,</div><div class="line">            // play以后，更新分数</div><div class="line">            played: function () &#123;</div><div class="line">                var players = this.players,</div><div class="line">                    score = &#123;</div><div class="line">                        Home: players.home.points,</div><div class="line">                        Guest: players.guest.points</div><div class="line">                    &#125;;</div><div class="line">                scoreboard.update(score);</div><div class="line">            &#125;,</div><div class="line">            // 处理用户按键交互</div><div class="line">            keypress: function (e) &#123;</div><div class="line">                e = e || window.event; // IE</div><div class="line">                if (e.which === 49) &#123; // 数字键 &quot;1&quot;</div><div class="line">                    mediator.players.home.play();</div><div class="line">                    return;</div><div class="line">                &#125;</div><div class="line">                if (e.which === 48) &#123; // 数字键 &quot;0&quot;</div><div class="line">                    mediator.players.guest.play();</div><div class="line">                    return;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;;</div><div class="line">        // go!</div><div class="line">        mediator.setup();</div><div class="line">        window.onkeypress = mediator.keypress;</div><div class="line">        // 30秒以后结束</div><div class="line">        setTimeout(function () &#123;</div><div class="line">            window.onkeypress = null;</div><div class="line">            console.log(&apos;Game over!&apos;);</div><div class="line">        &#125;, 30000);</div><div class="line">    &lt;/script&gt;</div><div class="line">&lt;/body&gt;</div><div class="line">&lt;/html&gt;</div></pre></td></tr></table></figure>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>中介者模式一般应用于一组对象已定义良好但是以复杂的方式进行通信的场合，一般情况下，中介者模式很容易在系统中使用，但也容易在系统里误用，当系统出现了多对多交互复杂的对象群时，先不要急于使用中介者模式，而是要思考一下是不是系统设计有问题。</p>
+<p>另外，由于中介者模式把交互复杂性变成了中介者本身的复杂性，所以说中介者对象会比其它任何对象都复杂。</p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/2015/08/16/深入理解javascript/41设计模式之模板方法/"><span>设计模式之模板方法</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2015/08/16/深入理解javascript/41设计模式之模板方法/" rel="bookmark">
+        <time class="entry-date published" datetime="2015-08-16T04:02:02.000Z">
+          2015-08-16
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>模板方法（TemplateMethod）定义了一个操作中的算法的骨架，而将一些步骤延迟到子类中。模板方法使得子类可以不改变一个算法的结构即可重定义该算法的某些特定步骤。</p>
+<p>模板方法是一种代码复用的基本技术，在类库中尤为重要，因为他们提取了类库中的公共行为。模板方法导致一种反向的控制结构，这种结构就是传说中的“好莱坞法则”，即“别找我们，我们找你”，这指的是父类调用一个类的操作，而不是相反。具体体现是面向对象编程编程语言里的抽象类（以及其中的抽象方法），以及继承该抽象类（和抽象方法）的子类。</p>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><p>举个例子，泡茶和泡咖啡有同样的步骤，比如烧开水（boilWater）、冲泡（brew）、倒在杯子里（pourOnCup），加小料（addCondiments）等等。但每种饮料冲泡的方法以及所加的小料不一样，所以我们可以利用模板方法实现这个主要步骤。</p>
+<p>首先先来定义抽象步骤：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">var CaffeineBeverage = function () &#123;</div><div class="line">&#125;;</div><div class="line">CaffeineBeverage.prototype.prepareRecipe = function () &#123;</div><div class="line">    this.boilWater();</div><div class="line">    this.brew();</div><div class="line">    this.pourOnCup();</div><div class="line">    if (this.customerWantsCondiments()) &#123;</div><div class="line">        // 如果可以想加小料，就加上</div><div class="line"> this.addCondiments();</div><div class="line">    &#125;</div><div class="line">&#125;;</div><div class="line">CaffeineBeverage.prototype.boilWater = function () &#123;</div><div class="line">    console.log(&quot;将水烧开!&quot;);</div><div class="line">&#125;;</div><div class="line">CaffeineBeverage.prototype.pourOnCup = function () &#123;</div><div class="line">    console.log(&quot;将饮料到再杯子里!&quot;);</div><div class="line">&#125;;</div><div class="line">CaffeineBeverage.prototype.brew = function () &#123;</div><div class="line">    throw new Error(&quot;该方法必须重写!&quot;);</div><div class="line">&#125;;</div><div class="line">CaffeineBeverage.prototype.addCondiments = function () &#123;</div><div class="line">    throw new Error(&quot;该方法必须重写!&quot;);</div><div class="line">&#125;;</div><div class="line">// 默认加上小料</div><div class="line">CaffeineBeverage.prototype.customerWantsCondiments = function () &#123;</div><div class="line">    return true;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>该函数在原型上扩展了所有的基础步骤，以及主要步骤，冲泡和加小料步骤没有实现，供具体饮料所对应的函数来实现，另外是否加小料（customerWantsCondiments ）默认返回 true，子函数重写的时候可以重写该值。</p>
+<p>下面两个函数分别是冲咖啡和冲茶所对应的函数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">// 冲咖啡</div><div class="line">var Coffee = function () &#123;</div><div class="line">    CaffeineBeverage.apply(this);</div><div class="line">&#125;;</div><div class="line">Coffee.prototype = new CaffeineBeverage();</div><div class="line">Coffee.prototype.brew = function () &#123;</div><div class="line">    console.log(&quot;从咖啡机想咖啡倒进去!&quot;);</div><div class="line">&#125;;</div><div class="line">Coffee.prototype.addCondiments = function () &#123;</div><div class="line">    console.log(&quot;添加糖和牛奶&quot;);</div><div class="line">&#125;;</div><div class="line">Coffee.prototype.customerWantsCondiments = function () &#123;</div><div class="line">    return confirm(&quot;你想添加糖和牛奶吗？&quot;);</div><div class="line">&#125;;</div><div class="line">//冲茶叶</div><div class="line">var Tea = function () &#123;</div><div class="line">    CaffeineBeverage.apply(this);</div><div class="line">&#125;;</div><div class="line">Tea.prototype = new CaffeineBeverage();</div><div class="line">Tea.prototype.brew = function () &#123;</div><div class="line">    console.log(&quot;泡茶叶!&quot;);</div><div class="line">&#125;;</div><div class="line">Tea.prototype.addCondiments = function () &#123;</div><div class="line">    console.log(&quot;添加柠檬!&quot;);</div><div class="line">&#125;;</div><div class="line">Tea.prototype.customerWantsCondiments = function () &#123;</div><div class="line">    return confirm(&quot;你想添加柠檬嘛？&quot;);</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>另外使用 confirm，可以让用户自己选择加不加小料，很不错，不是嘛？</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>模板方法应用于下列情况：</p>
+<ol>
+<li>一次性实现一个算法的不变的部分，并将可变的行为留给子类来实现</li>
+<li>各子类中公共的行为应被提取出来并集中到一个公共父类中的避免代码重复，不同之处分离为新的操作，最后，用一个钓鱼这些新操作的模板方法来替换这些不同的代码</li>
+<li>控制子类扩展，模板方法只在特定点调用“hook”操作，这样就允许在这些点进行扩展</li>
+</ol>
+<p>和策略模式不同，模板方法使用继承来改变算法的一部分，而策略模式使用委托来改变整个算法。</p>
+<h2 id="同步与推荐"><a href="#同步与推荐" class="headerlink" title="同步与推荐"></a>同步与推荐</h2><p>深入理解 JavaScript 系列文章，包括了原创，翻译，转载等各类型的文章，如果对你有用，请推荐支持一把，给大叔写作的动力。</p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/2015/08/12/深入理解javascript/31设计模式之代理模式/"><span>设计模式之代理模式</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2015/08/12/深入理解javascript/31设计模式之代理模式/" rel="bookmark">
+        <time class="entry-date published" datetime="2015-08-12T05:02:02.000Z">
+          2015-08-12
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>代理，顾名思义就是帮助别人做事，GoF 对代理模式的定义如下：</p>
+<p>代理模式（Proxy），为其他对象提供一种代理以控制对这个对象的访问。</p>
+<p>代理模式使得代理对象控制具体对象的引用。代理几乎可以是任何对象：文件，资源，内存中的对象，或者是一些难以复制的东西。</p>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><p>我们来举一个简单的例子，假如dudu要送酸奶小妹玫瑰花，却不知道她的联系方式或者不好意思，想委托大叔去送这些玫瑰，那大叔就是个代理（其实挺好的，可以扣几朵给媳妇），那我们如何来做呢？</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">// 先声明美女对象</div><div class="line">var girl = function (name) &#123;</div><div class="line">    this.name = name;</div><div class="line">&#125;;</div><div class="line">// 这是dudu</div><div class="line">var dudu = function (girl) &#123;</div><div class="line">    this.girl = girl;</div><div class="line">    this.sendGift = function (gift) &#123;</div><div class="line">        alert(&quot;Hi &quot; + girl.name + &quot;, dudu送你一个礼物：&quot; + gift);</div><div class="line">    &#125;</div><div class="line">&#125;;</div><div class="line">// 大叔是代理</div><div class="line">var proxyTom = function (girl) &#123;</div><div class="line">    this.girl = girl;</div><div class="line">    this.sendGift = function (gift) &#123;</div><div class="line">        (new dudu(girl)).sendGift(gift); // 替dudu送花咯</div><div class="line">    &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>调用方式就非常简单了：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">var proxy = new proxyTom(new girl(&quot;酸奶小妹&quot;));</div><div class="line">proxy.sendGift(&quot;999朵玫瑰&quot;);</div></pre></td></tr></table></figure>
+<h2 id="实战一把"><a href="#实战一把" class="headerlink" title="实战一把"></a>实战一把</h2><p>通过上面的代码，相信大家对代理模式已经非常清楚了，我们来实战下：我们有一个简单的播放列表，需要在点击单个连接（或者全选）的时候在该连接下方显示视频曲介绍以及 play 按钮，点击 play 按钮的时候播放视频，列表结构如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">&lt;h1&gt;Dave Matthews vids&lt;/h1&gt;</div><div class="line">&lt;p&gt;&lt;span id=&quot;toggle-all&quot;&gt;全选/反选&lt;/span&gt;&lt;/p&gt;</div><div class="line">&lt;ol id=&quot;vids&quot;&gt;</div><div class="line">  &lt;li&gt;&lt;input type=&quot;checkbox&quot; checked&gt;&lt;a href=&quot;http://new.music.yahoo.com/videos/--2158073&quot;&gt;Gravedigger&lt;/a&gt;&lt;/li&gt;</div><div class="line">  &lt;li&gt;&lt;input type=&quot;checkbox&quot; checked&gt;&lt;a href=&quot;http://new.music.yahoo.com/videos/--4472739&quot;&gt;Save Me&lt;/a&gt;&lt;/li&gt;</div><div class="line">  &lt;li&gt;&lt;input type=&quot;checkbox&quot; checked&gt;&lt;a href=&quot;http://new.music.yahoo.com/videos/--45286339&quot;&gt;Crush&lt;/a&gt;&lt;/li&gt;</div><div class="line">  &lt;li&gt;&lt;input type=&quot;checkbox&quot; checked&gt;&lt;a href=&quot;http://new.music.yahoo.com/videos/--2144530&quot;&gt;Don&apos;t Drink The Water&lt;/a&gt;&lt;/li&gt;</div><div class="line">  &lt;li&gt;&lt;input type=&quot;checkbox&quot; checked&gt;&lt;a href=&quot;http://new.music.yahoo.com/videos/--217241800&quot;&gt;Funny the Way It Is&lt;/a&gt;&lt;/li&gt;</div><div class="line">  &lt;li&gt;&lt;input type=&quot;checkbox&quot; checked&gt;&lt;a href=&quot;http://new.music.yahoo.com/videos/--2144532&quot;&gt;What Would You Say&lt;/a&gt;</div><div class="line">&lt;/li&gt;</div><div class="line">&lt;/ol&gt;</div></pre></td></tr></table></figure>
+<p>我们先来分析如下，首先我们不仅要监控 a 连接的点击事件，还要监控“全选/反选”的点击事件，然后请求服务器查询视频信息，组装 HTML 信息显示在 li 元素的最后位置上，效果如下：</p>
+<p><img src="http://wiki.jikexueyuan.com/project/javascript-depth-understanding/images/17.png" alt="img"></p>
+<p>然后再监控play连接的点击事件，点击以后开始播放，效果如下：</p>
+<p><img src="http://wiki.jikexueyuan.com/project/javascript-depth-understanding/images/18.png" alt="img"></p>
+<p>好了，开始，没有 jQuery，我们自定义一个选择器：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">var $ = function (id) &#123;</div><div class="line">    return document.getElementById(id);</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>由于 Yahoo 的 json 服务提供了 callback 参数，所以我们传入我们自定义的 callback 以便来接受数据，具体查询字符串拼装代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">var http = &#123;</div><div class="line">    makeRequest: function (ids, callback) &#123;</div><div class="line">        var url = &apos;http://query.yahooapis.com/v1/public/yql?q=&apos;,</div><div class="line">            sql = &apos;select * from music.video.id where ids IN (&quot;%ID%&quot;)&apos;,</div><div class="line">            format = &quot;format=json&quot;,</div><div class="line">            handler = &quot;callback=&quot; + callback,</div><div class="line">            script = document.createElement(&apos;script&apos;);</div><div class="line">            sql = sql.replace(&apos;%ID%&apos;, ids.join(&apos;&quot;,&quot;&apos;));</div><div class="line">            sql = encodeURIComponent(sql);</div><div class="line">            url += sql + &apos;&amp;&apos; + format + &apos;&amp;&apos; + handler;</div><div class="line">            script.src = url;</div><div class="line">        document.body.appendChild(script);</div><div class="line">    &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>代理对象如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line">var proxy = &#123;</div><div class="line">    ids: [],</div><div class="line">    delay: 50,</div><div class="line">    timeout: null,</div><div class="line">    callback: null,</div><div class="line">    context: null,</div><div class="line">    // 设置请求的id和callback以便在播放的时候触发回调</div><div class="line">    makeRequest: function (id, callback, context) &#123;</div><div class="line">        // 添加到队列dd to the queue</div><div class="line">        this.ids.push(id);</div><div class="line">        this.callback = callback;</div><div class="line">        this.context = context;</div><div class="line">        // 设置timeout</div><div class="line">        if (!this.timeout) &#123;</div><div class="line">            this.timeout = setTimeout(function () &#123;</div><div class="line">                proxy.flush();</div><div class="line">            &#125;, this.delay);</div><div class="line">        &#125;</div><div class="line">    &#125;,</div><div class="line">    // 触发请求，使用代理职责调用了http.makeRequest</div><div class="line">    flush: function () &#123;</div><div class="line">        // proxy.handler为请求yahoo时的callback</div><div class="line">        http.makeRequest(this.ids, &apos;proxy.handler&apos;); </div><div class="line">        // 请求数据以后，紧接着执行proxy.handler方法（里面有另一个设置的callback)</div><div class="line">        // 清楚timeout和队列</div><div class="line">        this.timeout = null;</div><div class="line">        this.ids = [];</div><div class="line">    &#125;,</div><div class="line">    handler: function (data) &#123;</div><div class="line">        var i, max;</div><div class="line">        // 单个视频的callback调用</div><div class="line">        if (parseInt(data.query.count, 10) === 1) &#123;</div><div class="line">            proxy.callback.call(proxy.context, data.query.results.Video);</div><div class="line">            return;</div><div class="line">        &#125;</div><div class="line">        // 多个视频的callback调用</div><div class="line">        for (i = 0, max = data.query.results.Video.length; i &lt; max; i += 1) &#123;</div><div class="line">            proxy.callback.call(proxy.context, data.query.results.Video[i]);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>视频处理模块主要有 3 种子功能：获取信息、展示信息、播放视频：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div></pre></td><td class="code"><pre><div class="line">var videos = &#123;</div><div class="line">    // 初始化播放器代码，开始播放</div><div class="line">    getPlayer: function (id) &#123;</div><div class="line">        return &apos;&apos; +</div><div class="line">            &apos;&lt;object width=&quot;400&quot; height=&quot;255&quot; id=&quot;uvp_fop&quot; allowFullScreen=&quot;true&quot;&gt;&apos; +</div><div class="line">            &apos;&lt;param name=&quot;movie&quot; value=&quot;http://d.yimg.com/m/up/fop/embedflv/swf/fop.swf&quot;\/&gt;&apos; +</div><div class="line">            &apos;&lt;param name=&quot;flashVars&quot; value=&quot;id=v&apos; + id + &apos;&amp;amp;eID=1301797&amp;amp;lang=us&amp;amp;enableFullScreen=0&amp;amp;shareEnable=1&quot;\/&gt;&apos; +</div><div class="line">            &apos;&lt;param name=&quot;wmode&quot; value=&quot;transparent&quot;\/&gt;&apos; +</div><div class="line">            &apos;&lt;embed &apos; +</div><div class="line">            &apos;height=&quot;255&quot; &apos; +</div><div class="line">            &apos;width=&quot;400&quot; &apos; +</div><div class="line">            &apos;id=&quot;uvp_fop&quot; &apos; +</div><div class="line">            &apos;allowFullScreen=&quot;true&quot; &apos; +</div><div class="line">            &apos;src=&quot;http://d.yimg.com/m/up/fop/embedflv/swf/fop.swf&quot; &apos; +</div><div class="line">            &apos;type=&quot;application/x-shockwave-flash&quot; &apos; +</div><div class="line">            &apos;flashvars=&quot;id=v&apos; + id + &apos;&amp;amp;eID=1301797&amp;amp;lang=us&amp;amp;ympsc=4195329&amp;amp;enableFullScreen=1&amp;amp;shareEnable=1&quot;&apos; +</div><div class="line">            &apos;\/&gt;&apos; +</div><div class="line">            &apos;&lt;\/object&gt;&apos;;</div><div class="line">                &#125;,</div><div class="line">    // 拼接信息显示内容，然后在append到li的底部里显示</div><div class="line">    updateList: function (data) &#123;</div><div class="line">        var id,</div><div class="line">            html = &apos;&apos;,</div><div class="line">            info;</div><div class="line">        if (data.query) &#123;</div><div class="line">            data = data.query.results.Video;</div><div class="line">        &#125;</div><div class="line">        id = data.id;</div><div class="line">        html += &apos;&lt;img src=&quot;&apos; + data.Image[0].url + &apos;&quot; width=&quot;50&quot; \/&gt;&apos;;</div><div class="line">        html += &apos;&lt;h2&gt;&apos; + data.title + &apos;&lt;\/h2&gt;&apos;;</div><div class="line">        html += &apos;&lt;p&gt;&apos; + data.copyrightYear + &apos;, &apos; + data.label + &apos;&lt;\/p&gt;&apos;;</div><div class="line">        if (data.Album) &#123;</div><div class="line">            html += &apos;&lt;p&gt;Album: &apos; + data.Album.Release.title + &apos;, &apos; + data.Album.Release.releaseYear + &apos;&lt;br \/&gt;&apos;;</div><div class="line">        &#125;</div><div class="line">        html += &apos;&lt;p&gt;&lt;a class=&quot;play&quot; href=&quot;http://new.music.yahoo.com/videos/--&apos; + id + &apos;&quot;&gt;&amp;raquo; play&lt;\/a&gt;&lt;\/p&gt;&apos;;</div><div class="line">        info = document.createElement(&apos;div&apos;);</div><div class="line">        info.id = &quot;info&quot; + id;</div><div class="line">        info.innerHTML = html;</div><div class="line">        $(&apos;v&apos; + id).appendChild(info);</div><div class="line">    &#125;,</div><div class="line">    // 获取信息并显示</div><div class="line">    getInfo: function (id) &#123;</div><div class="line">        var info = $(&apos;info&apos; + id);</div><div class="line">        if (!info) &#123;</div><div class="line">            proxy.makeRequest(id, videos.updateList, videos); //执行代理职责，并传入videos.updateList回调函数</div><div class="line">            return;</div><div class="line">        &#125;</div><div class="line">        if (info.style.display === &quot;none&quot;) &#123;</div><div class="line">            info.style.display = &apos;&apos;;</div><div class="line">        &#125; else &#123;</div><div class="line">            info.style.display = &apos;none&apos;;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>现在可以处理点击事件的代码了，由于有很多 a 连接，如果每个连接都绑定事件的话，显然性能会有问题，所以我们将事件绑定在 `` 元素上，然后检测点击的是否是a连接，如果是说明我们点击的是视频地址，然后就可以播放了：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">$(&apos;vids&apos;).onclick = function (e) &#123;</div><div class="line">    var src, id;</div><div class="line">    e = e || window.event;</div><div class="line">    src = e.target || e.srcElement;</div><div class="line">    // 不是连接的话就不继续处理了</div><div class="line">    if (src.nodeName.toUpperCase() !== &quot;A&quot;) &#123;</div><div class="line">        return;</div><div class="line">    &#125;</div><div class="line">    //停止冒泡</div><div class="line">    if (typeof e.preventDefault === &quot;function&quot;) &#123;</div><div class="line">        e.preventDefault();</div><div class="line">    &#125;</div><div class="line">    e.returnValue = false;</div><div class="line">    id = src.href.split(&apos;--&apos;)[1];</div><div class="line">    //如果点击的是已经生产的视频信息区域的连接play，就开始播放</div><div class="line">    // 然后return不继续了</div><div class="line">    if (src.className === &quot;play&quot;) &#123;</div><div class="line">        src.parentNode.innerHTML = videos.getPlayer(id);</div><div class="line">        return;</div><div class="line">    &#125;</div><div class="line">    src.parentNode.id = &quot;v&quot; + id;</div><div class="line">    videos.getInfo(id); // 这个才是第一次点击的时候显示视频信息的处理代码</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>全选反选的代码大同小异，我们就不解释了：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">$(&apos;toggle-all&apos;).onclick = function (e) &#123;</div><div class="line">    var hrefs, i, max, id;</div><div class="line">    hrefs = $(&apos;vids&apos;).getElementsByTagName(&apos;a&apos;);</div><div class="line">    for (i = 0, max = hrefs.length; i &lt; max; i += 1) &#123;</div><div class="line">        // 忽略play连接</div><div class="line">        if (hrefs[i].className === &quot;play&quot;) &#123;</div><div class="line">            continue;</div><div class="line">        &#125;</div><div class="line">        // 忽略没有选择的项</div><div class="line">        if (!hrefs[i].parentNode.firstChild.checked) &#123;</div><div class="line">            continue;</div><div class="line">        &#125;</div><div class="line">        id = hrefs[i].href.split(&apos;--&apos;)[1];</div><div class="line">        hrefs[i].parentNode.id = &quot;v&quot; + id;</div><div class="line">        videos.getInfo(id);</div><div class="line">    &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>代理模式一般适用于如下场合：</p>
+<ol>
+<li><strong>远程代理</strong>，也就是为了一个对象在不同的地址空间提供局部代表，这样可以隐藏一个对象存在于不同地址空间的事实，就像 web service 里的代理类一样。</li>
+<li><strong>虚拟代理</strong>，根据需要创建开销很大的对象，通过它来存放实例化需要很长时间的真实对象，比如浏览器的渲染的时候先显示问题，而图片可以慢慢显示（就是通过虚拟代理代替了真实的图片，此时虚拟代理保存了真实图片的路径和尺寸。</li>
+<li><strong>安全代理</strong>，用来控制真实对象访问时的权限，一般用于对象应该有不同的访问权限。</li>
+<li><strong>智能指引</strong>，只当调用真实的对象时，代理处理另外一些事情。例如 C#里的垃圾回收，使用对象的时候会有引用次数，如果对象没有引用了，GC 就可以回收它了。</li>
+</ol>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/2015/07/23/深入理解javascript/33设计模式之策略模式/"><span>设计模式之策略模式</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2015/07/23/深入理解javascript/33设计模式之策略模式/" rel="bookmark">
+        <time class="entry-date published" datetime="2015-07-23T15:18:02.000Z">
+          2015-07-23
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>策略模式定义了算法家族，分别封装起来，让他们之间可以互相替换，此模式让算法的变化不会影响到使用算法的客户。</p>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><p>在理解策略模式之前，我们先来一个例子，一般情况下，如果我们要做数据合法性验证，很多时候都是按照 swith 语句来判断，但是这就带来几个问题，首先如果增加需求的话，我们还要再次修改这段代码以增加逻辑，而且在进行单元测试的时候也会越来越复杂，代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">validator = &#123;</div><div class="line">    validate: function (value, type) &#123;</div><div class="line">        switch (type) &#123;</div><div class="line">            case &apos;isNonEmpty &apos;:</div><div class="line">                &#123;</div><div class="line">                    return true; // NonEmpty 验证结果</div><div class="line">                &#125;</div><div class="line">            case &apos;isNumber &apos;:</div><div class="line">                &#123;</div><div class="line">                    return true; // Number 验证结果</div><div class="line">                    break;</div><div class="line">                &#125;</div><div class="line">            case &apos;isAlphaNum &apos;:</div><div class="line">                &#123;</div><div class="line">                    return true; // AlphaNum 验证结果</div><div class="line">                &#125;</div><div class="line">            default:</div><div class="line">                &#123;</div><div class="line">                    return true;</div><div class="line">                &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;;</div><div class="line">//  测试</div><div class="line">alert(validator.validate(&quot;123&quot;, &quot;isNonEmpty&quot;));</div></pre></td></tr></table></figure>
+<p>那如何来避免上述代码中的问题呢，根据策略模式，我们可以将相同的工作代码单独封装成不同的类，然后通过统一的策略处理类来处理，OK，我们先来定义策略处理类，代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line">var validator = &#123;</div><div class="line">    // 所有可以的验证规则处理类存放的地方，后面会单独定义</div><div class="line">    types: &#123;&#125;,</div><div class="line">    // 验证类型所对应的错误消息</div><div class="line">    messages: [],</div><div class="line">    // 当然需要使用的验证类型</div><div class="line">    config: &#123;&#125;,</div><div class="line">    // 暴露的公开验证方法</div><div class="line">    // 传入的参数是 key =&gt; value对</div><div class="line">    validate: function (data) &#123;</div><div class="line">        var i, msg, type, checker, result_ok;</div><div class="line">        // 清空所有的错误信息</div><div class="line">        this.messages = [];</div><div class="line">        for (i in data) &#123;</div><div class="line">            if (data.hasOwnProperty(i)) &#123;</div><div class="line">                type = this.config[i];  // 根据key查询是否有存在的验证规则</div><div class="line">                checker = this.types[type]; // 获取验证规则的验证类</div><div class="line">                if (!type) &#123;</div><div class="line">                    continue; // 如果验证规则不存在，则不处理</div><div class="line">                &#125;</div><div class="line">                if (!checker) &#123; // 如果验证规则类不存在，抛出异常</div><div class="line">                    throw &#123;</div><div class="line">                        name: &quot;ValidationError&quot;,</div><div class="line">                        message: &quot;No handler to validate type &quot; + type</div><div class="line">                    &#125;;</div><div class="line">                &#125;</div><div class="line">                result_ok = checker.validate(data[i]); // 使用查到到的单个验证类进行验证</div><div class="line">                if (!result_ok) &#123;</div><div class="line">                    msg = &quot;Invalid value for *&quot; + i + &quot;*, &quot; + checker.instructions;</div><div class="line">                    this.messages.push(msg);</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        return this.hasErrors();</div><div class="line">    &#125;,</div><div class="line">    // helper</div><div class="line">    hasErrors: function () &#123;</div><div class="line">        return this.messages.length !== 0;</div><div class="line">    &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>然后剩下的工作，就是定义 types 里存放的各种验证类了，我们这里只举几个例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">// 验证给定的值是否不为空</div><div class="line">validator.types.isNonEmpty = &#123;</div><div class="line">    validate: function (value) &#123;</div><div class="line">        return value !== &quot;&quot;;</div><div class="line">    &#125;,</div><div class="line">    instructions: &quot;传入的值不能为空&quot;</div><div class="line">&#125;;</div><div class="line">// 验证给定的值是否是数字</div><div class="line">validator.types.isNumber = &#123;</div><div class="line">    validate: function (value) &#123;</div><div class="line">        return !isNaN(value);</div><div class="line">    &#125;,</div><div class="line">    instructions: &quot;传入的值只能是合法的数字，例如：1, 3.14 or 2010&quot;</div><div class="line">&#125;;</div><div class="line">// 验证给定的值是否只是字母或数字</div><div class="line">validator.types.isAlphaNum = &#123;</div><div class="line">    validate: function (value) &#123;</div><div class="line">        return !/[^a-z0-9]/i.test(value);</div><div class="line">    &#125;,</div><div class="line">    instructions: &quot;传入的值只能保护字母和数字，不能包含特殊字符&quot;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>使用的时候，我们首先要定义需要验证的数据集合，然后还需要定义每种数据需要验证的规则类型，代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">var data = &#123;</div><div class="line">    first_name: &quot;Tom&quot;,</div><div class="line">    last_name: &quot;Xu&quot;,</div><div class="line">    age: &quot;unknown&quot;,</div><div class="line">    username: &quot;TomXu&quot;</div><div class="line">&#125;;</div><div class="line">validator.config = &#123;</div><div class="line">    first_name: &apos;isNonEmpty&apos;,</div><div class="line">    age: &apos;isNumber&apos;,</div><div class="line">    username: &apos;isAlphaNum&apos;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>最后，获取验证结果的代码就简单了：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">validator.validate(data);</div><div class="line">if (validator.hasErrors()) &#123;</div><div class="line">    console.log(validator.messages.join(&quot;\n&quot;));</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>策略模式定义了一系列算法，从概念上来说，所有的这些算法都是做相同的事情，只是实现不同，他可以以相同的方式调用所有的方法，减少了各种算法类与使用算法类之间的耦合。</p>
+<p>从另外一个层面上来说，单独定义算法类，也方便了单元测试，因为可以通过自己的算法进行单独测试。</p>
+<p>实践中，不仅可以封装算法，也可以用来封装几乎任何类型的规则，是要在分析过程中需要在不同时间应用不同的业务规则，就可以考虑是要策略模式来处理各种变化。</p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/2015/05/22/深入理解javascript/43设计模式之状态模式/"><span>设计模式之状态模式</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2015/05/22/深入理解javascript/43设计模式之状态模式/" rel="bookmark">
+        <time class="entry-date published" datetime="2015-05-22T08:02:02.000Z">
+          2015-05-22
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>状态模式（State）允许一个对象在其内部状态改变的时候改变它的行为，对象看起来似乎修改了它的类。</p>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><p>举个例子，就比如我们平时在下载东西，通常就会有好几个状态，比如准备状态（ReadyState）、下载状态（DownloadingState）、暂停状态（DownloadPausedState）、下载完毕状态（DownloadedState）、失败状态（DownloadFailedState），也就是说在每个状态都只可以做当前状态才可以做的事情，而不能做其它状态能做的事儿。</p>
+<p>由于 State 模式描述了下载（Download）如何在每一种状态下表现出不同的行为。这一模式的关键思想就是引入了一个叫做 State 的抽象类（或 JS 里的函数）来表示下载状态，State 函数（作为原型）为每个状态的子类（继承函数）声明了一些公共接口。其每个继承函数实现与特定状态相关的行为，比如 DownloadingState 和 DownloadedState 分别实现了正在下载和下载完毕的行为。这些行为可以通过 Download 来来维护。</p>
+<p>让我们来实现一把，首先定义作为其他基础函数的原型的 State 函数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">var State = function () &#123;</div><div class="line">&#125;;</div><div class="line">State.prototype.download = function () &#123;</div><div class="line">    throw new Error(&quot;该方法必须被重载!&quot;);</div><div class="line">&#125;;</div><div class="line">State.prototype.pause = function () &#123;</div><div class="line">    throw new Error(&quot;该方法必须被重载!&quot;);</div><div class="line">&#125;;</div><div class="line">State.prototype.fail = function () &#123;</div><div class="line">    throw new Error(&quot;该方法必须被重载!&quot;);</div><div class="line">&#125;;</div><div class="line">State.prototype.finish = function () &#123;</div><div class="line">    throw new Error(&quot;该方法必须被重载!&quot;);</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>我们为 State 的原型定义了 4 个方法接口，分别对应着下载（download）、暂停（pause）、失败（fail）、结束（finish）以便子函数可以重写。</p>
+<p>在编写子函数之前，我们先来编写一个 ReadyState 函数，以便可以将状态传递给第一个 download 状态：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">var ReadyState = function (oDownload) &#123;</div><div class="line">    State.apply(this);</div><div class="line">    this.oDownload = oDownload;</div><div class="line">&#125;;</div><div class="line">ReadyState.prototype = new State();</div><div class="line">ReadyState.prototype.download = function () &#123;</div><div class="line">    this.oDownload.setState(this.oDownload.getDownloadingState());</div><div class="line">    // Ready以后，可以开始下载，所以设置了Download函数里的状态获取方法</div><div class="line"> console.log(&quot;Start Download!&quot;);</div><div class="line">&#125;;</div><div class="line">ReadyState.prototype.pause = function () &#123;</div><div class="line">    throw new Error(&quot;还没开始下载，不能暂停!&quot;);</div><div class="line">&#125;;</div><div class="line">ReadyState.prototype.fail = function () &#123;</div><div class="line">    throw new Error(&quot;文件还没开始下载，怎么能说失败呢!&quot;);</div><div class="line">&#125;;</div><div class="line">ReadyState.prototype.finish = function () &#123;</div><div class="line">    throw new Error(&quot;文件还没开始下载，当然也不能结束了!&quot;);</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>该函数接收了一个 Download 维护函数的实例作为参数，Download 函数用于控制状态的改变和获取（类似于中央控制器，让外部调用），ReadyState 重写了原型的 download 方法，以便开始进行下载。我们继续来看 Download 函数的主要功能：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line">var Download = function () &#123;</div><div class="line">    this.oState = new ReadyState(this);</div><div class="line">&#125;;</div><div class="line">Download.prototype.setState = function (oState) &#123;</div><div class="line">    this.oState = oState;</div><div class="line">&#125;;</div><div class="line">// 对外暴露的四个公共方法，以便外部调用</div><div class="line">Download.prototype.download = function () &#123;</div><div class="line">    this.oState.download();</div><div class="line">&#125;;</div><div class="line">Download.prototype.pause = function () &#123;</div><div class="line">    this.oState.pause();</div><div class="line">&#125;;</div><div class="line">Download.prototype.fail = function () &#123;</div><div class="line">    this.oState.fail();</div><div class="line">&#125;;</div><div class="line">Download.prototype.finish = function () &#123;</div><div class="line">    this.oState.finish();</div><div class="line">&#125;;</div><div class="line">//获取各种状态，传入当前this对象</div><div class="line">Download.prototype.getReadyState = function () &#123;</div><div class="line">    return new ReadyState(this);</div><div class="line">&#125;;</div><div class="line">Download.prototype.getDownloadingState = function () &#123;</div><div class="line">    return new DownloadingState(this);</div><div class="line">&#125;;</div><div class="line">Download.prototype.getDownloadPausedState = function () &#123;</div><div class="line">    return new DownloadPausedState(this);</div><div class="line">&#125;;</div><div class="line">Download.prototype.getDownloadedState = function () &#123;</div><div class="line">    return new DownloadedState(this);</div><div class="line">&#125;;</div><div class="line">Download.prototype.getDownloadedFailedState = function () &#123;</div><div class="line">    return new DownloadFailedState(this);</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>Download 函数的原型提供了 8 个方法，4 个是对用于下载状态的操作行为，另外 4 个是用于获取当前四个不同的状态，这 4 个方法都接收 this 作为参数，也就是将 Download 实例自身作为一个参数传递给处理该请求的状态对象（ReadyState 以及后面要实现的继承函数），这使得状态对象比必要的时候可以访问 oDownlaod。</p>
+<p>接下来，继续定义 4 个相关状态的函数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">var DownloadingState = function (oDownload) &#123;</div><div class="line">    State.apply(this);</div><div class="line">    this.oDownload = oDownload;</div><div class="line">&#125;;</div><div class="line">DownloadingState.prototype = new State();</div><div class="line">DownloadingState.prototype.download = function () &#123;</div><div class="line">    throw new Error(&quot;文件已经正在下载中了!&quot;);</div><div class="line">&#125;;</div><div class="line">DownloadingState.prototype.pause = function () &#123; this.oDownload.setState(this.oDownload.getDownloadPausedState());</div><div class="line">    console.log(&quot;暂停下载!&quot;);</div><div class="line">&#125;;</div><div class="line">DownloadingState.prototype.fail = function () &#123; this.oDownload.setState(this.oDownload.getDownloadedFailedState());</div><div class="line">    console.log(&quot;下载失败!&quot;);</div><div class="line">&#125;;</div><div class="line">DownloadingState.prototype.finish = function () &#123;</div><div class="line">    this.oDownload.setState(this.oDownload.getDownloadedState());</div><div class="line">    console.log(&quot;下载完毕!&quot;);</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>DownloadingState 的主要注意事项就是已经正在下载的文件，不能再次开始下载了，其它的状态都可以连续进行。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line">var DownloadPausedState = function (oDownload) &#123;</div><div class="line">    State.apply(this);</div><div class="line">    this.oDownload = oDownload;</div><div class="line">&#125;;</div><div class="line">DownloadPausedState.prototype = new State();</div><div class="line">DownloadPausedState.prototype.download = function () &#123;</div><div class="line">    this.oDownload.setState(this.oDownload.getDownloadingState());</div><div class="line">    console.log(&quot;继续下载!&quot;);</div><div class="line">&#125;;</div><div class="line">DownloadPausedState.prototype.pause = function () &#123;</div><div class="line">    throw new Error(&quot;已经暂停了，咋还要暂停呢!&quot;);</div><div class="line">&#125;;</div><div class="line">DownloadPausedState.prototype.fail = function () &#123; this.oDownload.setState(this.oDownload.getDownloadedFailedState());</div><div class="line">    console.log(&quot;下载失败!&quot;);</div><div class="line">&#125;;</div><div class="line">DownloadPausedState.prototype.finish = function () &#123;</div><div class="line">    this.oDownload.setState(this.oDownload.getDownloadedState());</div><div class="line">    console.log(&quot;下载完毕!&quot;);</div><div class="line">&#125;;</div><div class="line">DownloadPausedState函数里要注意的是，已经暂停的下载，不能再次暂停。</div><div class="line">var DownloadedState = function (oDownload) &#123;</div><div class="line">    State.apply(this);</div><div class="line">    this.oDownload = oDownload;</div><div class="line">&#125;;</div><div class="line">DownloadedState.prototype = new State();</div><div class="line">DownloadedState.prototype.download = function () &#123;</div><div class="line">    this.oDownload.setState(this.oDownload.getDownloadingState());</div><div class="line">    console.log(&quot;重新下载!&quot;);</div><div class="line">&#125;;</div><div class="line">DownloadedState.prototype.pause = function () &#123;</div><div class="line">    throw new Error(&quot;对下载完了，还暂停啥？&quot;);</div><div class="line">&#125;;</div><div class="line">DownloadedState.prototype.fail = function () &#123;</div><div class="line">    throw new Error(&quot;都下载成功了，咋会失败呢？&quot;);</div><div class="line">&#125;;</div><div class="line">DownloadedState.prototype.finish = function () &#123;</div><div class="line">    throw new Error(&quot;下载成功了，不能再为成功了吧!&quot;);</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>DownloadedState 函数，同理成功下载以后，不能再设置 finish 了，只能设置重新下载状态。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">var DownloadFailedState = function (oDownload) &#123;</div><div class="line">    State.apply(this);</div><div class="line">    this.oDownload = oDownload;</div><div class="line">&#125;;</div><div class="line">DownloadFailedState.prototype = new State();</div><div class="line">DownloadFailedState.prototype.download = function () &#123;</div><div class="line">    this.oDownload.setState(this.oDownload.getDownloadingState());</div><div class="line">    console.log(&quot;尝试重新下载!&quot;);</div><div class="line">&#125;;</div><div class="line">DownloadFailedState.prototype.pause = function () &#123;</div><div class="line">    throw new Error(&quot;失败的下载，也不能暂停!&quot;);</div><div class="line">&#125;;</div><div class="line">DownloadFailedState.prototype.fail = function () &#123;</div><div class="line">    throw new Error(&quot;都失败了，咋还失败呢!&quot;);</div><div class="line">&#125;;</div><div class="line">DownloadFailedState.prototype.finish = function () &#123;</div><div class="line">    throw new Error(&quot;失败的下载，肯定也不会成功!&quot;);</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>同理，DownloadFailedState 函数的失败状态，也不能再次失败，但可以和 finished 以后再次尝试重新下载。</p>
+<p>调用测试代码，就非常简单了，我们在 HTML 里演示吧，首先是要了 jquery，然后有 3 个按钮分别代表：开始下载、暂停、重新下载。（注意在 Firefox 里用 firebug 查看结果，因为用了 console.log 方法）。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line">&lt;html&gt;</div><div class="line">&lt;head&gt;</div><div class="line">    &lt;link type=&quot;text/css&quot; rel=&quot;stylesheet&quot; href=&quot;http://www.cnblogs.com/css/style.css&quot; /&gt;</div><div class="line">    &lt;title&gt;State Pattern&lt;/title&gt;</div><div class="line">    &lt;script type=&quot;text/javascript&quot; src=&quot;/jquery.js&quot;&gt;&lt;/script&gt;</div><div class="line">    &lt;script type=&quot;text/javascript&quot; src=&quot;Download.js&quot;&gt;&lt;/script&gt;</div><div class="line">    &lt;script type=&quot;text/javascript&quot; src=&quot;states/State.js&quot;&gt;&lt;/script&gt;</div><div class="line">    &lt;script type=&quot;text/javascript&quot; src=&quot;states/DownloadFailedState.js&quot;&gt;&lt;/script&gt;</div><div class="line">    &lt;script type=&quot;text/javascript&quot; src=&quot;states/DownloadPausedState.js&quot;&gt;&lt;/script&gt;</div><div class="line">    &lt;script type=&quot;text/javascript&quot; src=&quot;states/DownloadedState.js&quot;&gt;&lt;/script&gt;</div><div class="line">    &lt;script type=&quot;text/javascript&quot; src=&quot;states/DownloadingState.js&quot;&gt;&lt;/script&gt;</div><div class="line">    &lt;script type=&quot;text/javascript&quot; src=&quot;states/ReadyState.js&quot;&gt;&lt;/script&gt;</div><div class="line">&lt;/head&gt;</div><div class="line">&lt;body&gt;</div><div class="line">    &lt;input type=&quot;button&quot; value=&quot;开始下载&quot; id=&quot;download_button&quot; /&gt;</div><div class="line">    &lt;input type=&quot;button&quot; value=&quot;暂停&quot; id=&quot;pause_button&quot; /&gt;</div><div class="line">    &lt;input type=&quot;button&quot; value=&quot;重新下载&quot; id=&quot;resume_button&quot; /&gt;</div><div class="line">    &lt;script type=&quot;text/javascript&quot;&gt;</div><div class="line">        var oDownload = new Download();</div><div class="line">        $(&quot;#download_button&quot;).click(function () &#123;</div><div class="line">            oDownload.download();</div><div class="line">        &#125;);</div><div class="line">        $(&quot;#pause_button&quot;).click(function () &#123;</div><div class="line">            oDownload.pause();</div><div class="line">        &#125;);</div><div class="line">        $(&quot;#resume_button&quot;).click(function () &#123;</div><div class="line">            oDownload.download();</div><div class="line">        &#125;);</div><div class="line">    &lt;/script&gt;</div><div class="line">&lt;/body&gt;</div><div class="line">&lt;/html&gt;</div></pre></td></tr></table></figure>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>状态模式的使用场景也特别明确，有如下两点：</p>
+<ol>
+<li>一个对象的行为取决于它的状态，并且它必须在运行时刻根据状态改变它的行为。</li>
+<li>一个操作中含有大量的分支语句，而且这些分支语句依赖于该对象的状态。状态通常为一个或多个枚举常量的表示。</li>
+</ol>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/2015/05/16/深入理解javascript/38设计模式之职责链模式/"><span>设计模式之职责链模式</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2015/05/16/深入理解javascript/38设计模式之职责链模式/" rel="bookmark">
+        <time class="entry-date published" datetime="2015-05-16T15:02:02.000Z">
+          2015-05-16
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>职责链模式（Chain of responsibility）是使多个对象都有机会处理请求，从而避免请求的发送者和接受者之间的耦合关系。将这个对象连成一条链，并沿着这条链传递该请求，直到有一个对象处理他为止。</p>
+<p>也就是说，请求以后，从第一个对象开始，链中收到请求的对象要么亲自处理它，要么转发给链中的下一个候选者。提交请求的对象并不明确知道哪一个对象将会处理它——也就是该请求有一个隐式的接受者（implicit receiver）。根据运行时刻，任一候选者都可以响应相应的请求，候选者的数目是任意的，你可以在运行时刻决定哪些候选者参与到链中。</p>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><p>对于 JavaScript 实现，我们可以利用其原型特性来实现职责链模式。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">var NO_TOPIC = -1;</div><div class="line">var Topic;</div><div class="line">function Handler(s, t) &#123;</div><div class="line">    this.successor = s || null;</div><div class="line">    this.topic = t || 0;</div><div class="line">&#125;</div><div class="line">Handler.prototype = &#123;</div><div class="line">    handle: function () &#123;</div><div class="line">        if (this.successor) &#123;</div><div class="line">            this.successor.handle()</div><div class="line">        &#125;</div><div class="line">    &#125;,</div><div class="line">    has: function () &#123;</div><div class="line">        return this.topic != NO_TOPIC;</div><div class="line">    &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>Handler 只是接受 2 个参数，第一个是继任者（用于将处理请求传下去），第二个是传递层级（可以用于控制在某个层级下是否执行某个操作，也可以不用），Handler 原型暴露了一个 handle 方法，这是实现该模式的重点，先来看看如何使用上述代码。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">var app = new Handler(&#123;</div><div class="line">    handle: function () &#123;</div><div class="line">        console.log(&apos;app handle&apos;);</div><div class="line">    &#125;</div><div class="line">&#125;, 3);</div><div class="line">var dialog = new Handler(app, 1);</div><div class="line">var button = new Handler(dialog, 2);</div><div class="line">button.handle();</div></pre></td></tr></table></figure>
+<p>改代码通过原型特性，调用代码从 button.handle()-&gt;dialog.handle()-&gt;app.handle()-&gt;参数里的 handle()，前三个都是调用原型的 handle，最后才查找到传入的参数里的 handle，然后输出结果，也就是说其实只有最后一层才处理。</p>
+<p>那如何做到调用的时候，只让 dialog 的这个对象进行处理呢？其实可以定义 dialog 实例对象的 handle 方法就可以了，但需要在 new button 的之前来做，代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">var app = new Handler(&#123;</div><div class="line">    handle: function () &#123;</div><div class="line">        console.log(&apos;app handle&apos;);</div><div class="line">    &#125;</div><div class="line">&#125;, 3);</div><div class="line">var dialog = new Handler(app, 1);</div><div class="line">dialog.handle = function () &#123;</div><div class="line">    console.log(&apos;dialog before ...&apos;)</div><div class="line">    // 这里做具体的处理操作</div><div class="line">    console.log(&apos;dialog after ...&apos;)</div><div class="line">&#125;;</div><div class="line">var button = new Handler(dialog, 2);</div><div class="line">button.handle();</div></pre></td></tr></table></figure>
+<p>该代码的执行结果即时 dialog.handle 里的处理结果，而不再是给 app 传入的参数里定义的 handle 的执行操作。</p>
+<p>那能不能做到自身处理完以后，然后在让继任者继续处理呢？答案是肯定的，但是在调用的 handle 以后，需要利用原型的特性调用如下代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Handler.prototype.handle.call(this);</div></pre></td></tr></table></figure>
+<p>该句话的意思说，调用原型的 handle 方法，来继续调用其继任者（也就是 successor ）的 handle 方法，以下代码表现为：button/dialog/app 三个对象定义的 handle 都会执行。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">var app = new Handler(&#123;</div><div class="line">    handle: function () &#123;</div><div class="line">        console.log(&apos;app handle&apos;);</div><div class="line">    &#125;</div><div class="line">&#125;, 3);</div><div class="line">var dialog = new Handler(app, 1);</div><div class="line">dialog.handle = function () &#123;</div><div class="line">    console.log(&apos;dialog before ...&apos;)</div><div class="line">    // 这里做具体的处理操作</div><div class="line">    Handler.prototype.handle.call(this); //继续往上走</div><div class="line">    console.log(&apos;dialog after ...&apos;)</div><div class="line">&#125;;</div><div class="line">var button = new Handler(dialog, 2);</div><div class="line">button.handle = function () &#123;</div><div class="line">    console.log(&apos;button before ...&apos;)</div><div class="line">    // 这里做具体的处理操作</div><div class="line">    Handler.prototype.handle.call(this);</div><div class="line">    console.log(&apos;button after ...&apos;)</div><div class="line">&#125;;</div><div class="line">button.handle();</div></pre></td></tr></table></figure>
+<p>通过代码的运行结果我们可以看出，如果想先自身处理，然后再调用继任者处理的话，就在末尾执行 Handler.prototype.handle.call(this); 代码，如果想先处理继任者的代码，就在开头执行 Handler.prototype.handle.call(this); 代码。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>职责链模式经常和组合模式一起使用，这样一个构件的父构件可以作为其继任者。</p>
+<p>同时，DOM 里的事件冒泡机制也和此好像有点类似，比如点击一个按钮以后，如果不阻止冒泡，其 click 事件将一直向父元素冒泡，利用这个机制也可以处理很多相关的问题，比如本系列设计模式享元模式里的《例1：事件集中管理》的示例代码。</p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/2015/04/25/深入理解javascript/35设计模式之迭代器模式/"><span>设计模式之迭代器模式</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2015/04/25/深入理解javascript/35设计模式之迭代器模式/" rel="bookmark">
+        <time class="entry-date published" datetime="2015-04-25T05:33:02.000Z">
+          2015-04-25
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>迭代器模式(Iterator)：提供一种方法顺序一个聚合对象中各个元素，而又不暴露该对象内部表示。</p>
+<p>迭代器的几个特点是：</p>
+<ol>
+<li>访问一个聚合对象的内容而无需暴露它的内部表示。</li>
+<li>为遍历不同的集合结构提供一个统一的接口，从而支持同样的算法在不同的集合结构上进行操作。</li>
+<li>遍历的同时更改迭代器所在的集合结构可能会导致问题（比如 C# 的 foreach 里不允许修改 item）。</li>
+</ol>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><p>一般的迭代，我们至少要有 2 个方法，hasNext()和 Next()，这样才做做到遍历所有对象，我们先给出一个例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">var agg = (function () &#123;</div><div class="line">    var index = 0,</div><div class="line">    data = [1, 2, 3, 4, 5],</div><div class="line">    length = data.length;</div><div class="line">    return &#123;</div><div class="line">        next: function () &#123;</div><div class="line">            var element;</div><div class="line">            if (!this.hasNext()) &#123;</div><div class="line">                return null;</div><div class="line">            &#125;</div><div class="line">            element = data[index];</div><div class="line">            index = index + 2;</div><div class="line">            return element;</div><div class="line">        &#125;,</div><div class="line">        hasNext: function () &#123;</div><div class="line">            return index &lt; length;</div><div class="line">        &#125;,</div><div class="line">        rewind: function () &#123;</div><div class="line">            index = 0;</div><div class="line">        &#125;,</div><div class="line">        current: function () &#123;</div><div class="line">            return data[index];</div><div class="line">        &#125;</div><div class="line">    &#125;;</div><div class="line">&#125; ());</div></pre></td></tr></table></figure>
+<p>使用方法和平时 C# 里的方式是一样的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">// 迭代的结果是：1,3,5</div><div class="line">while (agg.hasNext()) &#123;</div><div class="line">    console.log(agg.next());</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>当然，你也可以通过额外的方法来重置数据，然后再继续其它操作：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">// 重置</div><div class="line">agg.rewind();</div><div class="line">console.log(agg.current()); // 1</div></pre></td></tr></table></figure>
+<h2 id="jQuery-应用例子"><a href="#jQuery-应用例子" class="headerlink" title="jQuery 应用例子"></a>jQuery 应用例子</h2><p>jQuery 里一个非常有名的迭代器就是 $.each 方法，通过 each 我们可以传入额外的 function，然后来对所有的 item 项进行迭代操作，例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">$.each([&apos;dudu&apos;, &apos;dudu&apos;, &apos;酸奶小妹&apos;, &apos;那个MM&apos;], function (index, value) &#123;</div><div class="line">    console.log(index + &apos;: &apos; + value);</div><div class="line">&#125;);</div><div class="line">//或者</div><div class="line">$(&apos;li&apos;).each(function (index) &#123;</div><div class="line">    console.log(index + &apos;: &apos; + $(this).text());</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>迭代器的使用场景是：对于集合内部结果常常变化各异，我们不想暴露其内部结构的话，但又响让客户代码透明底访问其中的元素，这种情况下我们可以使用迭代器模式。</p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/2015/03/02/http/"><span>http</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2015/03/02/http/" rel="bookmark">
+        <time class="entry-date published" datetime="2015-03-02T06:41:30.000Z">
+          2015-03-02
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>超文本传输协议(HTTP，HyperText Transfer Protocol)</p>
+<p>是互联网上应用最为广泛的一种网络协议。所有的WWW文件都必须遵守这个标准。设计HTTP最初的目的是为了提供一种发布和接收HTML页面的方法。</p>
+<p>HTTP的发展是万维网协会（World Wide Web Consortium）和Internet工作小组（Internet Engineering Task Force）合作的结果，（他们）最终发布了一系列的RFC，其中最著名的就是RFC 2616。RFC 2616定义了HTTP协议的我们今天普遍使用的一个版本——HTTP 1.1。</p>
+<p>HTTP是一个客户端和服务器端请求和应答的标准（TCP）。客户端是终端用户，服务器端是网站。通过使用Web浏览器、网络爬虫或者其它的工具，客户端发起一个到服务器上指定端口（默认端口为80）的HTTP请求。（我们称这个客户端）叫用户代理（user agent）。</p>
+<p>应答的服务器上存储着（一些）资源，比如HTML文件和图像。（我们称）这个应答服务器为源服务器（origin server）。在用户代理和源服务器中间可能存在多个中间层，比如代理，网关，或者隧道（tunnels）。尽管TCP/IP协议是互联网上最流行的应用，HTTP协议并没有规定必须使用它和（基于）它支持的层。 事实上，HTTP可以在任何其他互联网协议上，或者在其他网络上实现。HTTP只假定（其下层协议提供）可靠的传输，任何能够提供这种保证的协议都可以被其使用。</p>
+<p>通常，由HTTP客户端发起一个请求，建立一个到服务器指定端口（默认是80端口）的TCP连接。HTTP服务器则在那个端口监听客户端发送过来的请求。一旦收到请求，服务器（向客户端）发回一个状态行，比如”HTTP/1.1 200 OK”，和（响应的）消息，消息的消息体可能是请求的文件、错误消息、或者其它一些信息。</p>
+<p>HTTP使用TCP而不是UDP的原因在于（打开一个）一个网页必须传送很多数据，而TCP协议提供传输控制，按顺序组织数据，和错误纠正。具体细节请参考‘TCP和UDP的不同’。</p>
+<p>通过HTTP或者HTTPS协议请求的资源由统一资源定位器（Uniform Resource Identifiers）（或者，更准确一些，URLs）来标识。</p>
+<blockquote>
+<h3 id="2、请求信息Request-Message"><a href="#2、请求信息Request-Message" class="headerlink" title="2、请求信息Request Message"></a>2、请求信息Request Message</h3></blockquote>
+<p>发出的请求信息包括以下几个</p>
+<p>请求行，例如GET /images/logo.gif HTTP/1.1，表示从/images 目录下请求logo.gif 这个文件。<br>（请求）头，例如Accept-Language: en</p>
+<p>空行</p>
+<p>可选的消息体</p>
+<p>请求行和标题必须以<cr><lf> 作为结尾（也就是，回车然后换行）。空行内必须只有<cr><lf>而无其他空格。在HTTP/1.1 协议中，所有的请求头，除Host外，都是可选的。</lf></cr></lf></cr></p>
+<blockquote>
+<h3 id="3、请求方法"><a href="#3、请求方法" class="headerlink" title="3、请求方法"></a>3、请求方法</h3></blockquote>
+<p>HTTP/1.1协议中共定义了八种方法（有时也叫“动作”）来表明Request-URI指定的资源的不同操作方式：</p>
+<h3 id="OPTIONS"><a href="#OPTIONS" class="headerlink" title="OPTIONS"></a>OPTIONS</h3><p>返回服务器针对特定资源所支持的HTTP请求方法。也可以利用向Web服务器发送’*’的请求来测试服务器的功能性。</p>
+<h3 id="HEAD"><a href="#HEAD" class="headerlink" title="HEAD"></a>HEAD</h3><p>向服务器索要与GET请求相一致的响应，只不过响应体将不会被返回。这一方法可以在不必传输整个响应内容的情况下，就可以获取包含在响应消息头中的元信息。</p>
+<h3 id="GET"><a href="#GET" class="headerlink" title="GET"></a>GET</h3><p>向特定的资源发出请求。注意：GET方法不应当被用于产生“副作用”的操作中，例如在Web Application中。其中一个原因是GET可能会被网络蜘蛛等随意访问。参见安全方法</p>
+<h3 id="POST"><a href="#POST" class="headerlink" title="POST"></a>POST</h3><p>向指定资源提交数据进行处理请求（例如提交表单或者上传文件）。数据被包含在请求体中。POST请求可能会导致新的资源的建立和/或已有资源的修改。</p>
+<h3 id="PUT"><a href="#PUT" class="headerlink" title="PUT"></a>PUT</h3><p>向指定资源位置上传其最新内容。</p>
+<h3 id="DELETE"><a href="#DELETE" class="headerlink" title="DELETE"></a>DELETE</h3><p>删除指定资源。</p>
+<h3 id="TRACE"><a href="#TRACE" class="headerlink" title="TRACE"></a>TRACE</h3><p>回显服务器收到的请求。</p>
+<h3 id="CONNECT"><a href="#CONNECT" class="headerlink" title="CONNECT"></a>CONNECT</h3><p>HTTP/1.1协议中预留给能够将连接改为管道方式的代理服务器。</p>
+<p>方法名称是区分大小写的。当某个请求所针对的资源不支持对应的请求方法的时候，服务器应当返回状态码405(Method Not Allowed)；当服务器不认识或者不支持对应的请求方法的时候，应当返回状态码501(Not Implemented)。</p>
+<p>HTTP服务器至少应该实现GET和HEAD方法，其他方法都是可选的。当然，所有的方法支持的实现都应当符合下述的方法各自的语义定义。此外，除了上述方法，特定的HTTP服务器还能够扩展自定义的方法。<br>安全及幂等方法</p>
+<blockquote>
+<h3 id="安全方法"><a href="#安全方法" class="headerlink" title="安全方法"></a>安全方法</h3></blockquote>
+<p>开发者应当意识到他们的软件代表了用户在因特网上进行交互，并且应当告知用户，他们正在进行的操作可能对他们自身或者其他人有未曾预料的重要影响。</p>
+<p>特别地，对于GET和HEAD方法而言，除了进行获取资源信息外，这些请求不应当再有任何其他意义。也就是说，这些方法应当被认为是“安全的”。客户端应当使用其他“非安全”方法，例如POST，PUT及DELETE来以特殊的方式（通常是按钮而不是超链接）使得客户能够意识到可能要负的责任（例如一个按钮带来的资金交易）或者被告知正在请求的操作可能是不安全的（例如某个文件将被上传或删除）。</p>
+<p>但是，不能想当然地认为服务器不会在处理某个GET请求时不会产生任何副作用。事实上，很多动态资源会把这作为其特性。这里重要的区别在于用户并没有请求这一副作用，因此不应由用户为这些副作用承担责任。</p>
+<blockquote>
+<h3 id="幂等方法"><a href="#幂等方法" class="headerlink" title="幂等方法"></a>幂等方法</h3></blockquote>
+<p>假如在不考虑诸如错误或者过期等问题的情况下，若干次请求的副作用与单次请求相同或者根本没有副作用，那么这些请求方法就能够被视作“幂等”的。GET，HEAD，PUT和DELETE方法都有这样的幂等属性，同样由于根据协议，OPTIONS，TRACE都不应有副作用，因此也理所当然也是幂等的。</p>
+<p>假如某个由若干个请求做成的请求序列产生的结果在重复执行这个请求序列或者其中任何一个或多个请求后仍没有发生变化，则这个请求序列便是“幂等”的。但是，可能出现若干个请求做成的请求序列是“非幂等”的，即使这个请求序列中所有执行的请求方法都是幂等的。例如，这个请求序列的结果依赖于某个会在下次执行这个序列的过程中被修改的变量。</p>
+<blockquote>
+<h3 id="4、协议版本号"><a href="#4、协议版本号" class="headerlink" title="4、协议版本号"></a>4、协议版本号</h3></blockquote>
+<p>超文本传输协议已经演化出了很多版本，它们中的大部分都是向下兼容的。在RFC 2145中描述了HTTP版本号的用法。客户端在请求的开始告诉服务器它采用的协议版本号，而后者则在响应中采用相同或者更早的协议版本。<br>0.9</p>
+<p>已过时。只接受 GET 一种请求方法，没有在通讯中指定版本号，且不支持请求头。由于该版本不支持 POST 方法，所以客户端无法向服务器传递太多信息。</p>
+<blockquote>
+<p><strong>HTTP/1.0</strong></p>
+</blockquote>
+<p>这是第一个在通讯中指定版本号的 HTTP 协议版本，至今仍被广泛采用，特别是在代理服务器中。</p>
+<blockquote>
+<p><strong>HTTP/1.1</strong></p>
+</blockquote>
+<p>当前版本。持久连接被默认采用，并能很好地配合代理服务器工作。还支持以管道方式在同时发送多个请求，以便降低线路负载，提高传输速度。</p>
+<p><strong>HTTP/1.1</strong>相较于 <strong>HTTP/1.0</strong> 协议的区别主要体现在：</p>
+<p>缓存处理</p>
+<p>带宽优化及网络连接的使用</p>
+<p>错误通知的管理</p>
+<p>消息在网络中的发送</p>
+<p>互联网地址的维护</p>
+<p>安全性及完整性</p>
+<blockquote>
+<h3 id="5、状态行"><a href="#5、状态行" class="headerlink" title="5、状态行"></a>5、状态行</h3></blockquote>
+<p>参见：HTTP状态码</p>
+<p>所有 HTTP 响应的第一行都是状态行, 依次是当前 HTTP 版本号，3位数字组成的状态代码，以及描述状态的短语，彼此由空格分隔。</p>
+<p>状态代码的第一个数字代表当前响应的类型：</p>
+<p><strong>1xx 消息</strong>——请求已被服务器接收，继续处理</p>
+<p><strong>2xx 成功</strong>——请求已成功被服务器接收、理解、并接受</p>
+<p><strong>3xx 重定向</strong>——需要后续操作才能完成这一请求</p>
+<p><strong>4xx 请求错误</strong>——请求含有词法错误或者无法被执行</p>
+<p><strong>5xx 服务器错误</strong>——服务器在处理某个正确请求时发生错误</p>
+<p>虽然 RFC 2616 中已经推荐了描述状态的短语，例如”200 OK”，”404 Not Found”，但是 WEB 开发者仍然能够自行决定采用何种短语，用以显示本地化的状态描述或者自定义信息。</p>
+<blockquote>
+<p><strong>HTTP是什么?</strong></p>
+</blockquote>
+<p>　　当我们想浏览一个网站的时候，只要在浏览器的地址栏里输入网站的地址就可以了，例如www.baidu.com,但是在浏览器的地址栏里面出现的却是：<a href="http://www.baidu.com/" target="_blank" rel="external">http://www.baidu.com</a> ,你知道为什么会多出一个“http”吗？</p>
+<p>　　我们在浏览器的地址栏里输入的网站地址叫做URL (Uniform Resource Locator，统一资源定位符)。就像每家每户都有一个门牌地址一样，每个网页也都有一个Internet地址。当你在浏览器的地址框中输入一个URL或是单击一个超级链接时，URL就确定了要浏览的地址。浏览器通过超文本传输协议(HTTP)，将Web服务器上站点的网页代码提取出来，并翻译成漂亮的网页。因此，在我们认识HTTP之前，有必要先弄清楚URL的组成,例如：<a href="http://www.baidu.com/china/index.htm%E3%80%82%E5%AE%83%E7%9A%84%E5%90%AB%E4%B9%89%E5%A6%82%E4%B8%8B%EF%BC%9A" target="_blank" rel="external">http://www.baidu.com/china/index.htm。它的含义如下：</a></p>
+<p>　　<strong>1. http://：</strong>代表超文本传输协议，通知baidu.com服务器显示Web页，通常不用输入；</p>
+<p>　　<strong>2. www：</strong>代表一个Web（万维网）服务器；</p>
+<p>　　<strong>3. baidu.com/：</strong>这是装有网页的服务器的域名，或站点服务器的名称；</p>
+<p>　　<strong>4. China/：</strong>为该服务器上的子目录，就好像我们的文件夹；</p>
+<p>　　<strong>5. Index.htm：index.htm</strong>是文件夹中的一个HTML文件（网页）。</p>
+<p>　　我们知道，Internet的基本协议是TCP/IP协议，然而在TCP/IP模型最上层的是应用层（Application layer），它包含所有高层的协议。高层协议有：文件传输协议FTP、电子邮件传输协议SMTP、域名系统服务DNS、网络新闻传输协议NNTP和HTTP协议等。</p>
+<p>　　<strong>HTTP协议</strong>（HyperText Transfer Protocol，超文本传输协议）是用于从WWW服务器传输超文本到本地浏览器的传送协议。它可以使浏览器更加高效，使网络传输减少。它不仅保证计算机正确快速地传输超文本文档，还确定传输文档中的哪一部分，以及哪部分内容首先显示(如文本先于图形)等。这就是你为什么在浏览器中看到的网页地址都是以<a href="http://xn--8mrq9eb8bu7ib26a./" target="_blank" rel="external">http://开头的原因。</a></p>
+<p>　　自WWW诞生以来，一个多姿多彩的资讯和虚拟的世界便出现在我们眼前，可是我们怎么能够更加容易地找到我们需要的资讯呢？当决定使用超文本作为WWW文档的标准格式后，于是在1990年，科学家们立即制定了能够快速查找这些超文本文档的协议，即HTTP协议。经过几年的使用与发展，得到不断的完善和扩展，目前在WWW中使用的是HTTP/1.0的第六版。</p>
+<blockquote>
+<p><strong>http 百科名片</strong></p>
+</blockquote>
+<p>超文本传输协议(HTTP，HyperText Transfer Protocol)是互联网上应用最为广泛的一种网络协议。所有的WWW文件都必须遵守这个标准。设计HTTP最初的目的是为了提供一种发布和接收HTML页面的方法。</p>
+<blockquote>
+<p><strong>目录</strong></p>
+</blockquote>
+<p><strong>简介</strong></p>
+<p><strong>协议功能</strong></p>
+<p><strong>协议基础</strong></p>
+<p><strong>通用头域</strong></p>
+<p><strong>Cache-Control头域</strong></p>
+<p><strong>HTTP Keep-Alive</strong></p>
+<p><strong>Date头域</strong></p>
+<p><strong>Pragma头域</strong></p>
+<p><strong>请求消息</strong></p>
+<p><strong>Host头域</strong></p>
+<p><strong>Referer头域</strong></p>
+<p><strong>Range头域</strong></p>
+<p><strong>User-Agent头域</strong></p>
+<p><strong>响应消息</strong></p>
+<p><strong>HTTP-运作方式</strong></p>
+<p><strong>实体</strong></p>
+<p><strong>Content-Type实体头</strong></p>
+<p><strong>Last-modified实体头</strong></p>
+<p><strong>协议结构</strong></p>
+<p><strong>工作原理</strong></p>
+<p><strong>状态消息</strong></p>
+<p><strong>1xx:信息</strong></p>
+<p><strong>2xx:成功</strong></p>
+<p><strong>3xx:重定向</strong></p>
+<p><strong>4xx:客户端错误</strong></p>
+<p><strong>5xx:服务器错误</strong></p>
+<p><strong>版本历史</strong></p>
+<p><strong>协议版本0.9、HTTP/1.0、HTTP/1.1</strong></p>
+<p>简介</p>
+<p>协议功能、协议基础、通用头域、Cache-Control头域</p>
+<p>HTTP Keep-Alive、Date头域、Pragma头域</p>
+<p><strong>请求消息</strong></p>
+<blockquote>
+<p>Host头域、Referer头域、Range头域、User-Agent头域</p>
+</blockquote>
+<p><strong>响应消息</strong></p>
+<blockquote>
+<p>HTTP-运作方式、实体、Content-Type实体头、Last-modified实体头、协议结构、工作原理</p>
+</blockquote>
+<p><strong>状态消息</strong></p>
+<blockquote>
+<p>1xx:信息</p>
+<p>2xx:成功</p>
+<p>3xx:重定向</p>
+<p>4xx:客户端错误</p>
+<p>5xx:服务器错误</p>
+</blockquote>
+<p><strong>版本历史</strong></p>
+<p><code>协议版本0.9、HTTP/1.0、HTTP/1.1</code></p>
+<blockquote>
+<h3 id="6、简介"><a href="#6、简介" class="headerlink" title="6、简介"></a>6、简介</h3></blockquote>
+<p>HTTP的发展是万维网协会（World Wide Web Consortium）和Internet工作小组（Internet Engineering Task Force）合作的结果，（他们）最终发布了一系列的RFC，其中最著名的就是RFC 2616。RFC 2616定义了HTTP协议的我们今天普遍使用的一个版本——HTTP 1.1。 　　</p>
+<p>HTTP是一个客户端和服务器端请求和应答的标准（TCP）。客户端是终端用户，服务器端是网站。通过使用Web浏览器、网络爬虫或者其它的工具，客户端发起一个到服务器上指定端口（默认端口为80）的HTTP请求。（我们称这个客户端）叫用户代理（user agent）。应答的服务器上存储着（一些）资源，比如HTML文件和图像。（我们称）这个应答服务器为源服务器（origin server）。</p>
+<p>在用户代理和源服务器中间可能存在 多个中间层，比如代理，网关，或者隧道（tunnels）。尽管TCP/IP协议是互联网上最流行的应用，HTTP协议并没有规定必须使用它和（基于）它支持的层。 事实上，HTTP可以在任何其他互联网协议上，或者在其他网络上实现。HTTP只假定（其下层协议提供）可靠的传输，任何能够提供这种保证的协议都可以被其使用。 　　</p>
+<p>通常，由HTTP客户端发起一个请求，建立一个到服务器指定端口（默认是80端口）的TCP连接。HTTP服务器则在那个端口监听客户端发送过来的请求。一旦收到请求，服务器（向客户端）发回一个状态行，比如”HTTP/1.1 200 OK”，和（响应的）消息，消息的消息体可能是请求的文件、错误消息、或者其它一些信息。 HTTP使用TCP而不是UDP的原因在于（打开一个）一个网页必须传送很多数据，而TCP协议提供传输控制，按顺序组织数据，和错误纠正。 　　</p>
+<p>通过HTTP或者HTTPS协议请求的资源由统一资源标示符（Uniform Resource Identifiers）（或者，更准确一些，URLs）来标识。</p>
+<blockquote>
+<h3 id="7、协议功能"><a href="#7、协议功能" class="headerlink" title="7、协议功能"></a>7、协议功能</h3></blockquote>
+<p>HTTP是超文本传输协议，是客户端浏览器或其他程序与Web服务器之间的应用层通信协议。在Internet上的Web服务器上存放的都是超文本信息，客户机需要通过HTTP协议传输所要访问的超文本信息。HTTP包含命令和传输信息，不仅可用于Web访问，也可以用于其他因特网/内联网应用系统之间的通信，从而实现各类应用资源超媒体访问的集成。 　　</p>
+<p>当我们想浏览一个网站的时候，只要在浏览器的地址栏里输入网站的地址就可以了，例如www.<strong>*</strong>.com,但是在浏览器的地址栏里面出现的却是：<a href="http://www.%2A%2A%2A%2A%2A%2A%2A%2C%E4%BD%A0%E7%9F%A5%E9%81%93%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BC%9A%E5%A4%9A%E5%87%BA%E4%B8%80%E4%B8%AA%E2%80%9Chttp%E2%80%9D%E5%90%97%EF%BC%9F/" target="_blank" rel="external">http://www.<strong><em>*</em></strong>,你知道为什么会多出一个“http”吗？</a> 　　</p>
+<p>我们在浏览器的地址栏里输入的网站地址叫做URL (Uniform Resource Locator，统一资源定位符)。就像每家每户都有一个门牌地址一样，每个网页也都有一个Internet地址。当你在 浏览器的地址框中输入一个URL或是单击一个超级链接时，URL就确定了要浏览的地址。浏览器通过超文本转移协议(HTTP)，将Web服务器上站点的网页代码提取出来，并翻译成漂亮的网页。因此，在我们认识HTTP之前，有必要先弄清楚URL的组成,<br>例如：</p>
+<p><a href="http://www.%2A%2A%2A%2A%2A%2A.com/china/index.htm%E3%80%82" target="_blank" rel="external">http://www.<strong>**</strong>.com/china/index.htm。</a></p>
+<p>它的含义如下： 　　</p>
+<ol>
+<li><a href="http://xn--:%2C%2A%2A%2A%2A-gz9vr13cm76esggb39fczizl0f4bpn4j9oloie.xn--comweb%2C%3B-j49l99yfpdtqp8rzqvzwwc999f6pop28ggdci80e/" target="_blank" rel="external">http://：代表超文本转移协议，通知<em>**</em>.com服务器显示Web页，通常不用输入；</a> 　　</li>
+<li>www：代表一个Web（万维网）服务器； 　　</li>
+<li><strong>\</strong>.com/：这是装有网页的服务器的域名，或站点服务器的名称； 　　</li>
+<li>China/：为该服务器上的子目录，就好像我们的文件夹； 　　</li>
+<li>Index.htm：index.htm是文件夹中的一个HTML文件（网页）。 　　</li>
+</ol>
+<blockquote>
+<p>我们知道，Internet的基本协议是TCP/IP协议，然而在TCP/IP模型最上层的是应用层（Application layer），它包含所有高层的协议。高层协议有：文件传输协议FTP、电子邮件传输协议SMTP、域名系统服务DNS、网络新闻传输协议NNTP和HTTP协议等。 　　</p>
+</blockquote>
+<p>HTTP协议（HyperText Transfer Protocol，超文本转移协议）是用于从WWW服务器传输超文本到本地浏览器的传送协议。它可以使浏览器更加高效，使网络传输减少。它不仅保证计算机正确快速地传输超文本文档，还确定传输文档中的哪一部分，以及哪部分内容首先显示(如文本先于图形)等。这就是你为什么在浏览器中看到的网页地址都是以<a href="http://xn--8mrq9eb8bu7ib26a./" target="_blank" rel="external">http://开头的原因。</a></p>
+<p>自WWW诞生以来，一个多姿多彩的资讯和虚拟的世界便出现在我们眼前，可是我们怎么能够更加容易地找到我们需要的资讯呢？当决定使用超文本作为WWW文档的标准格式后，于是在1990年，科学家们立即制定了能够快速查找这些超文本文档的协议，即HTTP协议。经过几年的使用与发展，得到不断的完善和扩展，目前在WWW中使用的是HTTP/1.0的第六版。</p>
+<blockquote>
+<h3 id="8、协议基础"><a href="#8、协议基础" class="headerlink" title="8、协议基础"></a>8、协议基础</h3></blockquote>
+<p>HTTP（HyperText Transfer Protocol）是超文本转移协议的缩写，它用于传送WWW方式的数据，关于HTTP协议的详细内容请参考RFC2616。HTTP协议采用了请求/响应模型。客户端向服务器发送一个请求，请求头包含请求的方法、URL、协议版本、以及包含请求修饰符、客户信息和内容的类似于MIME的消息结构。服务器以一个状态行作为响应，相应的内容包括消息协议的版本，成功或者错误编码加上包含服务器信息、实体元信息以及可能的实体内容。 　　</p>
+<p>通常HTTP消息包括客户机向服务器的请求消息和服务器向客户机的响应消息。这两种类型的消息由一个起始行，一个或者多个头域，一个指示头域结束的空行和可选的消息体组成。HTTP的头域包括通用头，请求头，响应头和实体头四个部分。每个头域由一个域名，冒号（:）和域值三部分组成。域名是大小写无关的，域值前可以添加任何数量的空格符，头域可以被扩展为多行，在每行开始处，使用至少一个空格或制表符。</p>
+<blockquote>
+<h4 id="通用头域"><a href="#通用头域" class="headerlink" title="通用头域"></a>通用头域</h4></blockquote>
+<p>　　通用头域包含请求和响应消息都支持的头域，通用头域包含Cache-Control、Connection、Date、Pragma、Transfer-Encoding、Upgrade、Via。对通用头域的扩展要求通讯双方都支持此扩展，如果存在不支持的通用头域，一般将会作为实体头域处理。下面简单介绍几个在UPnP消息中使用的通用头域。</p>
+<blockquote>
+<h4 id="Cache-Control头域"><a href="#Cache-Control头域" class="headerlink" title="Cache-Control头域"></a>Cache-Control头域</h4></blockquote>
+<p>　　Cache-Control指定请求和响应遵循的缓存机制。在请求消息或响应消息中设置Cache-Control并不会修改另一个消息处理过程中的缓存处理过程。请求时的缓存指令包括</p>
+<blockquote>
+<h4 id="no-cache、no-store、max-age、max-stale、min-fresh、only-if-cached，"><a href="#no-cache、no-store、max-age、max-stale、min-fresh、only-if-cached，" class="headerlink" title="no-cache、no-store、max-age、max-stale、min-fresh、only-if-cached，"></a>no-cache、no-store、max-age、max-stale、min-fresh、only-if-cached，</h4></blockquote>
+<p>响应消息中的指令包括</p>
+<blockquote>
+<h3 id="public、private、no-cache、no-store、no-transform、must-revalidate、proxy-revalidate、max-age。"><a href="#public、private、no-cache、no-store、no-transform、must-revalidate、proxy-revalidate、max-age。" class="headerlink" title="public、private、no-cache、no-store、no-transform、must-revalidate、proxy-revalidate、max-age。"></a>public、private、no-cache、no-store、no-transform、must-revalidate、proxy-revalidate、max-age。</h3></blockquote>
+<p>各个消息中的指令含义如下：<br>Public指示响应可被任何缓存区缓存。 　<br>Private指示对于单个用户的整个或部分响应消息，不能被共享缓存处理。这允许服务器仅仅描述当用户 的部分响应消息，此响应消息对于其他用户的请求无效。 　　</p>
+<p>no-cache指示请求或响应消息不能缓存<br>no-store用于防止重要的信息被无意的发布。在请求消息中发送将使得请求和响应消息都不使用缓存。 　<br>max-age指示客户机可以接收生存期不大于指定时间（以秒为单位）的响应。 　　</p>
+<p>min-fresh指示客户机可以接收响应时间小于当前时间加上指定时间的响应。 　　<br>max-stale指示客户机可以接收超出超时期间的响应消息。如果指定max-stale消息的值，那么客户机可以接收超出超时期指定值之内的响应消息。</p>
+<blockquote>
+<h4 id="HTTP-Keep-Alive"><a href="#HTTP-Keep-Alive" class="headerlink" title="HTTP Keep-Alive"></a>HTTP Keep-Alive</h4></blockquote>
+<p>　　Keep-Alive功能使客户端到服务器端的连接持续有效，当出现对服务器的后继请求时，Keep-Alive功能避免了建立或者重新建立连接。市场上的大部分Web服务器，包括iPlanet、IIS和Apache，都支持HTTP Keep-Alive。对于提供静态内容的网站来说，这个功能通常很有用。但是，对于负担较重的网站来说，这里存在另外一个问题：虽然为客户保留打开的连接有一定的好处，但它同样影响了性能，因为在处理暂停期间，本来可以释放的资源仍旧被占用。当Web服务器和应用服务器在同一台机器上运行时，Keep- Alive功能对资源利用的影响尤其突出。 　　</p>
+<p>KeepAliveTime 值控制 TCP/IP 尝试验证空闲连接是否完好的频率。如果这段时间内没有活动，则会发送保持活动信号。如果网络工作正常，而且接收方是活动的，它就会响应。如果需要对丢失接收方敏感，换句话说，需要更快地发现丢失了接收方，请考虑减小这个值。如果长期不活动的空闲连接出现次数较多，而丢失接收方的情况出现较少，您可能会要提高该值以减少开销。缺省情况下，如果空闲连接 7200000 毫秒（2 小时）内没有活动，Windows 就发送保持活动的消息。通常，1800000 毫秒是首选值，从而一半的已关闭连接会在 30 分钟内被检测到。</p>
+<p>KeepAliveInterval 值定义了如果未从接收方收到保持活动消息的响应，TCP/IP 重复发送保持活动信号的频率。当连续发送保持活动信号、但未收到响应的次数超出 TcpMaxDataRetransmissions 的值时，会放弃该连接。如果期望较长的响应时间，您可能需要提高该值以减少开销。如果需要减少花在验证接收方是否已丢失上的时间，请考虑减小该值或</p>
+<p>TcpMaxDataRetransmissions 值。缺省情况下，在未收到响应而重新发送保持活动的消息之前，Windows 会等待 1000 毫秒（1 秒）。 KeepAliveTime 根据你的需要设置就行，比如10分钟，注意要转换成MS。 XXX代表这个间隔值得大小。</p>
+<blockquote>
+<h4 id="Date头域"><a href="#Date头域" class="headerlink" title="Date头域"></a>Date头域</h4></blockquote>
+<p>　　Date头域表示消息发送的时间，时间的描述格式由rfc822定义。例如，Date:Mon,31Dec200104:25:57GMT。Date描述的时间表示世界标准时，换算成本地时间，需要知道用户所在的时区。</p>
+<blockquote>
+<h4 id="Pragma头域"><a href="#Pragma头域" class="headerlink" title="Pragma头域"></a>Pragma头域</h4></blockquote>
+<p>　　Pragma头域用来包含实现特定的指令，最常用的是Pragma:no-cache。在HTTP/1.1协议中，它的含义和Cache-Control:no-cache相同。</p>
+<blockquote>
+<h4 id="请求消息"><a href="#请求消息" class="headerlink" title="请求消息"></a>请求消息</h4></blockquote>
+<p>　　请求消息的第一行为下面的格式： 　<br>MethodSPRequest-URISPHTTP-VersionCRLFMethod</p>
+<p>表示对于Request-URI完成的方法，这个字段是大小写敏感的，包括</p>
+<p>OPTIONS、GET、HEAD、POST、PUT、DELETE、TRACE。</p>
+<p>方法GET和HEAD应该被所有的通用<a href="http://baike.sogou.com/lemma/ShowInnerLink.htm?lemmaId=267249" target="_blank" rel="external">WEB服务器</a>支持，其他所有方法的实现是可选的。GET方法取回由Request-URI标识的信息。</p>
+<p>HEAD方法也是取回由Request-URI标识的信息，只是可以在响应时，不返回消息体。POST方法可以请求服务器接收包含在请求中的实体信息，可以用于提交</p>
+<p><a href="http://baike.sogou.com/lemma/ShowInnerLink.htm?lemmaId=292881" target="_blank" rel="external">表单</a>，</p>
+<p>向新闻组、BBS、邮件群组和数据库发送消息。 　　</p>
+<p>SP表示空格。Request-URI遵循URI格式，在此字段为星号（*）时，说明请求并不用于某个特定的资源地址，而是用于服务器本身。HTTP-Version表示支持的HTTP版本，例如为HTTP/1.1。</p>
+<p>CRLF表示换行回车符。请求头域允许客户端向服务器传递关于请求或者关于客户机的附加信 息。请求头域可能包含下列字段</p>
+<p>Accept、Accept-Charset、Accept-Encoding、Accept-Language、Authorization、From、Host、If-Modified-Since、If-Match、If-None-Match、If-Range、If-Range、If-Unmodified-Since、Max-Forwards、Proxy-Authorization、Range、Referer、User-Agent。</p>
+<p>对请求头域的扩展要求通讯双方都支持，如果存在不支持的请求头域，一般将会作为实体头域处理。 　　</p>
+<p>典型的请求消息： 　<br><code>Host: download.*******.de 　　
+Accept: */* 　　Pragma: no-cache 　　
+Cache-Control: no-cache 　　
+User-Agent: Mozilla/4.04[en](Win95;I;Nav) 　　
+Range: bytes=554554-</code><br>上例第一行表示HTTP客户端（可能是浏览器、下载程序）通过GET方法获得指定URL下的文件。棕色的部分表示请求头域的信息，绿色的部分表示通用头部分。</p>
+<blockquote>
+<h4 id="Host头域"><a href="#Host头域" class="headerlink" title="Host头域"></a>Host头域</h4></blockquote>
+<p>　　Host头域指定请求资源的Intenet主机和<a href="http://baike.sogou.com/lemma/ShowInnerLink.htm?lemmaId=17312" target="_blank" rel="external">端口号</a>，必须表示请求url的原始服务器或网关的位置。HTTP/1.1请求必须包含<a href="http://baike.sogou.com/lemma/ShowInnerLink.htm?lemmaId=8958983" target="_blank" rel="external">主机头</a>域，否则系统会以400状态码返回。</p>
+<blockquote>
+<h4 id="Referer头域"><a href="#Referer头域" class="headerlink" title="Referer头域"></a>Referer头域</h4></blockquote>
+<p>　　Referer头域允许客户端指定请求uri的源资源地址，这可以允许服务器生成回退链表，可用来登陆、优化cache等。他也允许废除的或错误的连接由于维护的目的被追踪。如果请求的uri没有自己的uri地址，Referer不能被发送。如果指定的是部分uri地址，则此地址应该是一个<a href="http://baike.sogou.com/lemma/ShowInnerLink.htm?lemmaId=101504077" target="_blank" rel="external">相对地址</a>。</p>
+<blockquote>
+<h4 id="Range头域"><a href="#Range头域" class="headerlink" title="Range头域"></a>Range头域</h4></blockquote>
+<p>　　Range头域可以请求实体的一个或者多个子范围。例如， 　　表示头500个字节：bytes=0-499 　　表示第二个500字节：bytes=500-999 　　表示最后500个字节：bytes=-500 　　表示500字节以后的范围：bytes=500- 　　第一个和最后一个字节：bytes=0-0,-1 　　同时指定几个范围：bytes=500-600,601-999 　　但是服务器可以忽略此请求头，如果无条件GET包含Range请求头，响应会以状态码206（PartialContent）返回而不是以200（OK）。</p>
+<blockquote>
+<h4 id="User-Agent头域"><a href="#User-Agent头域" class="headerlink" title="User-Agent头域"></a>User-Agent头域</h4></blockquote>
+<p>　　User-Agent头域的内容包含发出请求的用户信息。</p>
+<p>响应消息<br>　　响应消息的第一行为下面的格式： 　　<br>HTTP-VersionSPStatus-CodeSPReason-PhraseCRLF 　　<br>HTTP-Version表示支持的HTTP版本，例如为HTTP/1.1。Status-Code是一个三个数字的结果代码。Reason-Phrase给Status-Code提供一个简单的文本描述。Status-Code主要用于机器自动识别，Reason-Phrase主要用于帮助用户理解。Status-Code的第一个数字定义响应的类别，后两个数字没有分类的作用。第一个数字可能取5个不同的值： 　　</p>
+<p>1xx:信息响应类，表示接收到请求并且继续处理 　　</p>
+<p>2xx:处理成功响应类，表示动作被成功接收、理解和接受 　　</p>
+<p>3xx:<a href="http://baike.sogou.com/lemma/ShowInnerLink.htm?lemmaId=73770898" target="_blank" rel="external">重定向</a>响应类，为了完成指定的动作，必须接受进一步处理 　　</p>
+<p>4xx:客户端错误，客户请求包含语法错误或者是不能正确执行 　　</p>
+<p>5xx:服务端错误，服务器不能正确执行一个正确的请求 　　响应头域允许服务器传递不能放在状态行的附加信息，这些域主要描述服务器的信息和Request-URI进一步的信息。响应头域包含</p>
+<p>Age、Location、Proxy-Authenticate、Public、Retry-After、Server、Vary、Warning、WWW-Authenticate。</p>
+<p>对响应头域的扩展要求通讯双方都支持，如果存在不支持的响应头域，一般将会作为实体头域处理。 　　</p>
+<p>典型的响应消息：<br>HTTP/1.0200OK 　　<br>Date:Mon,31Dec200104:25:57GMT 　　<br>Server:Apache/1.3.14(Unix) 　　<br>Content-type:text/html 　　<br>Last-modified:Tue,17Apr200106:46:28GMT 　　Etag:”a030f020ac7c01:1e9f” 　　<br>Content-length:39725426 　　<br>Content-range:bytes55<strong><em>\</em></strong>/40279980 　　</p>
+<p>上例第一行表示HTTP服务端响应一个GET方法。棕色的部分表示响应头域的信息，绿色的部分表示通用头部分，红色的部分表示实体头域的信息。 　　<br>Location响应头 　　</p>
+<p>Location响应头用于重定向接收者到一个新URI地址。<br>Server响应头 　　</p>
+<p>Server响应头包含处理请求的原始服务器的软件信息。此域能包含多个产品标识和注释，产品标识一般按照重要性排序。</p>
+<blockquote>
+<h4 id="HTTP-运作方式"><a href="#HTTP-运作方式" class="headerlink" title="HTTP-运作方式"></a>HTTP-运作方式</h4></blockquote>
+<p>　　HTTP协议是基于请求／响应<a href="http://baike.sogou.com/lemma/ShowInnerLink.htm?lemmaId=1286086" target="_blank" rel="external">范式</a>的。一个客户机与<a href="http://baike.sogou.com/lemma/ShowInnerLink.htm?lemmaId=3850180" target="_blank" rel="external">服务器</a>建立连接后，发送一个请求给服务器，请求方式的格式为，统一资源标识符、协议版本号，后边是MIME信息包括请求修饰符、客户机信息和可能的内容。服务器接到请求后，给予相应的响应信息，其格式为一个状态行包括信息的协议版本号、一个成功或错误的代码，</p>
+<p>后边是<a href="http://baike.sogou.com/lemma/ShowInnerLink.htm?lemmaId=40102" target="_blank" rel="external">MIME</a>信息包括服务器信息、实体信息和可能的内容。 　　</p>
+<p>许多HTTP通讯是由一个用户代理初始化的并且包括一个申请在源服务器上资源的请求。最简单的情况可能是在用户代理(UA)和源服务器(O)之间通过一个单独的连接来完成。 　　</p>
+<p>当一个或多个中介出现在请求／响应链中时，情况就变得复杂一些。中介由三种：代理(Proxy)、<a href="http://baike.sogou.com/lemma/ShowInnerLink.htm?lemmaId=106777428" target="_blank" rel="external">网关</a>(Gateway)和通道(Tunnel)。</p>
+<p>一个代理根据URI的绝对格式来接受请求，重写全部或部分消息，通过URI的标识把已格式化过的请求发送到服务器。网关是一个接收代理，作为一些其它服务器的上层，并且如果必须的话，可以把请求翻译给下层的服务器协议。一个通道作为不改变消息的两个连接之间的中继点。当通讯需要通过一个中介(例如：防火墙等)或者是中介不能识别消息的内容时，通道经常被使用.</p>
+<p>实体<br>　　请求消息和响应消息都可以包含实体信息，实体信息一般由实体头域和实体组成。实体头域包含关于实体的原信息，实体头包括Allow、Content-Base、Content-Encoding、Content-Language、Content- Length、Content-Location、Content-MD5、Content-Range、Content-Type、Etag、Expires、Last-Modified、extension-header。extension-header允许客户端定义新的实体头，但是这些域可能无法被接受方识别。实体可以是一个经过编码的字节流，它的编码方式由Content-Encoding或Content-Type定义，它的长度由Content-Length或Content-Range定义。</p>
+<blockquote>
+<h4 id="Content-Type实体头"><a href="#Content-Type实体头" class="headerlink" title="Content-Type实体头"></a>Content-Type实体头</h4></blockquote>
+<p>　　Content-Type实体头用于向接收方指示实体的介质类型，指定HEAD方法送到接收方的实体介质类型，或GET方法发送的请求介质类型Content-Range实体头 　　</p>
+<p>Content-Range实体头用于指定整个实体中的一部分的插入位置，他也指示了整个实体的长度。在服务器向客户返回一个部分响应，它必须描述响应覆盖的范围和整个实体长度。一般格式： 　　</p>
+<p>Content-Range:bytes-unitSPfirst-byte-pos-last-byte-pos/entity-legth 　　</p>
+<p>例如，传送头500个字节次字段的形式：Content-Range:bytes0-499/1234如果一个http消息包含此节（例如，对范围请求的响应或对一系列范围的重叠请求），Content-Range表示传送的范围，Content-Length表示实际传送的字节数。</p>
+<blockquote>
+<h4 id="Last-modified实体头"><a href="#Last-modified实体头" class="headerlink" title="Last-modified实体头"></a>Last-modified实体头</h4></blockquote>
+<p>　　Last-modified实体头指定服务器上保存内容的最后修订时间。 　　</p>
+<p>例如，传送头500个字节次字段的形式：Content-Range:bytes0-499/1234如果一个http消息包含此节（例如，对范围请求的响应或对一系列范围的重叠请求），Content-Range表示传送的范围，Content-Length表示实际传送的字节数。 　　</p>
+<p>Last-modified实体头</p>
+<blockquote>
+<h3 id="9-协议结构"><a href="#9-协议结构" class="headerlink" title="9 协议结构"></a><em>9</em> 协议结构</h3></blockquote>
+<p><a href="http://baike.sogou.com/Create.e?sp=2&amp;sp=l26357&amp;sp=28" target="_blank" rel="external">**编辑</a><br>　　HTTP报文由从客户机到服务器的请求和从服务器到客户机的响应构成。请求报文格式如下： 　　</p>
+<p>请求行 － 通用信息头 － 请求头 － 实体头 － 报文主体 　　</p>
+<p>请求行以方法字段开始，后面分别是 URL 字段和 HTTP 协议版本字段，并以 CRLF 结尾。SP 是分隔符。除了在最后的 CRLF 序列中 CF 和 LF 是必需的之外，其他都可以不要。有关通用信息头，请求头和实体头方面的具体内容可以参照相关文件。 　　</p>
+<p>应答报文格式如下： 　　</p>
+<p>状态行 － 通用信息头 － 响应头 － 实体头 － 报文主体 　　</p>
+<p>状态码元由3位数字组成，表示请求是否被理解或被满足。原因分析是对原文的状态码作简短的描述，状态码用来支持自动操作，而原因分析用来供用户使用。客户机无需用来检查或显示语法。有关通用信息头，响应头和实体头方面的具体内容可以参照相关文件。</p>
+<blockquote>
+<h3 id="10-工作原理"><a href="#10-工作原理" class="headerlink" title="10 工作原理"></a><em>10</em> 工作原理</h3></blockquote>
+<p><a href="http://baike.sogou.com/Create.e?sp=2&amp;sp=l26357&amp;sp=29" target="_blank" rel="external">**编辑</a><br>　　既然我们明白了URL的构成，那么HTTP是怎么工作呢？我们接下来就要讨论这个问题。 　　</p>
+<p>一次HTTP操作称为一个事务，其工作过程可分为四步： 　　</p>
+<p>首先客户机与服务器需要建立连接。只要单击某个超级链接，HTTP的工作就开始了。 　　</p>
+<p>建立连接后，客户机发送一个请求给服务器，请求方式的格式为：统一资源标识符（URL）、协议<a href="http://baike.sogou.com/lemma/ShowInnerLink.htm?lemmaId=7749920" target="_blank" rel="external">版本号</a>，后边是MIME信息包括请求修饰符、客户机信息和可能的内容。 　　</p>
+<p>服务器接到请求后，给予相应的响应信息，其格式为一个状态行，包括信息的协议版本号、一个成功或错误的代码，后边是MIME信息包括服务器信息、实体信息和可能的内容。 　　</p>
+<p>客户端接收服务器所返回的信息通过浏览器显示在用户的显示屏上，然后客 户机与服务器断开连接。 　　</p>
+<p>如果在以上过程中的某一步出现错误，那么产生错误的信息将返回到客户端，由显示屏输出。对于用户来说，这些过程是由HTTP自己完成的，用户只要用鼠标点击，等待信息显示就可以了。 　　</p>
+<p>许多HTTP通讯是由一个用户代理初始化的并且包括一个申请在源服务器上资源的请求。最简单的情况可能是在用户代理和服务器之间通过一个单独的连接来完成。在Internet上，HTTP通讯通常发生在TCP/IP连接之上。缺省端口是TCP 80，但其它的端口也是可用的。但这并不预示着HTTP协议在Internet或其它网络的其它协议之上才能完成。HTTP只预示着一个可靠的传输。 　　</p>
+<p>这个过程就好像我们打电话订货一样，我们可以打电话给商家，告诉他我们需要什么规格的商品，然后商家再告诉我们什么商品有货，什么商品缺货。这些，我们是通过电话线用电话联系（HTTP是通过TCP/IP），当然我们也可以通过传真，只要商家那边也有传真。 　　</p>
+<p>以上简要介绍了HTTP协议的宏观运作方式，下面介绍一下HTTP协议的内部操作过程。 　　</p>
+<p>在WWW中，“客户”与“服务器”是一个相对的概念，只存在于一个特定的连接期间，即在某个连接中的客户在另一个连接中可能作为服务器。基于HTTP协议的客户/服务器模式的信息交换过程，它分四个过程：建立连接、发送请求信息、发送响应信息、关闭连接。这就好像上面的例子，我们电话订货的全过程。 　　</p>
+<p>其实简单说就是任何服务器除了包括HTML文件以外，还有一个HTTP驻留程序，用于响应用户请求。你的浏览器是HTTP客户，向服务器发送请求，当浏览器中输入了一个开始文件或点击了一个超级链接时，浏览器就向服务器发送了HTTP请求，此请求被送往由<a href="http://baike.sogou.com/lemma/ShowInnerLink.htm?lemmaId=17314" target="_blank" rel="external">IP地址</a>指定的URL。</p>
+<p>驻留程序接收到请求，在进行必要的操作后回送所要求的文件。在这一过程中，在网络上发送和接收的数据已经被分成一个或多个数据包（packet），每个数据包包括：要传送的数据；控制信息，即告诉网络怎样处理数据包。TCP/IP决定了每个数据包的格式。如果事先不告诉你，你可能不会知道信息被分成用于传输和再重新组合起来的许多小块。 　　</p>
+<p>也就是说商家除了拥有商品之外，它也有一个职员在接听你的电话，当你打电话的时候，你的声音转换成各种复杂的数据，通过电话线传输到对方的电话机，对方的电话机又把各种复杂的数据转换成声音，使得对方商家的职员能够明白你的请求。这个过程你不需要明白声音是怎么转换成复杂的数据的。</p>
+<blockquote>
+<h3 id="11、状态消息"><a href="#11、状态消息" class="headerlink" title="11、状态消息"></a>11、状态消息</h3></blockquote>
+<p><a href="http://baike.sogou.com/Create.e?sp=2&amp;sp=l26357&amp;sp=30" target="_blank" rel="external">**编辑</a></p>
+<p>1xx:信息</p>
+<blockquote>
+<p><strong>100 Continue</strong></p>
+</blockquote>
+<p>服务器仅接收到部分请求，但是一旦服务器并没有拒绝该请求，客户端应该继续发送其余的请求。</p>
+<blockquote>
+<p><strong>101 Switching Protocols</strong></p>
+</blockquote>
+<p>服务器转换协议：服务器将遵从客户的请求转换到另外一种协议。</p>
+<blockquote>
+<p><strong>2xx:成功</strong></p>
+</blockquote>
+<p>消息:<br>描述:</p>
+<blockquote>
+<p><strong>200 OK</strong></p>
+</blockquote>
+<p>请求成功（其后是对GET和POST请求的应答文档。）</p>
+<blockquote>
+<p><strong>201 Created</strong></p>
+</blockquote>
+<p>请求被创建完成，同时新的资源被创建。</p>
+<blockquote>
+<p><strong>202 Accepted</strong></p>
+</blockquote>
+<p>供处理的请求已被接受，但是处理未完成。</p>
+<blockquote>
+<p><strong>203 Non-authoritative Information</strong></p>
+</blockquote>
+<p>文档已经正常地返回，但一些应答头可能不正确，因为使用的是文档的拷贝。</p>
+<blockquote>
+<p><strong>204 No Content</strong></p>
+</blockquote>
+<p>没有新文档。浏览器应该继续显示原来的文档。如果用户定期地刷新页面，而Servlet可以确定用户文档足够新，这个状态代码是很有用的。</p>
+<blockquote>
+<p><strong>5 Reset Content</strong></p>
+</blockquote>
+<p>没有新文档。但浏览器应该重置它所显示的内容。用来强制浏览器清除表单输入内容。</p>
+<blockquote>
+<p><strong>06 Partial Content</strong></p>
+</blockquote>
+<p>客户发送了一个带有Range头的GET请求，服务器完成了它。</p>
+<blockquote>
+<p><strong>3xx:重定向</strong></p>
+<p><strong>300 Multiple Choices</strong></p>
+</blockquote>
+<p>多重选择。链接列表。用户可以选择某链接到达目的地。最多允许五个地址。</p>
+<blockquote>
+<p><strong>301 Moved Permanently</strong></p>
+</blockquote>
+<p>所请求的页面已经转移至新的url。</p>
+<blockquote>
+<p><strong>302 Found</strong></p>
+</blockquote>
+<p>所请求的页面已经临时转移至新的url。</p>
+<blockquote>
+<p><strong>303 See Other</strong></p>
+</blockquote>
+<p>所请求的页面可在别的url下被找到。</p>
+<blockquote>
+<p><strong>304 Not Modified</strong></p>
+</blockquote>
+<p>未按预期修改文档。客户端有缓冲的文档并发出了一个条件性的请求（一般是提供If-Modified-Since头表示客户只想比指定日期更新的文档）。服务器告诉客户，原来缓冲的文档还可以继续使用。</p>
+<blockquote>
+<p><strong>305 Use Proxy</strong></p>
+</blockquote>
+<p>客户请求的文档应该通过Location头所指明的代理服务器提取。</p>
+<blockquote>
+<p><strong>306 *Unused</strong></p>
+</blockquote>
+<p>此代码被用于前一版本。目前已不再使用，但是代码依然被保留。</p>
+<blockquote>
+<p><strong>307 Temporary Redirect</strong></p>
+</blockquote>
+<p>被请求的页面已经临时移至新的url。</p>
+<blockquote>
+<p><strong>4xx:客户端错误</strong></p>
+<p><strong>400 Bad Request</strong></p>
+</blockquote>
+<p>服务器未能理解请求。</p>
+<blockquote>
+<p><strong>401 Unauthorized</strong></p>
+</blockquote>
+<p>被请求的页面需要用户名和密码。</p>
+<blockquote>
+<p><strong>402 Payment Required</strong></p>
+</blockquote>
+<p>此代码尚无法使用。</p>
+<blockquote>
+<p><strong>403 Forbidden</strong></p>
+</blockquote>
+<p>对被请求页面的访问被禁止。</p>
+<blockquote>
+<p><strong>404 Not Found</strong></p>
+</blockquote>
+<p>服务器无法找到被请求的页面。</p>
+<blockquote>
+<p><strong>405 Method Not Allowed</strong></p>
+</blockquote>
+<p>请求中指定的方法不被允许。</p>
+<blockquote>
+<p><strong>406 Not Acceptable</strong></p>
+</blockquote>
+<p>服务器生成的响应无法被客户端所接受。</p>
+<blockquote>
+<p><strong>407 Proxy Authentication Required</strong></p>
+</blockquote>
+<p>用户必须首先使用代理服务器进行验证，这样请求才会被处理。</p>
+<blockquote>
+<p><strong>408 Request Timeout</strong></p>
+</blockquote>
+<p>请求超出了服务器的等待时间。</p>
+<blockquote>
+<p><strong>409 Conflict</strong></p>
+</blockquote>
+<p>由于冲突，请求无法被完成。</p>
+<blockquote>
+<p><strong>410 Gone</strong></p>
+</blockquote>
+<p>被请求的页面不可用。</p>
+<blockquote>
+<p><strong>411 Length Required</strong></p>
+</blockquote>
+<p>“Content-Length” 未被定义。如果无此内容，服务器不会接受请求。</p>
+<blockquote>
+<p><strong>412 Precondition Failed</strong></p>
+</blockquote>
+<p>请求中的前提条件被服务器评估为失败。</p>
+<blockquote>
+<p><strong>413 Request Entity Too Large</strong></p>
+</blockquote>
+<p>由于所请求的实体的太大，服务器不会接受请求。</p>
+<blockquote>
+<p><strong>414 Request-url Too Long</strong></p>
+</blockquote>
+<p>由于url太长，服务器不会接受请求。当post请求被转换为带有很长的查询信息的get请求时，就会发生这种情况。</p>
+<blockquote>
+<p><strong>415 Unsupported Media Type</strong></p>
+</blockquote>
+<p>由于媒介类型不被支持，服务器不会接受请求。</p>
+<blockquote>
+<p><strong>416</strong></p>
+</blockquote>
+<p>服务器不能满足客户在请求中指定的Range头。</p>
+<blockquote>
+<p><strong>417 Expectation Failed</strong></p>
+<p><strong>5xx:服务器错误</strong></p>
+<p><strong>500 Internal Server Error</strong></p>
+</blockquote>
+<p>请求未完成。服务器遇到不可预知的情况。</p>
+<blockquote>
+<p><strong>501 Not Implemented</strong></p>
+</blockquote>
+<p>请求未完成。服务器不支持所请求的功能。</p>
+<blockquote>
+<p><strong>502 Bad Gateway</strong></p>
+</blockquote>
+<p>请求未完成。服务器从上游服务器收到一个无效的响应。</p>
+<blockquote>
+<p><strong>503 Service Unavailable</strong></p>
+</blockquote>
+<p>请求未完成。服务器临时过载或当机。</p>
+<blockquote>
+<p><strong>504 Gateway Timeout</strong></p>
+</blockquote>
+<p>网关超时。</p>
+<blockquote>
+<p><strong>505 HTTP Version Not Supported</strong></p>
+</blockquote>
+<p>服务器不支持请求中指明的HTTP协议版本。</p>
+<blockquote>
+<h3 id="12-版本历史"><a href="#12-版本历史" class="headerlink" title="12 版本历史"></a><em>12</em> 版本历史</h3><p><strong>协议版本</strong></p>
+</blockquote>
+<p>　　超文本传输协议已经演化出了很多版本，它们中的大部分都是向下兼容的。在RFC 2145中描述了HTTP 版本号的用法。客户端在请求的开始告诉服务器它采用的协议版本号，而后者则在响应中采用相同或者更早的协议版本。</p>
+<blockquote>
+<p><strong>0.9</strong></p>
+</blockquote>
+<p>　　已过时。只接受 GET 一种请求方法，没有在通讯中指定版本号，且不支持请求头。由于该版本不支持 POST 方法，所以客户端无法向服务器传递太多信息。</p>
+<blockquote>
+<p><strong>HTTP/1.0</strong></p>
+</blockquote>
+<p>　　这是第一个在通讯中指定版本号的HTTP 协议版本，至今仍被广泛采用，特别是在<a href="http://baike.sogou.com/lemma/ShowInnerLink.htm?lemmaId=15561" target="_blank" rel="external">代理服务器</a>中。</p>
+<blockquote>
+<p><strong>HTTP/1.1</strong></p>
+</blockquote>
+<p>　　当前版本。持久连接被默认采用，并能很好地配合代理服务器工作。还支持以管道方式在同时发送多个请求，以便降低线路负载，提高传输速度。<br>HTTP/1.1相较于 HTTP/1.0 协议的区别主要体现在：<br>1 缓存处理 　　</p>
+<p>2 带宽优化及网络连接的使用 　　</p>
+<p>3 错误通知的管理 　　</p>
+<p>4 消息在网络中的发送 　　</p>
+<p>5 互联网地址的维护 　　</p>
+<p>6 安全性及完整性 词条图册更多图册</p>
+<p><strong>1、网络传送带(影音传送带)</strong></p>
+<p><strong>2、Configuring the HTTP Listener</strong></p>
+<blockquote>
+<h3 id="13-安全超文本传输协议"><a href="#13-安全超文本传输协议" class="headerlink" title="13 安全超文本传输协议"></a><em>13</em> 安全超文本传输协议</h3></blockquote>
+<p>　　安全超文本传输协议（Secure Hypertext Transfer Protocol, S-HTTP）是一种结合HTTP而设计的消息的安全通信协议。S-HTTP协议为HTTP客户机和服务器提供了多种安全机制，这些安全服务选项是适用于Web上各类用户的。还为客户机和服务器提供了对称能力（及时处理请求和恢复，及两者的参数选择）同时维持HTTP的通信模型和实施特征。</p>
+<p>　　S-HTTP不需要客户方的公用密钥证明，但它支持对称密钥的操作模式。这意味着在没有要求用户个人建立公用密钥的情况下，会自发地发生私人交易。它支持端对端安全传输，客户机可能首先启动安全传输（使用报头的信息），用来支持加密技术。</p>
+<p>　　在语法上，S-HTTP报文与HTTP相同，由请求行或状态行组成，后面是信头和主体。请求报文的格式由请求行、通用信息头、请求头、实体头、信息主体组成。相应报文由响应行、通用信息头、响应头、实体头、信息主体组成。　</p>
+<p>　　目前有两种方法来建立连接：HTTPS URI方案和HTTP 1.1请求头（由RFC2817引入）。由于浏览器对后者的几乎没有任何支持，因此HTTPS URI方案仍是建立安全超文本协议连接的主要手段。</p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+
+<nav class="pagination">
+  
+  <a href="/page/4/" class="pagination-prev">上一页</a>
+  
+  
+  <a href="/page/6/" class="pagination-next">下一页</a>
+  
+</nav>
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/xuhongbo" target="_blank">Xuhongbo</a>
+    </br>
+    
+    &copy; 2017 John Doe
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

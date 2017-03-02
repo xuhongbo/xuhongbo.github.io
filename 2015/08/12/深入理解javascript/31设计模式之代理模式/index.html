@@ -1,0 +1,157 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>设计模式之代理模式 | Hexo</title>
+
+  
+  <meta name="author" content="John Doe">
+  
+
+  
+  <meta name="description" content="代理，顾名思义就是帮助别人做事，GoF 对代理模式的定义如下：
+代理模式（Proxy），为其他对象提供一种代理以控制对这个对象的访问。
+代理模式使得代理对象控制具体对象的引用。代理几乎可以是任何对象：文件，资源，内存中的对象，或者是一些难以复制的东西。
+正文我们来举一个简单的例子，假如dudu要送酸">
+  
+
+  
+  
+  <meta name="keywords" content="">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="设计模式之代理模式"/>
+
+  <meta property="og:site_name" content="Hexo"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">Hexo</a>
+    </h1>
+    <p class="site-description"></p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
+
+  
+    
+    <h3 class="article-title"><span>设计模式之代理模式</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2015/08/12/深入理解javascript/31设计模式之代理模式/" rel="bookmark">
+        <time class="entry-date published" datetime="2015-08-12T05:02:02.000Z">
+          2015-08-12
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>代理，顾名思义就是帮助别人做事，GoF 对代理模式的定义如下：</p>
+<p>代理模式（Proxy），为其他对象提供一种代理以控制对这个对象的访问。</p>
+<p>代理模式使得代理对象控制具体对象的引用。代理几乎可以是任何对象：文件，资源，内存中的对象，或者是一些难以复制的东西。</p>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><p>我们来举一个简单的例子，假如dudu要送酸奶小妹玫瑰花，却不知道她的联系方式或者不好意思，想委托大叔去送这些玫瑰，那大叔就是个代理（其实挺好的，可以扣几朵给媳妇），那我们如何来做呢？</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">// 先声明美女对象</div><div class="line">var girl = function (name) &#123;</div><div class="line">    this.name = name;</div><div class="line">&#125;;</div><div class="line">// 这是dudu</div><div class="line">var dudu = function (girl) &#123;</div><div class="line">    this.girl = girl;</div><div class="line">    this.sendGift = function (gift) &#123;</div><div class="line">        alert(&quot;Hi &quot; + girl.name + &quot;, dudu送你一个礼物：&quot; + gift);</div><div class="line">    &#125;</div><div class="line">&#125;;</div><div class="line">// 大叔是代理</div><div class="line">var proxyTom = function (girl) &#123;</div><div class="line">    this.girl = girl;</div><div class="line">    this.sendGift = function (gift) &#123;</div><div class="line">        (new dudu(girl)).sendGift(gift); // 替dudu送花咯</div><div class="line">    &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>调用方式就非常简单了：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">var proxy = new proxyTom(new girl(&quot;酸奶小妹&quot;));</div><div class="line">proxy.sendGift(&quot;999朵玫瑰&quot;);</div></pre></td></tr></table></figure>
+<h2 id="实战一把"><a href="#实战一把" class="headerlink" title="实战一把"></a>实战一把</h2><p>通过上面的代码，相信大家对代理模式已经非常清楚了，我们来实战下：我们有一个简单的播放列表，需要在点击单个连接（或者全选）的时候在该连接下方显示视频曲介绍以及 play 按钮，点击 play 按钮的时候播放视频，列表结构如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">&lt;h1&gt;Dave Matthews vids&lt;/h1&gt;</div><div class="line">&lt;p&gt;&lt;span id=&quot;toggle-all&quot;&gt;全选/反选&lt;/span&gt;&lt;/p&gt;</div><div class="line">&lt;ol id=&quot;vids&quot;&gt;</div><div class="line">  &lt;li&gt;&lt;input type=&quot;checkbox&quot; checked&gt;&lt;a href=&quot;http://new.music.yahoo.com/videos/--2158073&quot;&gt;Gravedigger&lt;/a&gt;&lt;/li&gt;</div><div class="line">  &lt;li&gt;&lt;input type=&quot;checkbox&quot; checked&gt;&lt;a href=&quot;http://new.music.yahoo.com/videos/--4472739&quot;&gt;Save Me&lt;/a&gt;&lt;/li&gt;</div><div class="line">  &lt;li&gt;&lt;input type=&quot;checkbox&quot; checked&gt;&lt;a href=&quot;http://new.music.yahoo.com/videos/--45286339&quot;&gt;Crush&lt;/a&gt;&lt;/li&gt;</div><div class="line">  &lt;li&gt;&lt;input type=&quot;checkbox&quot; checked&gt;&lt;a href=&quot;http://new.music.yahoo.com/videos/--2144530&quot;&gt;Don&apos;t Drink The Water&lt;/a&gt;&lt;/li&gt;</div><div class="line">  &lt;li&gt;&lt;input type=&quot;checkbox&quot; checked&gt;&lt;a href=&quot;http://new.music.yahoo.com/videos/--217241800&quot;&gt;Funny the Way It Is&lt;/a&gt;&lt;/li&gt;</div><div class="line">  &lt;li&gt;&lt;input type=&quot;checkbox&quot; checked&gt;&lt;a href=&quot;http://new.music.yahoo.com/videos/--2144532&quot;&gt;What Would You Say&lt;/a&gt;</div><div class="line">&lt;/li&gt;</div><div class="line">&lt;/ol&gt;</div></pre></td></tr></table></figure>
+<p>我们先来分析如下，首先我们不仅要监控 a 连接的点击事件，还要监控“全选/反选”的点击事件，然后请求服务器查询视频信息，组装 HTML 信息显示在 li 元素的最后位置上，效果如下：</p>
+<p><img src="http://wiki.jikexueyuan.com/project/javascript-depth-understanding/images/17.png" alt="img"></p>
+<p>然后再监控play连接的点击事件，点击以后开始播放，效果如下：</p>
+<p><img src="http://wiki.jikexueyuan.com/project/javascript-depth-understanding/images/18.png" alt="img"></p>
+<p>好了，开始，没有 jQuery，我们自定义一个选择器：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">var $ = function (id) &#123;</div><div class="line">    return document.getElementById(id);</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>由于 Yahoo 的 json 服务提供了 callback 参数，所以我们传入我们自定义的 callback 以便来接受数据，具体查询字符串拼装代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">var http = &#123;</div><div class="line">    makeRequest: function (ids, callback) &#123;</div><div class="line">        var url = &apos;http://query.yahooapis.com/v1/public/yql?q=&apos;,</div><div class="line">            sql = &apos;select * from music.video.id where ids IN (&quot;%ID%&quot;)&apos;,</div><div class="line">            format = &quot;format=json&quot;,</div><div class="line">            handler = &quot;callback=&quot; + callback,</div><div class="line">            script = document.createElement(&apos;script&apos;);</div><div class="line">            sql = sql.replace(&apos;%ID%&apos;, ids.join(&apos;&quot;,&quot;&apos;));</div><div class="line">            sql = encodeURIComponent(sql);</div><div class="line">            url += sql + &apos;&amp;&apos; + format + &apos;&amp;&apos; + handler;</div><div class="line">            script.src = url;</div><div class="line">        document.body.appendChild(script);</div><div class="line">    &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>代理对象如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line">var proxy = &#123;</div><div class="line">    ids: [],</div><div class="line">    delay: 50,</div><div class="line">    timeout: null,</div><div class="line">    callback: null,</div><div class="line">    context: null,</div><div class="line">    // 设置请求的id和callback以便在播放的时候触发回调</div><div class="line">    makeRequest: function (id, callback, context) &#123;</div><div class="line">        // 添加到队列dd to the queue</div><div class="line">        this.ids.push(id);</div><div class="line">        this.callback = callback;</div><div class="line">        this.context = context;</div><div class="line">        // 设置timeout</div><div class="line">        if (!this.timeout) &#123;</div><div class="line">            this.timeout = setTimeout(function () &#123;</div><div class="line">                proxy.flush();</div><div class="line">            &#125;, this.delay);</div><div class="line">        &#125;</div><div class="line">    &#125;,</div><div class="line">    // 触发请求，使用代理职责调用了http.makeRequest</div><div class="line">    flush: function () &#123;</div><div class="line">        // proxy.handler为请求yahoo时的callback</div><div class="line">        http.makeRequest(this.ids, &apos;proxy.handler&apos;); </div><div class="line">        // 请求数据以后，紧接着执行proxy.handler方法（里面有另一个设置的callback)</div><div class="line">        // 清楚timeout和队列</div><div class="line">        this.timeout = null;</div><div class="line">        this.ids = [];</div><div class="line">    &#125;,</div><div class="line">    handler: function (data) &#123;</div><div class="line">        var i, max;</div><div class="line">        // 单个视频的callback调用</div><div class="line">        if (parseInt(data.query.count, 10) === 1) &#123;</div><div class="line">            proxy.callback.call(proxy.context, data.query.results.Video);</div><div class="line">            return;</div><div class="line">        &#125;</div><div class="line">        // 多个视频的callback调用</div><div class="line">        for (i = 0, max = data.query.results.Video.length; i &lt; max; i += 1) &#123;</div><div class="line">            proxy.callback.call(proxy.context, data.query.results.Video[i]);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>视频处理模块主要有 3 种子功能：获取信息、展示信息、播放视频：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div></pre></td><td class="code"><pre><div class="line">var videos = &#123;</div><div class="line">    // 初始化播放器代码，开始播放</div><div class="line">    getPlayer: function (id) &#123;</div><div class="line">        return &apos;&apos; +</div><div class="line">            &apos;&lt;object width=&quot;400&quot; height=&quot;255&quot; id=&quot;uvp_fop&quot; allowFullScreen=&quot;true&quot;&gt;&apos; +</div><div class="line">            &apos;&lt;param name=&quot;movie&quot; value=&quot;http://d.yimg.com/m/up/fop/embedflv/swf/fop.swf&quot;\/&gt;&apos; +</div><div class="line">            &apos;&lt;param name=&quot;flashVars&quot; value=&quot;id=v&apos; + id + &apos;&amp;amp;eID=1301797&amp;amp;lang=us&amp;amp;enableFullScreen=0&amp;amp;shareEnable=1&quot;\/&gt;&apos; +</div><div class="line">            &apos;&lt;param name=&quot;wmode&quot; value=&quot;transparent&quot;\/&gt;&apos; +</div><div class="line">            &apos;&lt;embed &apos; +</div><div class="line">            &apos;height=&quot;255&quot; &apos; +</div><div class="line">            &apos;width=&quot;400&quot; &apos; +</div><div class="line">            &apos;id=&quot;uvp_fop&quot; &apos; +</div><div class="line">            &apos;allowFullScreen=&quot;true&quot; &apos; +</div><div class="line">            &apos;src=&quot;http://d.yimg.com/m/up/fop/embedflv/swf/fop.swf&quot; &apos; +</div><div class="line">            &apos;type=&quot;application/x-shockwave-flash&quot; &apos; +</div><div class="line">            &apos;flashvars=&quot;id=v&apos; + id + &apos;&amp;amp;eID=1301797&amp;amp;lang=us&amp;amp;ympsc=4195329&amp;amp;enableFullScreen=1&amp;amp;shareEnable=1&quot;&apos; +</div><div class="line">            &apos;\/&gt;&apos; +</div><div class="line">            &apos;&lt;\/object&gt;&apos;;</div><div class="line">                &#125;,</div><div class="line">    // 拼接信息显示内容，然后在append到li的底部里显示</div><div class="line">    updateList: function (data) &#123;</div><div class="line">        var id,</div><div class="line">            html = &apos;&apos;,</div><div class="line">            info;</div><div class="line">        if (data.query) &#123;</div><div class="line">            data = data.query.results.Video;</div><div class="line">        &#125;</div><div class="line">        id = data.id;</div><div class="line">        html += &apos;&lt;img src=&quot;&apos; + data.Image[0].url + &apos;&quot; width=&quot;50&quot; \/&gt;&apos;;</div><div class="line">        html += &apos;&lt;h2&gt;&apos; + data.title + &apos;&lt;\/h2&gt;&apos;;</div><div class="line">        html += &apos;&lt;p&gt;&apos; + data.copyrightYear + &apos;, &apos; + data.label + &apos;&lt;\/p&gt;&apos;;</div><div class="line">        if (data.Album) &#123;</div><div class="line">            html += &apos;&lt;p&gt;Album: &apos; + data.Album.Release.title + &apos;, &apos; + data.Album.Release.releaseYear + &apos;&lt;br \/&gt;&apos;;</div><div class="line">        &#125;</div><div class="line">        html += &apos;&lt;p&gt;&lt;a class=&quot;play&quot; href=&quot;http://new.music.yahoo.com/videos/--&apos; + id + &apos;&quot;&gt;&amp;raquo; play&lt;\/a&gt;&lt;\/p&gt;&apos;;</div><div class="line">        info = document.createElement(&apos;div&apos;);</div><div class="line">        info.id = &quot;info&quot; + id;</div><div class="line">        info.innerHTML = html;</div><div class="line">        $(&apos;v&apos; + id).appendChild(info);</div><div class="line">    &#125;,</div><div class="line">    // 获取信息并显示</div><div class="line">    getInfo: function (id) &#123;</div><div class="line">        var info = $(&apos;info&apos; + id);</div><div class="line">        if (!info) &#123;</div><div class="line">            proxy.makeRequest(id, videos.updateList, videos); //执行代理职责，并传入videos.updateList回调函数</div><div class="line">            return;</div><div class="line">        &#125;</div><div class="line">        if (info.style.display === &quot;none&quot;) &#123;</div><div class="line">            info.style.display = &apos;&apos;;</div><div class="line">        &#125; else &#123;</div><div class="line">            info.style.display = &apos;none&apos;;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>现在可以处理点击事件的代码了，由于有很多 a 连接，如果每个连接都绑定事件的话，显然性能会有问题，所以我们将事件绑定在 `` 元素上，然后检测点击的是否是a连接，如果是说明我们点击的是视频地址，然后就可以播放了：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">$(&apos;vids&apos;).onclick = function (e) &#123;</div><div class="line">    var src, id;</div><div class="line">    e = e || window.event;</div><div class="line">    src = e.target || e.srcElement;</div><div class="line">    // 不是连接的话就不继续处理了</div><div class="line">    if (src.nodeName.toUpperCase() !== &quot;A&quot;) &#123;</div><div class="line">        return;</div><div class="line">    &#125;</div><div class="line">    //停止冒泡</div><div class="line">    if (typeof e.preventDefault === &quot;function&quot;) &#123;</div><div class="line">        e.preventDefault();</div><div class="line">    &#125;</div><div class="line">    e.returnValue = false;</div><div class="line">    id = src.href.split(&apos;--&apos;)[1];</div><div class="line">    //如果点击的是已经生产的视频信息区域的连接play，就开始播放</div><div class="line">    // 然后return不继续了</div><div class="line">    if (src.className === &quot;play&quot;) &#123;</div><div class="line">        src.parentNode.innerHTML = videos.getPlayer(id);</div><div class="line">        return;</div><div class="line">    &#125;</div><div class="line">    src.parentNode.id = &quot;v&quot; + id;</div><div class="line">    videos.getInfo(id); // 这个才是第一次点击的时候显示视频信息的处理代码</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>全选反选的代码大同小异，我们就不解释了：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">$(&apos;toggle-all&apos;).onclick = function (e) &#123;</div><div class="line">    var hrefs, i, max, id;</div><div class="line">    hrefs = $(&apos;vids&apos;).getElementsByTagName(&apos;a&apos;);</div><div class="line">    for (i = 0, max = hrefs.length; i &lt; max; i += 1) &#123;</div><div class="line">        // 忽略play连接</div><div class="line">        if (hrefs[i].className === &quot;play&quot;) &#123;</div><div class="line">            continue;</div><div class="line">        &#125;</div><div class="line">        // 忽略没有选择的项</div><div class="line">        if (!hrefs[i].parentNode.firstChild.checked) &#123;</div><div class="line">            continue;</div><div class="line">        &#125;</div><div class="line">        id = hrefs[i].href.split(&apos;--&apos;)[1];</div><div class="line">        hrefs[i].parentNode.id = &quot;v&quot; + id;</div><div class="line">        videos.getInfo(id);</div><div class="line">    &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>代理模式一般适用于如下场合：</p>
+<ol>
+<li><strong>远程代理</strong>，也就是为了一个对象在不同的地址空间提供局部代表，这样可以隐藏一个对象存在于不同地址空间的事实，就像 web service 里的代理类一样。</li>
+<li><strong>虚拟代理</strong>，根据需要创建开销很大的对象，通过它来存放实例化需要很长时间的真实对象，比如浏览器的渲染的时候先显示问题，而图片可以慢慢显示（就是通过虚拟代理代替了真实的图片，此时虚拟代理保存了真实图片的路径和尺寸。</li>
+<li><strong>安全代理</strong>，用来控制真实对象访问时的权限，一般用于对象应该有不同的访问权限。</li>
+<li><strong>智能指引</strong>，只当调用真实的对象时，代理处理另外一些事情。例如 C#里的垃圾回收，使用对象的时候会有引用次数，如果对象没有引用了，GC 就可以回收它了。</li>
+</ol>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/xuhongbo" target="_blank">Xuhongbo</a>
+    </br>
+    
+    &copy; 2017 John Doe
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>
