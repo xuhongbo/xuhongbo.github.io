@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://yoursite.com/2016/10/08/eslint%E9%85%8D%E7%BD%AE/</loc>
+    
+    <lastmod>2017-03-02T10:10:03.334Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://yoursite.com/2016/03/11/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3javascript/9%E6%A0%B9%E6%9C%AC%E6%B2%A1%E6%9C%89%E2%80%9CJSON%20%E5%AF%B9%E8%B1%A1%E2%80%9D%E8%BF%99%E5%9B%9E%E4%BA%8B%EF%BC%81/</loc>
     
     <lastmod>2017-03-02T07:48:13.268Z</lastmod>
@@ -355,13 +362,6 @@
     <loc>http://yoursite.com/2016/01/15/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3javascript/14%E4%BD%9C%E7%94%A8%E5%9F%9F%E9%93%BE(Scope%20Chain)/</loc>
     
     <lastmod>2017-03-02T07:22:35.566Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://yoursite.com/2016/10/08/eslint%E9%85%8D%E7%BD%AE/</loc>
-    
-    <lastmod>2017-03-02T07:04:20.532Z</lastmod>
     
   </url>
   
