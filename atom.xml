@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2017-03-02T10:36:58.770Z</updated>
+  <updated>2017-03-02T10:38:52.882Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -20,24 +20,17 @@
     <link href="http://yoursite.com/2017/01/08/JavaScript/%E8%BF%90%E7%AE%97%E7%AC%A6/"/>
     <id>http://yoursite.com/2017/01/08/JavaScript/运算符/</id>
     <published>2017-01-08T07:02:02.000Z</published>
-    <updated>2017-03-02T10:36:58.770Z</updated>
+    <updated>2017-03-02T10:38:52.882Z</updated>
     
     <content type="html"><![CDATA[<ul>
 <li>程序中最简单的表达式就是，程序中的常量</li>
 <li>变量名也是一种简单的表达式</li>
 <li>复杂的表达式是由简单的表达式组成的</li>
 <li>函数调用表达式是由函数对象的表达式和0个或多个参数表达式构成</li>
-<li><p>可以使用运算符来将简单的表达式来组合成复杂的表达式</p>
-<a id="more"></a>
-</li>
-<li><p>程序中最简单的表达式就是，程序中的常量</p>
-</li>
-<li>变量名也是一种简单的表达式</li>
-<li>复杂的表达式是由简单的表达式组成的</li>
-<li>函数调用表达式是由函数对象的表达式和0个或多个参数表达式构成</li>
-<li>可以使用运算符来将简单的表达式来组合成复杂的表达式</li>
+<li>可以使用运算符来将简单的表达式来组合成复杂的表达式<a id="more"></a>
+<h2 id="原始表达式"><a href="#原始表达式" class="headerlink" title="原始表达式"></a>原始表达式</h2></li>
 </ul>
-<h2 id="原始表达式"><a href="#原始表达式" class="headerlink" title="原始表达式"></a>原始表达式</h2><p>“原始表达式”，说简单点就是最简单的表达式，并且不再包含其他表达式   </p>
+<p>“原始表达式”，说简单点就是最简单的表达式，并且不再包含其他表达式   </p>
 <blockquote>
 <p>js中原始表达式有以下：</p>
 <ul>
@@ -662,7 +655,7 @@
 &lt;li&gt;变量名也是一种简单的表达式&lt;/li&gt;
 &lt;li&gt;复杂的表达式是由简单的表达式组成的&lt;/li&gt;
 &lt;li&gt;函数调用表达式是由函数对象的表达式和0个或多个参数表达式构成&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;可以使用运算符来将简单的表达式来组合成复杂的表达式&lt;/p&gt;
+&lt;li&gt;可以使用运算符来将简单的表达式来组合成复杂的表达式
     
     </summary>
     
