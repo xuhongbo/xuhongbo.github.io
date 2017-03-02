@@ -1,0 +1,41 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title>  · Hexo</title><meta name="description" content=" - xuhongbo"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://yoursite.com/atom.xml" title="Hexo"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">博客</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">文章列表</a></li><li class="nav-list-item"><a href="https://github.com/xuhongbo" target="_blank" class="nav-list-link">GITHUB</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title"></h1><div class="post-info">Mar 2, 2017</div><div class="post-content"><h3 id="在github-pages利用hexo快速搭建静态个人主页以及更改域名"><a href="#在github-pages利用hexo快速搭建静态个人主页以及更改域名" class="headerlink" title="在github pages利用hexo快速搭建静态个人主页以及更改域名"></a>在github pages利用hexo快速搭建静态个人主页以及更改域名</h3><p>github pages是一种提供免费托管静态页面的工具，可以免费作为我们的个人主页进行使用<br><a id="more"></a></p>
+<p><a href="https://pages.github.com/" target="_blank" rel="external">官方地址</a></p>
+<p>既然知道工具是做什么的了，下面我们就开始进行操作吧</p>
+<h6 id="前期准备"><a href="#前期准备" class="headerlink" title="前期准备"></a>前期准备</h6><ol>
+<li>首先你要确保的是你有一个github账号 <a href="https://github.com/" target="_blank" rel="external">传送门</a></li>
+<li>还要确保你的电脑上有安装有git</li>
+<li>最后还要有nodejs</li>
+</ol>
+<p>###在github上申请github pages空间<br>如果你已经看到这了  我已经默认你具备了上面的三个条件了！<br>如果你看了上面的介绍 你应该已经知道了怎么去申请这个空间了 但是为了避免有的人还是犯迷糊我下面还是讲一下怎么申请这个github pages空间吧，避免第一步就卡死这<br>登陆我们的github</p>
+<p>点击这里新建一个仓储</p>
+<p><img src="/images/github0.png" alt="img"></p>
+<p>然后我们到了这个页面  我们按照我写的这个顺序进行操作</p>
+<p><img src="/images/github2.png" alt="img">我们的仓储名格式是xxx.github.io<br>然后选择public<br>然后选择同意 就可以了</p>
+<p>然后我们这个仓储就创建好了，图中的地址一定要记好，后面我们就有用了</p>
+<p><img src="/images/github4.png" alt="img"></p>
+<h3 id="安装hexo以及初始化"><a href="#安装hexo以及初始化" class="headerlink" title="安装hexo以及初始化"></a>安装hexo以及初始化</h3><h5 id="安装hexo"><a href="#安装hexo" class="headerlink" title="安装hexo"></a>安装hexo</h5><p>首先你可以自己看看hexo的官网 <a href="https://hexo.io/" target="_blank" rel="external">传送门</a><br>首先在全局安装hexo的脚手架在cmd命令行中输入 <code>$ npm install hexo-cli -g</code> </p>
+<p>等我们在全局安装好以后，找到你想放置你博客文件的目录 然后执行<code>hexo init blogName</code> 执行初始化操作</p>
+<p>![img]/images/HEXO1.png)</p>
+<p>然后我们就在本地有了一个blog的文件夹，然后我们输入<code>cd blogName</code> 然后执行<code>hexo server</code>就可以在本地看到你的blog了，但是显然只是本地，你并不满足</p>
+<p><img src="/images/HEXO2.png" alt="img"></p>
+<p>看到这里  你是不是感觉很简单呀</p>
+<p>对 就是这么简单</p>
+<p>下面我们要做的就是往我们的git仓库里面进行push了</p>
+<p>在hexo这个工具中我们可以直接配置我们的git地址</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"># Deployment</div><div class="line">## Docs: https://hexo.io/docs/deployment.html</div><div class="line">deploy:</div><div class="line">  type: git</div><div class="line">	//格式如下 https://账户:密码@你的仓储地址，也就是上面要你记住的地址</div><div class="line">  repo: https://xuhongbo:8180451github@github.com/xuhongbo/xuhongbo.github.io.git</div></pre></td></tr></table></figure>
+<p>在你执行过上面那一步之后  你就离成功只剩一步了</p>
+<p>下面我们再安装一个插件<code>npm install hexo-deployer-git --save</code>当然了，这个操作也是在我们的项目根目录中</p>
+<p>然后就可以进行发布了<code>hexo generate --deploy</code></p>
+<p><img src="/images/HEXO5.png" alt="img"></p>
+<p>至此 你已经可以在你的github pages上看到你的个人博客了</p>
+<p>如果你没有绑定个人域名的需求，就这样就不用往下面看了</p>
+<h3 id="绑定个人域名"><a href="#绑定个人域名" class="headerlink" title="绑定个人域名"></a>绑定个人域名</h3><p>首先我们要有一个域名，如果没有的话，自己想办法哈，这个我是帮不了你</p>
+<p>我在这里说一下怎么配dns和hexo中加入CNAME这两件事</p>
+<p>在这里我拿万网作为例子</p>
+<p>在dns解析中我们加入以下三条记录</p>
+<p>分别是两条github pages ip 和一条你的github pages地址名如<code>xxx.github.io.</code>注意哈，最后的那个点千万别忘了</p>
+<p><img src="/images/wanwang.png" alt="img"></p>
+<p>然后下面添加CNAME文件加入source文件夹中，然后在此文件中写入你的域名记住不带前面的http什么鬼的 只要 express.com 这一段然后再执行一次 <code>hexo generate --deploy</code>  </p>
+<p><img src="/images/CNAME.png" alt="img"><img src="/images/CNAME2.png" alt="img"></p>
+<p>嗯 所有工作已经做完了  你现在出去溜达一会  等个十来分钟  就可以访问了</p>
+</div></article></div></main><footer><div class="paginator"><a href="/2017/01/08/JavaScript/运算符/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2017 <a href="https://github.com/xuhongbo" target="_blank">xuhongbo-github</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" integrity="sha384-crwIf/BuaWM9rM65iM+dWFldgQ1Un8jWZMuh3puxb8TOY9+linwLoI7ZHZT+aekW" crossorigin="anonymous"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script></body></html>
