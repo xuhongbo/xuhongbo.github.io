@@ -64,7 +64,7 @@
     <link href="http://yoursite.com/2016/10/08/eslint%E9%85%8D%E7%BD%AE/"/>
     <id>http://yoursite.com/2016/10/08/eslint配置/</id>
     <published>2016-10-08T07:02:02.000Z</published>
-    <updated>2017-03-02T10:10:03.334Z</updated>
+    <updated>2017-03-02T10:12:45.482Z</updated>
     
     <content type="html"><![CDATA[<p>我们在全局安装<code>npm install eslint -g</code></p>
 <p>然后再初始化eslint<code>eslint --init</code></p>
