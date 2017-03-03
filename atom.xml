@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://xuhongbo.com/"/>
-  <updated>2017-03-02T13:17:20.247Z</updated>
+  <updated>2017-03-03T02:07:12.338Z</updated>
   <id>http://xuhongbo.com/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://xuhongbo.com/2017/01/18/%E5%B7%A5%E5%85%B7%E7%B1%BB/%E5%9C%A8github%20pages%E5%88%A9%E7%94%A8hexo%E5%BF%AB%E9%80%9F%E6%90%AD%E5%BB%BA%E9%9D%99%E6%80%81%E4%B8%AA%E4%BA%BA%E4%B8%BB%E9%A1%B5%E4%BB%A5%E5%8F%8A%E6%9B%B4%E6%94%B9%E5%9F%9F%E5%90%8D/"/>
     <id>http://xuhongbo.com/2017/01/18/工具类/在github pages利用hexo快速搭建静态个人主页以及更改域名/</id>
     <published>2017-01-18T06:41:30.000Z</published>
-    <updated>2017-03-02T13:17:20.247Z</updated>
+    <updated>2017-03-03T02:07:12.338Z</updated>
     
     <content type="html"><![CDATA[<p>github pages是一种提供免费托管静态页面的工具，可以免费作为我们的个人主页进行使用<br><a id="more"></a></p>
 <p><a href="https://pages.github.com/" target="_blank" rel="external">官方地址</a></p>
@@ -59,6 +59,8 @@
 <p>在dns解析中我们加入以下三条记录</p>
 <p>分别是两条github pages ip 和一条你的github pages地址名如<code>xxx.github.io.</code>注意哈，最后的那个点千万别忘了</p>
 <p><img src="/images/wanwang.png" alt="img"></p>
+<p>对了下面我们最好还是在阿里云里面开了我们的免费的cdn加速会比较好</p>
+<p><img src="/images/cdn.png" alt="img"></p>
 <p>然后下面添加CNAME文件加入source文件夹中，然后在此文件中写入你的域名记住不带前面的http什么鬼的 只要 express.com 这一段然后再执行一次 <code>hexo generate --deploy</code>  </p>
 <p><img src="/images/CNAME.png" alt="img"><img src="/images/CNAME2.png" alt="img"></p>
 <p>嗯 所有工作已经做完了  你现在出去溜达一会  等个十来分钟  就可以访问了</p>
