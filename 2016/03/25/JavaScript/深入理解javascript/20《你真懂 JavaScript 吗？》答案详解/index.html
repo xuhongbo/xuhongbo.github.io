@@ -1,0 +1,85 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> 《你真懂 JavaScript 吗？》答案详解 · xuhongbo</title><meta name="description" content="《你真懂 JavaScript 吗？》答案详解 - xuhongbo"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://xuhongbo.com/atom.xml" title="xuhongbo"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">博客</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">文章列表</a></li><li class="nav-list-item"><a href="https://github.com/xuhongbo" target="_blank" class="nav-list-link">GITHUB</a></li><li class="nav-list-item"><a href="/abstract/" target="_self" class="nav-list-link">个人简介</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title">《你真懂 JavaScript 吗？》答案详解</h1><div class="post-info">Mar 25, 2016</div><div class="post-content"><p>昨天发的《大叔手记（19）：你真懂 JavaScript 吗？》里面的 5 个题目，有很多回答，发现强人还是很多的，很多人都全部答对了。</p>
+<p>今天我们来对这 5 个题目详细分析一下，希望对大家有所帮助。</p>
+<h2 id="题目1"><a href="#题目1" class="headerlink" title="题目1"></a>题目1</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">if (!(&quot;a&quot; in window)) &#123;</div><div class="line">    var a = 1;</div><div class="line">&#125;</div><div class="line">alert(a);</div></pre></td></tr></table></figure>
+<a id="more"></a>
+<p>代码看起来是想说：如果 window 不包含属性 a，就声明一个变量 a，然后赋值为 1。</p>
+<p>你可能认为 alert 出来的结果是 1，然后实际结果是“undefined”。要了解为什么，我们需要知道 JavaScript 里的 3 个概念。</p>
+<p>首先，所有的全局变量都是 window 的属性，语句 var a = 1；等价于 window.a = 1；你可以用如下方式来检测全局变量是否声明：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&quot;变量名称&quot; in window</div></pre></td></tr></table></figure>
+<p>第二，所有的变量声明都在范围作用域的顶部，看一下相似的例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">alert(&quot;a&quot; in window);</div><div class="line">var a;</div></pre></td></tr></table></figure>
+<p>此时，尽管声明是在 alert 之后，alert 弹出的依然是 true，这是因为 JavaScript 引擎首先会扫墓所有的变量声明，然后将这些变量声明移动到顶部，最终的代码效果是这样的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">var a;</div><div class="line">alert(&quot;a&quot; in window);</div></pre></td></tr></table></figure>
+<p>这样看起来就很容易解释为什么 alert 结果是 true 了。</p>
+<p>第三，你需要理解该题目的意思是，变量声明被提前了，但变量赋值没有，因为这行代码包括了变量声明和变量赋值。</p>
+<p>你可以将语句拆分为如下代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">var a;    //声明</div><div class="line">a = 1;    //初始化赋值</div></pre></td></tr></table></figure>
+<p>当变量声明和赋值在一起用的时候，JavaScript 引擎会自动将它分为两部以便将变量声明提前，不将赋值的步骤提前是因为他有可能影响代码执行出不可预期的结果。</p>
+<p>所以，知道了这些概念以后，重新回头看一下题目的代码，其实就等价于：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">var a;</div><div class="line">if (!(&quot;a&quot; in window)) &#123;</div><div class="line">    a = 1;</div><div class="line">&#125;</div><div class="line">alert(a);</div></pre></td></tr></table></figure>
+<p>这样，题目的意思就非常清楚了：首先声明a，然后判断a是否在存在，如果不存在就赋值为 1，很明显 a 永远在 window 里存在，这个赋值语句永远不会执行，所以结果是 undefined。</p>
+<p>大叔注：提前这个词语显得有点迷惑了，其实就是执行上下文的关系，因为执行上下文分 2 个阶段：进入执行上下文和执行代码，在进入执行上下文的时候，创建变量对象 VO 里已经有了：函数的所有形参、所有的函数声明、所有的变量声明</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">VO(global) = &#123;</div><div class="line">    a: undefined</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这个时候 a 已经有了；</p>
+<p>然后执行代码的时候才开始走if语句，详细信息请查看<a href="http://www.cnblogs.com/TomXu/archive/2012/01/16/2309728.html" target="_blank" rel="external">《深入理解 JavaScript 系列（12）：变量对象（Variable Object）》</a>中的处理上下文代码的 2 个阶段小节。</p>
+<p>大叔注：相信很多人都是认为 a 在里面不可访问，结果才是 undefined 的吧，其实是已经有了，只不过初始值是 undefined，而不是不可访问。</p>
+<h2 id="题目-2"><a href="#题目-2" class="headerlink" title="题目 2"></a>题目 2</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">var a = 1,</div><div class="line">    b = function a(x) &#123;</div><div class="line">        x &amp;&amp; a(--x);</div><div class="line">    &#125;;</div><div class="line">alert(a);</div></pre></td></tr></table></figure>
+<p>这个题目看起来比实际复杂，alert 的结果是 1；这里依然有 3 个重要的概念需要我们知道。</p>
+<p>首先，在题目 1 里我们知道了变量声明在进入执行上下文就完成了；第二个概念就是函数声明也是提前的，所有的函数声明都在执行代码之前都已经完成了声明，和变量声明一样。澄清一下，函数声明是如下这样的代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">function functionName(arg1, arg2)&#123;</div><div class="line">    //函数体</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>如下不是函数，而是函数表达式，相当于变量赋值：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">var functionName = function(arg1, arg2)&#123;</div><div class="line">    //函数体</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>澄清一下，函数表达式没有提前，就相当于平时的变量赋值。</p>
+<p>第三需要知道的是，函数声明会覆盖变量声明，但不会覆盖变量赋值，为了解释这个，我们来看一个例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">function value()&#123;</div><div class="line">    return 1;</div><div class="line">&#125;</div><div class="line">var value;</div><div class="line">alert(typeof value);    //&quot;function&quot;</div></pre></td></tr></table></figure>
+<p>尽快变量声明在下面定义，但是变量 value 依然是 function，也就是说这种情况下，函数声明的优先级高于变量声明的优先级，但如果该变量 value 赋值了，那结果就完全不一样了：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">function value()&#123;</div><div class="line">    return 1;</div><div class="line">&#125;</div><div class="line">var value = 1;</div><div class="line">alert(typeof value);    //&quot;number&quot;</div></pre></td></tr></table></figure>
+<p>该 value 赋值以后，变量赋值初始化就覆盖了函数声明。</p>
+<p>重新回到题目，这个函数其实是一个有名函数表达式，函数表达式不像函数声明一样可以覆盖变量声明，但你可以注意到，变量 b 是包含了该函数表达式，而该函数表达式的名字是 a；不同的浏览器对a这个名词处理有点不一样，在 IE 里，会将 a 认为函数声明，所以它被变量初始化覆盖了，就是说如果调用 a(–x)的话就会出错，而其它浏览器在允许在函数内部调用 a(–x)，因为这时候 a 在函数外面依然是数字。基本上，IE 里调用 b(2)的时候会出错，但其它浏览器则返回 undefined。</p>
+<p>理解上述内容之后，该题目换成一个更准确和更容易理解的代码应该像这样：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">var a = 1,</div><div class="line">    b = function(x) &#123;</div><div class="line">        x &amp;&amp; b(--x);</div><div class="line">    &#125;;</div><div class="line">alert(a);</div></pre></td></tr></table></figure>
+<p>这样的话，就很清晰地知道为什么 alert 的总是 1 了，详细内容请参考<a href="http://www.cnblogs.com/TomXu/archive/2012/01/16/2309728.html" target="_blank" rel="external">《深入理解 JavaScript 系列（2）：揭秘命名函数表达式》</a>中的内容。</p>
+<p><code>大叔注：安装 ECMAScript 规范，作者对函数声明覆盖变量声明的解释其实不准确的，正确的理解应该是如下：</code></p>
+<p><strong>进入执行上下文：</strong> 这里出现了名字一样的情况，一个是函数申明，一个是变量申明。那么，根据深入理解 JavaScrip t系列（12）：变量对象（Variable Object）介绍的，填充 VO 的顺序是: 函数的形参 -&gt; 函数申明 -&gt; 变量申明。</p>
+<p>上述例子中，变量 a 在函数 a 后面，那么，变量 a 遇到函数 a 怎么办呢？还是根据变量对象中介绍的，当变量申明遇到 VO 中已经有同名的时候，不会影响已经存在的属性。而函数表达式不会影响 VO 的内容，所以 b 只有在执行的时候才会触发里面的内容。</p>
+<h2 id="题目-3"><a href="#题目-3" class="headerlink" title="题目 3"></a>题目 3</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">function a(x) &#123;</div><div class="line">    return x * 2;</div><div class="line">&#125;</div><div class="line">var a;</div><div class="line">alert(a);</div></pre></td></tr></table></figure>
+<p>这个题目就是题目 2 里的大叔加的注释了，也就是函数声明和变量声明的关系和影响，遇到同名的函数声明，VO 不会重新定义，所以这时候全局的 VO 应该是如下这样的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">VO(global) = &#123;</div><div class="line">    a: 引用了函数声明“a”</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>而执行 a 的时候，相应地就弹出了函数 a 的内容了。</p>
+<h2 id="题目-4"><a href="#题目-4" class="headerlink" title="题目 4"></a>题目 4</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">function b(x, y, a) &#123;</div><div class="line">    arguments[2] = 10;</div><div class="line">    alert(a);</div><div class="line">&#125;</div><div class="line">b(1, 2, 3);</div></pre></td></tr></table></figure>
+<p>关于这个题目，NC 搬出了 262-3 的规范出来解释，其实从<a href="http://www.cnblogs.com/TomXu/archive/2012/01/16/2309728.html" target="_blank" rel="external">《深入理解 JavaScript 系列（12）：变量对象（Variable Object）》</a>中的函数上下文中的变量对象一节就可以清楚地知道，活动对象是在进入函数上下文时刻被创建的，它通过函数的 arguments 属性初始化。arguments 属性的值是 Arguments 对象：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">AO = &#123;</div><div class="line">  arguments: &lt;ArgO&gt;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>Arguments 对象是活动对象的一个属性，它包括如下属性：</p>
+<ol>
+<li>callee — 指向当前函数的引用</li>
+<li>length — 真正传递的参数个数</li>
+<li>properties-indexes (字符串类型的整数) 属性的值就是函数的参数值(按参数列表从左到右排列)。 properties-indexes 内部元素的个数等于 arguments.length. properties-indexes 的值和实际传递进来的参数之间是<code>共享</code>的。</li>
+<li>这个共享其实不是真正的共享一个内存地址，而是 2 个不同的内存地址，使用 JavaScript 引擎来保证 2 个值是随时一样的，当然这也有一个前提，那就是这个索引值要小于你传入的参数个数，也就是说如果你只传入 2 个参数，而还继续使用 arguments[2]赋值的话，就会不一致，例如：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">function b(x, y, a) &#123;</div><div class="line">    arguments[2] = 10;</div><div class="line">    alert(a);</div><div class="line">&#125;</div><div class="line">b(1, 2);</div></pre></td></tr></table></figure>
+<p>这时候因为没传递第三个参数 a，所以赋值 10 以后，alert(a)的结果依然是 undefined，而不是 10，但如下代码弹出的结果依然是 10，因为和 a 没有关系。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">function b(x, y, a) &#123;</div><div class="line">    arguments[2] = 10;</div><div class="line">    alert(arguments[2]);</div><div class="line">&#125;</div><div class="line">b(1, 2);</div></pre></td></tr></table></figure>
+<h2 id="题目-5"><a href="#题目-5" class="headerlink" title="题目 5"></a>题目 5</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">function a() &#123;</div><div class="line">    alert(this);</div><div class="line">&#125;</div><div class="line">a.call(null);</div></pre></td></tr></table></figure>
+<p>这个题目可以说是最简单的，也是最诡异的，因为如果没学到它的定义的话，打死也不会知道结果的，关于这个题目，我们先来了解 2 个概念。</p>
+<p>首先，就是 this 值是如何定义的，当一个方法在对象上调用的时候，this 就指向到了该对象上，例如：</p>
+<p>var object = { method: function() { alert(this === object); //true } } object.method();</p>
+<p>上面的代码，调用 method() 的时候 this 被指向到调用它的 object 对象上，但在全局作用域里， this 是等价于 window（浏览器中，非浏览器里等价于 global），在如果一个 function 的定义不是属于一个对象属性的时候（也就是单独定义的函数），函数内部的 this 也是等价于 window 的，例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">function method() &#123;</div><div class="line">    alert(this === window);    //true</div><div class="line">&#125;</div><div class="line">method();</div></pre></td></tr></table></figure>
+<p>了解了上述概念之后，我们再来了解一下 call()是做什么的，call 方法作为一个 function 执行代表该方法可以让另外一个对象作为调用者来调用，call 方法的第一个参数是对象调用者，随后的其它参数是要传给调用 method 的参数（如果声明了的话），例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">function method() &#123;</div><div class="line">    alert(this === window);</div><div class="line">&#125;</div><div class="line">method();    //true</div><div class="line">method.call(document);   //false</div></pre></td></tr></table></figure>
+<p>第一个依然是 true 没什么好说的，第二个传入的调用对象是 document，自然不会等于 window，所以弹出了 false。</p>
+<p>另外，根据 ECMAScript262 规范规定：如果第一个参数传入的对象调用者是 null 或者 undefined 的话，call 方法将把全局对象（也就是 window）作为 this 的值。所以，不管你什么时候传入 null，其 this 都是全局对象 window，所以该题目可以理解成如下代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">function a() &#123;</div><div class="line">    alert(this);</div><div class="line">&#125;</div><div class="line">a.call(window);</div></pre></td></tr></table></figure>
+<p>所以弹出的结果是[object Window]就很容易理解了。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>这 5 个题目虽然貌似有点偏，但实际上考察的依然是基本概念，只有熟知了这些基本概念才能写出高质量代码。</p>
+<p>关于 JavaScript 的基本核心内容和理解基本上在该系列就到此为止了，接下来的章节除了把五大原则剩余的 2 篇补全依然，会再加两篇关于 DOM 的文章，然后就开始转向整理关于 JavaScript 模式与设计模式相关的文章了（大概10篇左右），随后再会花几个章节来一个实战系列。</p>
+<h2 id="更多题目"><a href="#更多题目" class="headerlink" title="更多题目"></a>更多题目</h2><p>如果大家有兴趣，可以继续研究下面的一些题目，详细通过这些题目也可以再次加深对 JavaScript 基础核心特性的理解。</p>
+<ol>
+<li>找出数字数组中最大的元素（使用 Match.max 函数）</li>
+<li>转化一个数字数组为 function 数组（每个 function 都弹出相应的数字）</li>
+<li>给 object 数组进行排序（排序条件是每个元素对象的属性个数）</li>
+<li>利用 JavaScript 打印出 Fibonacci 数（不使用全局变量）</li>
+<li>实现如下语法的功能：var a = (5).plus(3).minus(6); //2</li>
+<li>实现如下语法的功能：var a = add(2)(3)(4); //9</li>
+</ol>
+</div></article></div></main><footer><div class="paginator"><a href="/2016/03/25/JavaScript/深入理解javascript/17面向对象编程之一般理论/" class="prev">PREV</a><a href="/2016/03/19/JavaScript/深入理解javascript/22S.O.L.I.D 五大原则之依赖倒置原则 DIP/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2017 <a href="https://github.com/xuhongbo" target="_blank">xuhongbo-github</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" integrity="sha384-crwIf/BuaWM9rM65iM+dWFldgQ1Un8jWZMuh3puxb8TOY9+linwLoI7ZHZT+aekW" crossorigin="anonymous"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script></body></html>
