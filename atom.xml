@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://xuhongbo.com/"/>
-  <updated>2017-03-12T02:59:15.022Z</updated>
+  <updated>2017-03-12T03:03:30.590Z</updated>
   <id>http://xuhongbo.com/</id>
   
   <author>
@@ -16,11 +16,11 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title></title>
-    <link href="http://xuhongbo.com/2017/03/12/%E6%A1%86%E6%9E%B6/angular/%E9%AB%98%E4%BB%BF%E6%8B%89%E9%92%A9%E6%84%9F%E6%83%B3/"/>
-    <id>http://xuhongbo.com/2017/03/12/框架/angular/高仿拉钩感想/</id>
-    <published>2017-03-12T01:47:15.353Z</published>
-    <updated>2017-03-12T02:59:15.022Z</updated>
+    <title>angular高仿某招聘网站后感想</title>
+    <link href="http://xuhongbo.com/2017/03/10/%E6%A1%86%E6%9E%B6/angular/%E9%AB%98%E4%BB%BF%E6%8B%89%E9%92%A9%E6%84%9F%E6%83%B3/"/>
+    <id>http://xuhongbo.com/2017/03/10/框架/angular/高仿拉钩感想/</id>
+    <published>2017-03-09T17:24:22.000Z</published>
+    <updated>2017-03-12T03:03:30.590Z</updated>
     
     <content type="html"><![CDATA[<p>这两天闲来无趣，就自己摸索着，高仿了一把某招聘网站手机端，先说一下，我并不会把这个项目进行剖析，我只会进行记录一般的问题，具体的你可以去我的github上面进行fork，然后自己研究</p>
 <p>————————————————————————割——————————————————————————–</p>
@@ -43,7 +43,7 @@
 <li>登陆注册  个人中心</li>
 </ul>
 <p>话不多说，直接把我的目录亮出来吧</p>
-<p><img src="/image/lagou/tree.png" alt="img"></p>
+<p><img src="/images/lagou/tree.png" alt="img"></p>
 <p>在这个项目中我用到的最多的是directive（指令）,我在使用的时候感觉挺美妙的，有点vue里面模板引擎的感觉，具体的比较可以自己看看vue</p>
 <p>项目中用到的路由是第三方的ui-router，这个确实比我们的ng-router还用，如果不知道怎么用，可以看我的另一篇文章，虽然东西不多，但是日常使用还是OK的  <a href="http://xuhongbo.com/2016/12/14/%E6%A1%86%E6%9E%B6/angular/ui-router/">传送门</a></p>
 <p>好了话不多说了，直接说下核心的一些东西吧</p>
@@ -58,7 +58,7 @@
 <p>searchCtrl.js</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div></pre></td><td class="code"><pre><div class="line"><span class="meta">"use strict"</span>;</div><div class="line"></div><div class="line">angular.module(<span class="string">"app"</span>)</div><div class="line">    .controller(<span class="string">"searchCtrl"</span>, [<span class="string">"dict"</span>, <span class="string">"$http"</span>, <span class="string">"$scope"</span>, <span class="function"><span class="keyword">function</span> (<span class="params">dict, $http, $scope</span>) </span>&#123;</div><div class="line">        $scope.name = <span class="string">""</span>;</div><div class="line">        $scope.search = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line">            $http.get(<span class="string">"/data/positionList.json?name="</span> + $scope.name).then(<span class="function"><span class="keyword">function</span> (<span class="params">data</span>) </span>&#123;</div><div class="line">                $scope.positionList = data.data;</div><div class="line">            &#125;);</div><div class="line">        &#125;;</div><div class="line">        $scope.search();</div><div class="line">        $scope.sheet = &#123;&#125;;</div><div class="line">        $scope.tabList = [&#123;</div><div class="line">            <span class="attr">id</span>: <span class="string">"city"</span>,</div><div class="line">            <span class="attr">name</span>: <span class="string">"城市"</span></div><div class="line">        &#125;, &#123;</div><div class="line">            <span class="attr">id</span>: <span class="string">"salary"</span>,</div><div class="line">            <span class="attr">name</span>: <span class="string">"薪水"</span></div><div class="line">        &#125;, &#123;</div><div class="line">            <span class="attr">id</span>: <span class="string">"scale"</span>,</div><div class="line">            <span class="attr">name</span>: <span class="string">"公司规模"</span></div><div class="line">        &#125;];</div><div class="line">        <span class="keyword">var</span> tabId = <span class="string">""</span>;</div><div class="line">        $scope.filterObj=&#123;&#125;;</div><div class="line">        $scope.tClick = <span class="function"><span class="keyword">function</span> (<span class="params">id, name</span>) </span>&#123;</div><div class="line">            tabId = id;</div><div class="line">            $scope.sheet.list = dict[id].data;</div><div class="line">            $scope.visible = <span class="literal">true</span>;</div><div class="line">        &#125;;</div><div class="line">        $scope.sClick = <span class="function"><span class="keyword">function</span> (<span class="params">id, name</span>) </span>&#123;</div><div class="line">            <span class="keyword">if</span> (id) &#123;</div><div class="line">                angular.forEach($scope.tabList, <span class="function"><span class="keyword">function</span> (<span class="params">item</span>) </span>&#123;</div><div class="line">                    <span class="keyword">if</span> (item.id === tabId) &#123;</div><div class="line">                        item.name = name;</div><div class="line">                    &#125;</div><div class="line">                &#125;);</div><div class="line">                $scope.filterObj[tabId+<span class="string">"Id"</span>]=id;</div><div class="line">            &#125; <span class="keyword">else</span> &#123;</div><div class="line">                <span class="keyword">delete</span> $scope.filterObj[tabId+<span class="string">"Id"</span>];</div><div class="line">                angular.forEach($scope.tabList, <span class="function"><span class="keyword">function</span> (<span class="params">item</span>) </span>&#123;</div><div class="line">                    <span class="keyword">if</span> (item.id === tabId) &#123;</div><div class="line">                        <span class="keyword">switch</span> (item.id) &#123;</div><div class="line">                            <span class="keyword">case</span> <span class="string">"city"</span>:</div><div class="line">                                item.name = <span class="string">"城市"</span>;</div><div class="line">                                <span class="keyword">break</span>;</div><div class="line">                            <span class="keyword">case</span> <span class="string">"salary"</span>:</div><div class="line">                                item.name = <span class="string">"薪水"</span>;</div><div class="line">                                <span class="keyword">break</span>;</div><div class="line">                            <span class="keyword">case</span> <span class="string">"scale"</span>:</div><div class="line">                                item.name = <span class="string">"公司规模"</span>;</div><div class="line">                                <span class="keyword">break</span>;</div><div class="line">                            <span class="keyword">default</span>:</div><div class="line">                        &#125;</div><div class="line">                    &#125;</div><div class="line">                &#125;);</div><div class="line">            &#125;</div><div class="line">        &#125;;</div><div class="line">    &#125;]);</div></pre></td></tr></table></figure>
 <p>下面我贴出一张我在图例上的说明，相信，你很快就能看明白怎么回事</p>
-<p><img src="/image/lagou/directive接口.png" alt="img"></p>
+<p><img src="/images/lagou/directive接口.png" alt="img"></p>
 ]]></content>
     
     <summary type="html">
