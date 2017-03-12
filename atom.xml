@@ -193,7 +193,7 @@
     <link href="http://xuhongbo.com/2017/02/18/%E6%A1%86%E6%9E%B6/angular/angular%20Directives/"/>
     <id>http://xuhongbo.com/2017/02/18/框架/angular/angular Directives/</id>
     <published>2017-02-17T18:14:35.000Z</published>
-    <updated>2017-03-12T01:38:38.452Z</updated>
+    <updated>2017-03-12T01:40:45.797Z</updated>
     
     <content type="html"><![CDATA[<p>突然间之前一个同事问我angular自定义指令是什么鬼，我也突然间蒙了，但是我也知道怎么用，就是表述不清楚了，所以这两天查了查google angular的API，本着不误人子弟的原则，我写下了这篇文章，希望也能帮到你</p>
 <p>什么是指令呢？我们先看官方的说法</p>
