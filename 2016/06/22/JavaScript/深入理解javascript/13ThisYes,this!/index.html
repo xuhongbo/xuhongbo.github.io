@@ -1,4 +1,191 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> ThisYes,this! · xuhongbo</title><meta name="description" content="ThisYes,this! - xuhongbo"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://xuhongbo.com/atom.xml" title="xuhongbo"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">博客</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">文章列表</a></li><li class="nav-list-item"><a href="https://github.com/xuhongbo" target="_blank" class="nav-list-link">GITHUB</a></li><li class="nav-list-item"><a href="/abstract/" target="_self" class="nav-list-link">个人简介</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title">ThisYes,this!</h1><div class="post-info">Jun 22, 2016</div><div class="post-content"><p>在这篇文章里，我们将讨论跟执行上下文直接相关的更多细节。讨论的主题就是 this 关键字。实践证明，这个主题很难，在不同执行上下文中 this 的确定经常会发生问题。</p>
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>ThisYes,this! | xuhongbo</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="poetries,前端,设计,Hexo主题,前端开发,用户体验,设计,frontend,design,nodejs,JavaScript" />
+  
+
+  <meta name="description" content="在这篇文章里，我们将讨论跟执行上下文直接相关的更多细节。讨论的主题就是 this 关键字。实践证明，这个主题很难，在不同执行上下文中 this 的确定经常会发生问题。
+许多程序员习惯的认为，在程序语言中，this 关键字与面向对象程序开发紧密相关，其完全指向由构造器新创建的对象。在 ECMAScript 规范中也是这样实现的，但正如我们将看到那样，在 ECMAScript 中，this 并不限于只">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ThisYes,this!">
+<meta property="og:url" content="http://xuhongbo.com/2016/06/22/JavaScript/深入理解javascript/13ThisYes,this!/index.html">
+<meta property="og:site_name" content="xuhongbo">
+<meta property="og:description" content="在这篇文章里，我们将讨论跟执行上下文直接相关的更多细节。讨论的主题就是 this 关键字。实践证明，这个主题很难，在不同执行上下文中 this 的确定经常会发生问题。
+许多程序员习惯的认为，在程序语言中，this 关键字与面向对象程序开发紧密相关，其完全指向由构造器新创建的对象。在 ECMAScript 规范中也是这样实现的，但正如我们将看到那样，在 ECMAScript 中，this 并不限于只">
+<meta property="og:updated_time" content="2017-03-02T14:09:04.907Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ThisYes,this!">
+<meta name="twitter:description" content="在这篇文章里，我们将讨论跟执行上下文直接相关的更多细节。讨论的主题就是 this 关键字。实践证明，这个主题很难，在不同执行上下文中 this 的确定经常会发生问题。
+许多程序员习惯的认为，在程序语言中，this 关键字与面向对象程序开发紧密相关，其完全指向由构造器新创建的对象。在 ECMAScript 规范中也是这样实现的，但正如我们将看到那样，在 ECMAScript 中，this 并不限于只">
+
+  
+
+  
+    <link rel="icon" href="/favicon.ico">
+  
+
+  <link href="/css/styles.css?v=d671a41f" rel="stylesheet">
+
+
+  
+
+  
+
+  
+
+</head>
+
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">盒子</span>
+  
+
+  <div class="post-header CENTER">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">盒子</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox">
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/archives/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/categories/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            分类
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/tags/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            标签
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/about/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/search/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            搜索
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/atom.xml"
+            rel="noopener noreferrer"
+            target="_blank"
+            >
+            RSS
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录<i class="iconfont toc-title" style="display:inline-block;color:#87998d;width:20px;height:20px;">&#xf004b;</i></strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#定义"><span class="toc-text">定义</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#全局代码中的-this"><span class="toc-text">全局代码中的 this</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#函数代码中的-this"><span class="toc-text">函数代码中的 this</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#引用类型（Reference-type）"><span class="toc-text">引用类型（Reference type）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#函数调用和非引用类型"><span class="toc-text">函数调用和非引用类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#引用类型和-this-为-null"><span class="toc-text">引用类型和 this 为 null</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#作为构造器调用的函数中的-this"><span class="toc-text">作为构造器调用的函数中的 this</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#函数调用中手动设置-this"><span class="toc-text">函数调用中手动设置 this</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#结论"><span class="toc-text">结论</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#其它参考"><span class="toc-text">其它参考</span></a></li></ol>
+  </div>
+  <i class="iconfont" id="toc-eye" style="display:inline-block;color:#b36619;position:absolute;top:72px;right:233px;cursor:pointer;
+    font-size: 24px;">&#xe61c;</i>
+  <script src="//cdn.bootcss.com/jquery/3.1.0/jquery.min.js"></script>
+  <script>
+	$("#toc-eye").click(function(){
+	
+			$("#toc.toc-article").toggle(1000);
+			$(this).css({
+				"right":"265px"
+			});
+		
+	});
+  </script>
+
+
+
+<div class="content content-post CENTER">
+   <canvas id="evanyou" width="1302" height="678" style="position: fixed;width: 100%;height: 100%;top: 0;left:0;z-index:-1;"></canvas>
+<article id="post-JavaScript/深入理解javascript/13ThisYes,this!" class="article article-type-post" itemprop="blogPost">
+  <header class="article-header">
+    <h1 class="post-title">ThisYes,this!</h1>
+
+    <div class="article-meta">
+      <span>
+        <i class="icon-calendar"></i>
+        <span>2016.06.22</span>
+      </span>
+
+      
+        <span class="article-author">
+          <i class="icon-user"></i>
+          <span>xuhongbo</span>
+        </span>
+      
+
+      
+
+
+      
+
+    </div>
+  </header>
+
+  <div class="article-content">
+    
+      <p>在这篇文章里，我们将讨论跟执行上下文直接相关的更多细节。讨论的主题就是 this 关键字。实践证明，这个主题很难，在不同执行上下文中 this 的确定经常会发生问题。</p>
 <p>许多程序员习惯的认为，在程序语言中，this 关键字与面向对象程序开发紧密相关，其完全指向由构造器新创建的对象。在 ECMAScript 规范中也是这样实现的，但正如我们将看到那样，在 ECMAScript 中，this 并不限于只用来指向新创建的对象。</p>
 <p>让我们更详细的了解一下，在 ECMAScript 中 this 到底是什么？<br><a id="more"></a></p>
 <h2 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h2><p>this 是执行上下文中的一个属性：</p>
@@ -98,4 +285,276 @@
 <li><a href="http://bclary.com/2004/11/07/#a-11.2.2" target="_blank" rel="external">The new operator</a></li>
 <li><a href="http://bclary.com/2004/11/07/#a-11.2.3" target="_blank" rel="external">Function calls</a></li>
 </ol>
-</div></article></div></main><footer><div class="paginator"><a href="/2016/06/23/JavaScript/深入理解javascript/7S.O.L.I.D 五大原则之开闭原则 OCP/" class="prev">PREV</a><a href="/2016/05/29/JavaScript/深入理解javascript/46代码复用模式（推荐篇）/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2017 <a href="https://github.com/xuhongbo" target="_blank">xuhongbo-github</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" integrity="sha384-crwIf/BuaWM9rM65iM+dWFldgQ1Un8jWZMuh3puxb8TOY9+linwLoI7ZHZT+aekW" crossorigin="anonymous"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script></body></html>
+
+    
+  </div>
+</article>
+
+<button class="assist-btn2 circle" id="assist_btn2" title="点亮屏幕" style="left: 27px; top: 152px;">
+         <i class="iconfont" style="display:inline-block;color:red;width:20px;height:20px;">&#xe61d;</i>
+    </button>
+<button class="assist-btn1 circle" id="assist_btn1" title="关闭屏幕亮度" style="left: 27px; top: 152px;">
+         <i class="iconfont toc-title" style="display:inline-block;color:red;width:20px;height:20px;">&#xe61d;</i>
+    </button>
+	
+
+<script src="//cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script>	
+<script type="text/javascript">
+
+
+    // white theme
+    var body = {color: "#555", background: "#000"};
+    var a_tag = {color: "#222"};
+    var header = { background: "#222"};
+    var logo_line_i = {background: "#222"};
+    // var post_code = {background: "#eee", color: "#222"};
+
+    function switch_theme() {
+        $("body").css(body);
+        $("a:not('.links-of-author-item a, .site-state-item a, .site-state-posts a, .feed-link a, .motion-element a, .post-tags a, .show-commit-cls a, #donate_board a')").css(a_tag);
+        $(".header, .footer").css(header);
+        $(".logo-line-before i, .logo-line-after i").css(logo_line_i);
+        //$(".post code").css(post_code);
+        $("#idhyt-surprise-ball #idhyt-surprise-ball-animation .drag").css(a_tag);
+        $(".post-title-link, .posts-expand .post-meta, .post-comments-count, .disqus-comment-count, .post-category a, .post-nav-next a, .post-nav-item a").css(a_tag);
+        
+        // $("code").css({color: '#c5c8c6', background: '#1d1f21'});
+        //$("#assist_btn1").hide(1500);
+    }
+
+    $(function () {
+		$("#assist_btn2").css("display","none");
+        $("#assist_btn1").click(function() {
+            switch_theme();
+			$("div#toc.toc-article").css({
+				"background":"#eaeaea",
+				"opacity":1
+			});
+			$(".toc-article ol").show();
+			$("#toc.toc-article .toc-title").css("color","#a98602");
+			$("#assist_btn1").css("display","none");
+			$("#assist_btn2").css("display","block");
+        });
+		$("#assist_btn2").click(function() {
+			$("#assist_btn2").css("display","none");
+			$("#assist_btn1").css("display","block");
+			 $("body").css("background","url(http://www.miaov.com/static/ie/images/news/bg.png)")
+            $(".header, .footer").css("background","url(http://www.miaov.com/static/ie/images/news/bg.png)")
+			$(".toc-article ol").toggle(1000);
+        });
+    });
+
+	
+	//背景随机
+
+	var Y, O, E, L, B, C, T, z, N, S, A, I;
+	!function() {
+	var e = function() {
+		for (O.clearRect(0, 0, L, B), T = [{
+			x: 0,
+			y: .7 * B + C
+		}, {
+			x: 0,
+			y: .7 * B - C
+		}]; T[1].x < L + C;) t(T[0], T[1])
+	}, t = function(e, t) {
+			O.beginPath(), O.moveTo(e.x, e.y), O.lineTo(t.x, t.y);
+			var n = t.x + (2 * I() - .25) * C,
+				r = a(t.y);
+			O.lineTo(n, r), O.closePath(), N -= S / -50, O.fillStyle = "#" + (127 * A(N) + 128 << 16 | 127 * A(N + S / 3) + 128 << 8 | 127 * A(N + S / 3 * 2) + 128).toString(16), O.fill(), T[0] = T[1], T[1] = {
+				x: n,
+				y: r
+			}
+		}, a = function n(e) {
+			var t = e + (2 * I() - 1.1) * C;
+			return t > B || t < 0 ? n(e) : t
+		};
+	Y = document.getElementById("evanyou"), O = Y.getContext("2d"), E = window.devicePixelRatio || 1, L = window.innerWidth, B = window.innerHeight, C = 90, z = Math, N = 0, S = 2 * z.PI, A = z.cos, I = z.random, Y.width = L * E, Y.height = B * E, O.scale(E, E), O.globalAlpha = .6, document.onclick = e, document.ontouchstart = e, e()
+	}()
+
+          
+
+
+
+</script>
+
+</div>
+
+
+  <div class="text-center donation">
+    <div class="inner-donation">
+      <span class="btn-donation">支持一下</span>
+      <div class="donation-body">
+        <div class="tip text-center">扫一扫，支持poetries</div>
+        <ul class="theme.donation.items.length">
+        
+          <li class="item">
+            <img src="/images/weixin.jpg" alt="">
+          </li>
+        
+          <li class="item">
+            <img src="/images/zhifubao.jpg" alt="">
+          </li>
+        
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+
+
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/categories/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              分类
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/tags/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              标签
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/search/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              搜索
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/atom.xml"
+              rel="noopener noreferrer"
+              target="_blank"
+              >
+              RSS
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+
+    
+  <section class="duoshuo-comments">
+    <!-- 多说评论框 start -->
+    <div class="ds-thread" data-thread-key="http://xuhongbo.com/2016/06/22/JavaScript/深入理解javascript/13ThisYes,this!/index.html" data-title="ThisYes,this!" data-url="http://xuhongbo.com/2016/06/22/JavaScript/深入理解javascript/13ThisYes,this!/index.html"></div>
+    <!-- 多说评论框 end -->
+  </section>
+
+
+
+
+  <script type="text/javascript">
+  var duoshuoQuery = {short_name:"poetry"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0]
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+  </script>
+
+
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>

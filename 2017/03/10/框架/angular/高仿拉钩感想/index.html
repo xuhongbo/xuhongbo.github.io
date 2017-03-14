@@ -1,4 +1,192 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> angular高仿某招聘网站后感想 · xuhongbo</title><meta name="description" content="angular高仿某招聘网站后感想 - xuhongbo"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://xuhongbo.com/atom.xml" title="xuhongbo"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">博客</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">文章列表</a></li><li class="nav-list-item"><a href="https://github.com/xuhongbo" target="_blank" class="nav-list-link">GITHUB</a></li><li class="nav-list-item"><a href="/abstract/" target="_self" class="nav-list-link">个人简介</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title">angular高仿某招聘网站后感想</h1><div class="post-info">Mar 10, 2017</div><div class="post-content"><p>这两天闲来无趣，就自己摸索着，高仿了一把某招聘网站手机端，先说一下，我并不会把这个项目进行剖析，我只会进行记录一般的问题，具体的你可以去我的github上面进行fork，然后自己研究</p>
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>angular高仿某招聘网站后感想 | xuhongbo</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="poetries,前端,设计,Hexo主题,前端开发,用户体验,设计,frontend,design,nodejs,JavaScript" />
+  
+
+  <meta name="description" content="这两天闲来无趣，就自己摸索着，高仿了一把某招聘网站手机端，先说一下，我并不会把这个项目进行剖析，我只会进行记录一般的问题，具体的你可以去我的github上面进行fork，然后自己研究">
+<meta property="og:type" content="article">
+<meta property="og:title" content="angular高仿某招聘网站后感想">
+<meta property="og:url" content="http://xuhongbo.com/2017/03/10/框架/angular/高仿拉钩感想/index.html">
+<meta property="og:site_name" content="xuhongbo">
+<meta property="og:description" content="这两天闲来无趣，就自己摸索着，高仿了一把某招聘网站手机端，先说一下，我并不会把这个项目进行剖析，我只会进行记录一般的问题，具体的你可以去我的github上面进行fork，然后自己研究">
+<meta property="og:image" content="http://xuhongbo.com/images/lagou/tree.png">
+<meta property="og:image" content="http://xuhongbo.com/images/lagou/tree1.png">
+<meta property="og:image" content="http://xuhongbo.com/images/lagou/directive接口.png">
+<meta property="og:updated_time" content="2017-03-12T03:32:36.035Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="angular高仿某招聘网站后感想">
+<meta name="twitter:description" content="这两天闲来无趣，就自己摸索着，高仿了一把某招聘网站手机端，先说一下，我并不会把这个项目进行剖析，我只会进行记录一般的问题，具体的你可以去我的github上面进行fork，然后自己研究">
+<meta name="twitter:image" content="http://xuhongbo.com/images/lagou/tree.png">
+
+  
+
+  
+    <link rel="icon" href="/favicon.ico">
+  
+
+  <link href="/css/styles.css?v=d671a41f" rel="stylesheet">
+
+
+  
+
+  
+
+  
+
+</head>
+
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">盒子</span>
+  
+
+  <div class="post-header CENTER">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">盒子</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox">
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/archives/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/categories/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            分类
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/tags/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            标签
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/about/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/search/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            搜索
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/atom.xml"
+            rel="noopener noreferrer"
+            target="_blank"
+            >
+            RSS
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录<i class="iconfont toc-title" style="display:inline-block;color:#87998d;width:20px;height:20px;">&#xf004b;</i></strong>
+    <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#用到的技术栈以及工具："><span class="toc-text">用到的技术栈以及工具：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#功能点"><span class="toc-text">功能点</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#directive"><span class="toc-text">directive</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#service以及angular-cookie的使用"><span class="toc-text">service以及angular-cookie的使用</span></a></li></ol>
+  </div>
+  <i class="iconfont" id="toc-eye" style="display:inline-block;color:#b36619;position:absolute;top:72px;right:233px;cursor:pointer;
+    font-size: 24px;">&#xe61c;</i>
+  <script src="//cdn.bootcss.com/jquery/3.1.0/jquery.min.js"></script>
+  <script>
+	$("#toc-eye").click(function(){
+	
+			$("#toc.toc-article").toggle(1000);
+			$(this).css({
+				"right":"265px"
+			});
+		
+	});
+  </script>
+
+
+
+<div class="content content-post CENTER">
+   <canvas id="evanyou" width="1302" height="678" style="position: fixed;width: 100%;height: 100%;top: 0;left:0;z-index:-1;"></canvas>
+<article id="post-框架/angular/高仿拉钩感想" class="article article-type-post" itemprop="blogPost">
+  <header class="article-header">
+    <h1 class="post-title">angular高仿某招聘网站后感想</h1>
+
+    <div class="article-meta">
+      <span>
+        <i class="icon-calendar"></i>
+        <span>2017.03.10</span>
+      </span>
+
+      
+        <span class="article-author">
+          <i class="icon-user"></i>
+          <span>xuhongbo</span>
+        </span>
+      
+
+      
+
+
+      
+
+    </div>
+  </header>
+
+  <div class="article-content">
+    
+      <p>这两天闲来无趣，就自己摸索着，高仿了一把某招聘网站手机端，先说一下，我并不会把这个项目进行剖析，我只会进行记录一般的问题，具体的你可以去我的github上面进行fork，然后自己研究</p>
 <a id="more"></a>
 <p>————————————————————————割——————————————————————————–</p>
 <h4 id="用到的技术栈以及工具："><a href="#用到的技术栈以及工具：" class="headerlink" title="用到的技术栈以及工具："></a>用到的技术栈以及工具：</h4><ol>
@@ -57,4 +245,276 @@
 <p>自定义服务不仅能在控制器中使用，我们也可以在指令中进行调用，和我们的angular内置服务用法一致</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">指令</div><div class="line"><span class="string">"user strict"</span>;</div><div class="line"></div><div class="line">angular.module(<span class="string">"app"</span>).directive(<span class="string">"appHead"</span>, [<span class="string">"cache"</span>,<span class="function"><span class="keyword">function</span>(<span class="params">cache</span>) </span>&#123;</div><div class="line">	<span class="keyword">return</span> &#123;</div><div class="line">		<span class="attr">restrict</span>: <span class="string">"AE"</span>,</div><div class="line">		<span class="attr">replace</span>: <span class="literal">true</span>,</div><div class="line">		<span class="attr">templateUrl</span>: <span class="string">"views/template/header.html"</span>,</div><div class="line">		<span class="attr">link</span>:<span class="function"><span class="keyword">function</span>(<span class="params">$scope</span>)</span>&#123;</div><div class="line">			$scope.name=cache.get(<span class="string">"name"</span>)||<span class="string">""</span>;</div><div class="line">		&#125;</div><div class="line">	&#125;;</div><div class="line"></div><div class="line">&#125;]);</div></pre></td></tr></table></figure>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line">控制器</div><div class="line"><span class="meta">"use strict"</span>;</div><div class="line"></div><div class="line">angular.module(<span class="string">"app"</span>)</div><div class="line">    .controller(<span class="string">"positionCtrl"</span>, [</div><div class="line">        <span class="string">"$q"</span>,</div><div class="line">        <span class="string">"$http"</span>,</div><div class="line">        <span class="string">"$state"</span>,</div><div class="line">        <span class="string">"$scope"</span>,</div><div class="line">        <span class="string">"cache"</span>,</div><div class="line">        <span class="function"><span class="keyword">function</span> (<span class="params">$q, $http, $state, $scope, cache</span>) </span>&#123;</div><div class="line">            $scope.isLogin = <span class="literal">false</span>;</div><div class="line">            $scope.isLogin = cache.get(<span class="string">"name"</span>);</div><div class="line"></div><div class="line">            <span class="function"><span class="keyword">function</span> <span class="title">getPosition</span>(<span class="params"></span>) </span>&#123;</div><div class="line">                <span class="keyword">var</span> def = $q.defer();</div><div class="line">                $http.get(<span class="string">"data/position.json?id="</span> + $state.params.id).then(<span class="function"><span class="keyword">function</span> (<span class="params">resp</span>) </span>&#123;</div><div class="line">                    $scope.position = resp.data;</div><div class="line">                    def.resolve(resp.data);</div><div class="line">                &#125;, <span class="function"><span class="keyword">function</span> (<span class="params">err</span>) </span>&#123;</div><div class="line">                    def.reject(err);</div><div class="line">                &#125;);</div><div class="line">                <span class="keyword">return</span> def.promise;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="function"><span class="keyword">function</span> <span class="title">getCompany</span>(<span class="params">id</span>) </span>&#123;</div><div class="line">                $http.get(<span class="string">"data/company.json?id="</span> + id).then(<span class="function"><span class="keyword">function</span> (<span class="params">resp</span>) </span>&#123;</div><div class="line">                    $scope.company = resp.data;</div><div class="line">                &#125;);</div><div class="line">            &#125;</div><div class="line">            getPosition().then(<span class="function"><span class="keyword">function</span> (<span class="params">obj</span>) </span>&#123;</div><div class="line">                getCompany(obj.companyId);</div><div class="line">            &#125;);</div><div class="line"></div><div class="line">            $scope.go = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line">                <span class="keyword">if</span> (!$scope.isLogin) $state.go(<span class="string">"login"</span>);</div><div class="line">            &#125;;</div><div class="line">        &#125;</div><div class="line">    ]);</div></pre></td></tr></table></figure>
-</div></article></div></main><footer><div class="paginator"><a href="/2017/03/07/nodejs/mongodb/MongoDB/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2017 <a href="https://github.com/xuhongbo" target="_blank">xuhongbo-github</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" integrity="sha384-crwIf/BuaWM9rM65iM+dWFldgQ1Un8jWZMuh3puxb8TOY9+linwLoI7ZHZT+aekW" crossorigin="anonymous"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script></body></html>
+
+    
+  </div>
+</article>
+
+<button class="assist-btn2 circle" id="assist_btn2" title="点亮屏幕" style="left: 27px; top: 152px;">
+         <i class="iconfont" style="display:inline-block;color:red;width:20px;height:20px;">&#xe61d;</i>
+    </button>
+<button class="assist-btn1 circle" id="assist_btn1" title="关闭屏幕亮度" style="left: 27px; top: 152px;">
+         <i class="iconfont toc-title" style="display:inline-block;color:red;width:20px;height:20px;">&#xe61d;</i>
+    </button>
+	
+
+<script src="//cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script>	
+<script type="text/javascript">
+
+
+    // white theme
+    var body = {color: "#555", background: "#000"};
+    var a_tag = {color: "#222"};
+    var header = { background: "#222"};
+    var logo_line_i = {background: "#222"};
+    // var post_code = {background: "#eee", color: "#222"};
+
+    function switch_theme() {
+        $("body").css(body);
+        $("a:not('.links-of-author-item a, .site-state-item a, .site-state-posts a, .feed-link a, .motion-element a, .post-tags a, .show-commit-cls a, #donate_board a')").css(a_tag);
+        $(".header, .footer").css(header);
+        $(".logo-line-before i, .logo-line-after i").css(logo_line_i);
+        //$(".post code").css(post_code);
+        $("#idhyt-surprise-ball #idhyt-surprise-ball-animation .drag").css(a_tag);
+        $(".post-title-link, .posts-expand .post-meta, .post-comments-count, .disqus-comment-count, .post-category a, .post-nav-next a, .post-nav-item a").css(a_tag);
+        
+        // $("code").css({color: '#c5c8c6', background: '#1d1f21'});
+        //$("#assist_btn1").hide(1500);
+    }
+
+    $(function () {
+		$("#assist_btn2").css("display","none");
+        $("#assist_btn1").click(function() {
+            switch_theme();
+			$("div#toc.toc-article").css({
+				"background":"#eaeaea",
+				"opacity":1
+			});
+			$(".toc-article ol").show();
+			$("#toc.toc-article .toc-title").css("color","#a98602");
+			$("#assist_btn1").css("display","none");
+			$("#assist_btn2").css("display","block");
+        });
+		$("#assist_btn2").click(function() {
+			$("#assist_btn2").css("display","none");
+			$("#assist_btn1").css("display","block");
+			 $("body").css("background","url(http://www.miaov.com/static/ie/images/news/bg.png)")
+            $(".header, .footer").css("background","url(http://www.miaov.com/static/ie/images/news/bg.png)")
+			$(".toc-article ol").toggle(1000);
+        });
+    });
+
+	
+	//背景随机
+
+	var Y, O, E, L, B, C, T, z, N, S, A, I;
+	!function() {
+	var e = function() {
+		for (O.clearRect(0, 0, L, B), T = [{
+			x: 0,
+			y: .7 * B + C
+		}, {
+			x: 0,
+			y: .7 * B - C
+		}]; T[1].x < L + C;) t(T[0], T[1])
+	}, t = function(e, t) {
+			O.beginPath(), O.moveTo(e.x, e.y), O.lineTo(t.x, t.y);
+			var n = t.x + (2 * I() - .25) * C,
+				r = a(t.y);
+			O.lineTo(n, r), O.closePath(), N -= S / -50, O.fillStyle = "#" + (127 * A(N) + 128 << 16 | 127 * A(N + S / 3) + 128 << 8 | 127 * A(N + S / 3 * 2) + 128).toString(16), O.fill(), T[0] = T[1], T[1] = {
+				x: n,
+				y: r
+			}
+		}, a = function n(e) {
+			var t = e + (2 * I() - 1.1) * C;
+			return t > B || t < 0 ? n(e) : t
+		};
+	Y = document.getElementById("evanyou"), O = Y.getContext("2d"), E = window.devicePixelRatio || 1, L = window.innerWidth, B = window.innerHeight, C = 90, z = Math, N = 0, S = 2 * z.PI, A = z.cos, I = z.random, Y.width = L * E, Y.height = B * E, O.scale(E, E), O.globalAlpha = .6, document.onclick = e, document.ontouchstart = e, e()
+	}()
+
+          
+
+
+
+</script>
+
+</div>
+
+
+  <div class="text-center donation">
+    <div class="inner-donation">
+      <span class="btn-donation">支持一下</span>
+      <div class="donation-body">
+        <div class="tip text-center">扫一扫，支持poetries</div>
+        <ul class="theme.donation.items.length">
+        
+          <li class="item">
+            <img src="/images/weixin.jpg" alt="">
+          </li>
+        
+          <li class="item">
+            <img src="/images/zhifubao.jpg" alt="">
+          </li>
+        
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+
+
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/categories/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              分类
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/tags/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              标签
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/search/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              搜索
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/atom.xml"
+              rel="noopener noreferrer"
+              target="_blank"
+              >
+              RSS
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+
+    
+  <section class="duoshuo-comments">
+    <!-- 多说评论框 start -->
+    <div class="ds-thread" data-thread-key="http://xuhongbo.com/2017/03/10/框架/angular/高仿拉钩感想/index.html" data-title="angular高仿某招聘网站后感想" data-url="http://xuhongbo.com/2017/03/10/框架/angular/高仿拉钩感想/index.html"></div>
+    <!-- 多说评论框 end -->
+  </section>
+
+
+
+
+  <script type="text/javascript">
+  var duoshuoQuery = {short_name:"poetry"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0]
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+  </script>
+
+
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>

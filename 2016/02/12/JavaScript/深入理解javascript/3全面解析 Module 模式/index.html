@@ -1,4 +1,203 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> 全面解析 Module 模式 · xuhongbo</title><meta name="description" content="全面解析 Module 模式 - xuhongbo"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://xuhongbo.com/atom.xml" title="xuhongbo"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">博客</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">文章列表</a></li><li class="nav-list-item"><a href="https://github.com/xuhongbo" target="_blank" class="nav-list-link">GITHUB</a></li><li class="nav-list-item"><a href="/abstract/" target="_self" class="nav-list-link">个人简介</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title">全面解析 Module 模式</h1><div class="post-info">Feb 12, 2016</div><div class="post-content"><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Module 模式是 JavaScript 编程中一个非常通用的模式，一般情况下，大家都知道基本用法，本文尝试着给大家更多该模式的高级使用方式。</p>
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>全面解析 Module 模式 | xuhongbo</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="poetries,前端,设计,Hexo主题,前端开发,用户体验,设计,frontend,design,nodejs,JavaScript" />
+  
+
+  <meta name="description" content="简介Module 模式是 JavaScript 编程中一个非常通用的模式，一般情况下，大家都知道基本用法，本文尝试着给大家更多该模式的高级使用方式。
+首先我们来看看 Module 模式的基本特征：
+
+模块化，可重用
+封装了变量和 function，和全局的 namaspace 不接触，松耦合
+只暴露可用 public 的方法，其它私有方法全部隐藏">
+<meta property="og:type" content="article">
+<meta property="og:title" content="全面解析 Module 模式">
+<meta property="og:url" content="http://xuhongbo.com/2016/02/12/JavaScript/深入理解javascript/3全面解析 Module 模式/index.html">
+<meta property="og:site_name" content="xuhongbo">
+<meta property="og:description" content="简介Module 模式是 JavaScript 编程中一个非常通用的模式，一般情况下，大家都知道基本用法，本文尝试着给大家更多该模式的高级使用方式。
+首先我们来看看 Module 模式的基本特征：
+
+模块化，可重用
+封装了变量和 function，和全局的 namaspace 不接触，松耦合
+只暴露可用 public 的方法，其它私有方法全部隐藏">
+<meta property="og:updated_time" content="2017-03-02T14:10:39.704Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="全面解析 Module 模式">
+<meta name="twitter:description" content="简介Module 模式是 JavaScript 编程中一个非常通用的模式，一般情况下，大家都知道基本用法，本文尝试着给大家更多该模式的高级使用方式。
+首先我们来看看 Module 模式的基本特征：
+
+模块化，可重用
+封装了变量和 function，和全局的 namaspace 不接触，松耦合
+只暴露可用 public 的方法，其它私有方法全部隐藏">
+
+  
+
+  
+    <link rel="icon" href="/favicon.ico">
+  
+
+  <link href="/css/styles.css?v=d671a41f" rel="stylesheet">
+
+
+  
+
+  
+
+  
+
+</head>
+
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">盒子</span>
+  
+
+  <div class="post-header CENTER">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">盒子</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox">
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/archives/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/categories/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            分类
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/tags/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            标签
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/about/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/search/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            搜索
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/atom.xml"
+            rel="noopener noreferrer"
+            target="_blank"
+            >
+            RSS
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录<i class="iconfont toc-title" style="display:inline-block;color:#87998d;width:20px;height:20px;">&#xf004b;</i></strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#简介"><span class="toc-text">简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#基本用法"><span class="toc-text">基本用法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#匿名闭包"><span class="toc-text">匿名闭包</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#引用全局变量"><span class="toc-text">引用全局变量</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#高级用法"><span class="toc-text">高级用法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#扩展"><span class="toc-text">扩展</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#松耦合扩展"><span class="toc-text">松耦合扩展</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#紧耦合扩展"><span class="toc-text">紧耦合扩展</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#克隆与继承"><span class="toc-text">克隆与继承</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#跨文件共享私有对象"><span class="toc-text">跨文件共享私有对象</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#子模块"><span class="toc-text">子模块</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol>
+  </div>
+  <i class="iconfont" id="toc-eye" style="display:inline-block;color:#b36619;position:absolute;top:72px;right:233px;cursor:pointer;
+    font-size: 24px;">&#xe61c;</i>
+  <script src="//cdn.bootcss.com/jquery/3.1.0/jquery.min.js"></script>
+  <script>
+	$("#toc-eye").click(function(){
+	
+			$("#toc.toc-article").toggle(1000);
+			$(this).css({
+				"right":"265px"
+			});
+		
+	});
+  </script>
+
+
+
+<div class="content content-post CENTER">
+   <canvas id="evanyou" width="1302" height="678" style="position: fixed;width: 100%;height: 100%;top: 0;left:0;z-index:-1;"></canvas>
+<article id="post-JavaScript/深入理解javascript/3全面解析 Module 模式" class="article article-type-post" itemprop="blogPost">
+  <header class="article-header">
+    <h1 class="post-title">全面解析 Module 模式</h1>
+
+    <div class="article-meta">
+      <span>
+        <i class="icon-calendar"></i>
+        <span>2016.02.12</span>
+      </span>
+
+      
+        <span class="article-author">
+          <i class="icon-user"></i>
+          <span>xuhongbo</span>
+        </span>
+      
+
+      
+
+
+      
+
+    </div>
+  </header>
+
+  <div class="article-content">
+    
+      <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Module 模式是 JavaScript 编程中一个非常通用的模式，一般情况下，大家都知道基本用法，本文尝试着给大家更多该模式的高级使用方式。</p>
 <p>首先我们来看看 Module 模式的基本特征：</p>
 <ol>
 <li>模块化，可重用</li>
@@ -44,4 +243,276 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">blogModule.CommentSubModule = (function () &#123;</div><div class="line">    var my = &#123;&#125;;</div><div class="line">    // ...</div><div class="line">    return my;</div><div class="line">&#125; ());</div></pre></td></tr></table></figure>
 <p>尽管非常简单，我还是把它放进来了，因为我想说明的是子模块也具有一般模块所有的高级使用方式，也就是说你可以对任意子模块再次使用上面的一些应用方法。</p>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>上面的大部分方式都可以互相组合使用的，一般来说如果要设计系统，可能会用到松耦合扩展，私有状态和子模块这样的方式。另外，我这里没有提到性能问题，但我认为 Module 模式效率高，代码少，加载速度快。使用松耦合扩展允许并行加载，这更可以提升下载速度。不过初始化时间可能要慢一些，但是为了使用好的模式，这是值得的。</p>
-</div></article></div></main><footer><div class="paginator"><a href="/2016/02/13/JavaScript/深入理解javascript/19求值策略/" class="prev">PREV</a><a href="/2016/01/19/JavaScript/深入理解javascript/10JavaScript 核心（晋级高手必读篇）/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2017 <a href="https://github.com/xuhongbo" target="_blank">xuhongbo-github</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" integrity="sha384-crwIf/BuaWM9rM65iM+dWFldgQ1Un8jWZMuh3puxb8TOY9+linwLoI7ZHZT+aekW" crossorigin="anonymous"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script></body></html>
+
+    
+  </div>
+</article>
+
+<button class="assist-btn2 circle" id="assist_btn2" title="点亮屏幕" style="left: 27px; top: 152px;">
+         <i class="iconfont" style="display:inline-block;color:red;width:20px;height:20px;">&#xe61d;</i>
+    </button>
+<button class="assist-btn1 circle" id="assist_btn1" title="关闭屏幕亮度" style="left: 27px; top: 152px;">
+         <i class="iconfont toc-title" style="display:inline-block;color:red;width:20px;height:20px;">&#xe61d;</i>
+    </button>
+	
+
+<script src="//cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script>	
+<script type="text/javascript">
+
+
+    // white theme
+    var body = {color: "#555", background: "#000"};
+    var a_tag = {color: "#222"};
+    var header = { background: "#222"};
+    var logo_line_i = {background: "#222"};
+    // var post_code = {background: "#eee", color: "#222"};
+
+    function switch_theme() {
+        $("body").css(body);
+        $("a:not('.links-of-author-item a, .site-state-item a, .site-state-posts a, .feed-link a, .motion-element a, .post-tags a, .show-commit-cls a, #donate_board a')").css(a_tag);
+        $(".header, .footer").css(header);
+        $(".logo-line-before i, .logo-line-after i").css(logo_line_i);
+        //$(".post code").css(post_code);
+        $("#idhyt-surprise-ball #idhyt-surprise-ball-animation .drag").css(a_tag);
+        $(".post-title-link, .posts-expand .post-meta, .post-comments-count, .disqus-comment-count, .post-category a, .post-nav-next a, .post-nav-item a").css(a_tag);
+        
+        // $("code").css({color: '#c5c8c6', background: '#1d1f21'});
+        //$("#assist_btn1").hide(1500);
+    }
+
+    $(function () {
+		$("#assist_btn2").css("display","none");
+        $("#assist_btn1").click(function() {
+            switch_theme();
+			$("div#toc.toc-article").css({
+				"background":"#eaeaea",
+				"opacity":1
+			});
+			$(".toc-article ol").show();
+			$("#toc.toc-article .toc-title").css("color","#a98602");
+			$("#assist_btn1").css("display","none");
+			$("#assist_btn2").css("display","block");
+        });
+		$("#assist_btn2").click(function() {
+			$("#assist_btn2").css("display","none");
+			$("#assist_btn1").css("display","block");
+			 $("body").css("background","url(http://www.miaov.com/static/ie/images/news/bg.png)")
+            $(".header, .footer").css("background","url(http://www.miaov.com/static/ie/images/news/bg.png)")
+			$(".toc-article ol").toggle(1000);
+        });
+    });
+
+	
+	//背景随机
+
+	var Y, O, E, L, B, C, T, z, N, S, A, I;
+	!function() {
+	var e = function() {
+		for (O.clearRect(0, 0, L, B), T = [{
+			x: 0,
+			y: .7 * B + C
+		}, {
+			x: 0,
+			y: .7 * B - C
+		}]; T[1].x < L + C;) t(T[0], T[1])
+	}, t = function(e, t) {
+			O.beginPath(), O.moveTo(e.x, e.y), O.lineTo(t.x, t.y);
+			var n = t.x + (2 * I() - .25) * C,
+				r = a(t.y);
+			O.lineTo(n, r), O.closePath(), N -= S / -50, O.fillStyle = "#" + (127 * A(N) + 128 << 16 | 127 * A(N + S / 3) + 128 << 8 | 127 * A(N + S / 3 * 2) + 128).toString(16), O.fill(), T[0] = T[1], T[1] = {
+				x: n,
+				y: r
+			}
+		}, a = function n(e) {
+			var t = e + (2 * I() - 1.1) * C;
+			return t > B || t < 0 ? n(e) : t
+		};
+	Y = document.getElementById("evanyou"), O = Y.getContext("2d"), E = window.devicePixelRatio || 1, L = window.innerWidth, B = window.innerHeight, C = 90, z = Math, N = 0, S = 2 * z.PI, A = z.cos, I = z.random, Y.width = L * E, Y.height = B * E, O.scale(E, E), O.globalAlpha = .6, document.onclick = e, document.ontouchstart = e, e()
+	}()
+
+          
+
+
+
+</script>
+
+</div>
+
+
+  <div class="text-center donation">
+    <div class="inner-donation">
+      <span class="btn-donation">支持一下</span>
+      <div class="donation-body">
+        <div class="tip text-center">扫一扫，支持poetries</div>
+        <ul class="theme.donation.items.length">
+        
+          <li class="item">
+            <img src="/images/weixin.jpg" alt="">
+          </li>
+        
+          <li class="item">
+            <img src="/images/zhifubao.jpg" alt="">
+          </li>
+        
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+
+
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/categories/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              分类
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/tags/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              标签
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/search/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              搜索
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/atom.xml"
+              rel="noopener noreferrer"
+              target="_blank"
+              >
+              RSS
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+
+    
+  <section class="duoshuo-comments">
+    <!-- 多说评论框 start -->
+    <div class="ds-thread" data-thread-key="http://xuhongbo.com/2016/02/12/JavaScript/深入理解javascript/3全面解析 Module 模式/index.html" data-title="全面解析 Module 模式" data-url="http://xuhongbo.com/2016/02/12/JavaScript/深入理解javascript/3全面解析 Module 模式/index.html"></div>
+    <!-- 多说评论框 end -->
+  </section>
+
+
+
+
+  <script type="text/javascript">
+  var duoshuoQuery = {short_name:"poetry"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0]
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+  </script>
+
+
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>
