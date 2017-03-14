@@ -1,4 +1,202 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> angular directive · xuhongbo</title><meta name="description" content="angular directive - xuhongbo"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://xuhongbo.com/atom.xml" title="xuhongbo"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">博客</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">文章列表</a></li><li class="nav-list-item"><a href="https://github.com/xuhongbo" target="_blank" class="nav-list-link">GITHUB</a></li><li class="nav-list-item"><a href="/abstract/" target="_self" class="nav-list-link">个人简介</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title">angular directive</h1><div class="post-info">Feb 18, 2017</div><div class="post-content"><p>突然间之前一个同事问我angular自定义指令是什么鬼，我也突然间蒙了，但是我也知道怎么用，就是表述不清楚了，所以这两天查了查google angular的API，本着不误人子弟的原则，我写下了这篇文章，希望也能帮到你</p>
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>angular directive | xuhongbo</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="poetries,前端,设计,Hexo主题,前端开发,用户体验,设计,frontend,design,nodejs,JavaScript" />
+  
+
+  <meta name="description" content="突然间之前一个同事问我angular自定义指令是什么鬼，我也突然间蒙了，但是我也知道怎么用，就是表述不清楚了，所以这两天查了查google angular的API，本着不误人子弟的原则，我写下了这篇文章，希望也能帮到你
+什么是指令呢？我们先看官方的说法
+What are Directives?At a high level, directives are markers on a DOM elem">
+<meta property="og:type" content="article">
+<meta property="og:title" content="angular directive">
+<meta property="og:url" content="http://xuhongbo.com/2017/02/18/框架/angular/angular Directives/index.html">
+<meta property="og:site_name" content="xuhongbo">
+<meta property="og:description" content="突然间之前一个同事问我angular自定义指令是什么鬼，我也突然间蒙了，但是我也知道怎么用，就是表述不清楚了，所以这两天查了查google angular的API，本着不误人子弟的原则，我写下了这篇文章，希望也能帮到你
+什么是指令呢？我们先看官方的说法
+What are Directives?At a high level, directives are markers on a DOM elem">
+<meta property="og:image" content="http://xuhongbo.com/images/ng-link.png">
+<meta property="og:image" content="http://xuhongbo.com/images/ng-restrict.png">
+<meta property="og:image" content="http://xuhongbo.com/images/ng-scope.png">
+<meta property="og:image" content="http://xuhongbo.com/images/ng-zhiling.png">
+<meta property="og:image" content="http://xuhongbo.com/images/ng-form.png">
+<meta property="og:image" content="http://xuhongbo.com/images/expander.png">
+<meta property="og:image" content="http://xuhongbo.com/images/angular-ui.png">
+<meta property="og:updated_time" content="2017-03-12T01:42:11.748Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="angular directive">
+<meta name="twitter:description" content="突然间之前一个同事问我angular自定义指令是什么鬼，我也突然间蒙了，但是我也知道怎么用，就是表述不清楚了，所以这两天查了查google angular的API，本着不误人子弟的原则，我写下了这篇文章，希望也能帮到你
+什么是指令呢？我们先看官方的说法
+What are Directives?At a high level, directives are markers on a DOM elem">
+<meta name="twitter:image" content="http://xuhongbo.com/images/ng-link.png">
+
+  
+
+  
+    <link rel="icon" href="/favicon.ico">
+  
+
+  <link href="/css/styles.css?v=d671a41f" rel="stylesheet">
+
+
+  
+
+  
+
+  
+
+</head>
+
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">盒子</span>
+  
+
+  <div class="post-header CENTER">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">盒子</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox">
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/archives/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/categories/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            分类
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/tags/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            标签
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/about/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/search/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            搜索
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/atom.xml"
+            rel="noopener noreferrer"
+            target="_blank"
+            >
+            RSS
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录<i class="iconfont toc-title" style="display:inline-block;color:#87998d;width:20px;height:20px;">&#xf004b;</i></strong>
+    <ol class="toc"><li class="toc-item toc-level-5"><a class="toc-link" href="#What-are-Directives"><span class="toc-text">What are Directives?</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#指令定义的基础"><span class="toc-text">指令定义的基础</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#restrict匹配模式"><span class="toc-text">restrict匹配模式</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#设置指令对象的基础属性"><span class="toc-text">设置指令对象的基础属性</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#ng-transclude"><span class="toc-text">ng-transclude</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#link"><span class="toc-text">link</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#scope绑定策略"><span class="toc-text">scope绑定策略</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Angular指令对象的require和controller属性"><span class="toc-text">Angular指令对象的require和controller属性</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#require和controller属性的概念"><span class="toc-text">require和controller属性的概念</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#form指令"><span class="toc-text">form指令</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#自定义指令"><span class="toc-text">自定义指令</span></a>
+  </div>
+  <i class="iconfont" id="toc-eye" style="display:inline-block;color:#b36619;position:absolute;top:72px;right:233px;cursor:pointer;
+    font-size: 24px;">&#xe61c;</i>
+  <script src="//cdn.bootcss.com/jquery/3.1.0/jquery.min.js"></script>
+  <script>
+	$("#toc-eye").click(function(){
+	
+			$("#toc.toc-article").toggle(1000);
+			$(this).css({
+				"right":"265px"
+			});
+		
+	});
+  </script>
+
+
+
+<div class="content content-post CENTER">
+   <canvas id="evanyou" width="1302" height="678" style="position: fixed;width: 100%;height: 100%;top: 0;left:0;z-index:-1;"></canvas>
+<article id="post-框架/angular/angular Directives" class="article article-type-post" itemprop="blogPost">
+  <header class="article-header">
+    <h1 class="post-title">angular directive</h1>
+
+    <div class="article-meta">
+      <span>
+        <i class="icon-calendar"></i>
+        <span>2017.02.18</span>
+      </span>
+
+      
+        <span class="article-author">
+          <i class="icon-user"></i>
+          <span>xuhongbo</span>
+        </span>
+      
+
+      
+
+
+      
+
+    </div>
+  </header>
+
+  <div class="article-content">
+    
+      <p>突然间之前一个同事问我angular自定义指令是什么鬼，我也突然间蒙了，但是我也知道怎么用，就是表述不清楚了，所以这两天查了查google angular的API，本着不误人子弟的原则，我写下了这篇文章，希望也能帮到你</p>
 <p>什么是指令呢？我们先看官方的说法</p>
 <h5 id="What-are-Directives"><a href="#What-are-Directives" class="headerlink" title="What are Directives?"></a>What are Directives?</h5><p>At a high level, directives are markers on a DOM element (such as an attribute, element name, comment or CSS class) that tell AngularJS’s <strong>HTML compiler</strong> (<a href="https://docs.angularjs.org/api/ng/service/$compile" target="_blank" rel="external"><code>$compile</code></a>) to attach a specified behavior to that DOM element (e.g. via event listeners), or even to transform the DOM element and its children.</p>
 <p>AngularJS comes with a set of these directives built-in, like <code>ngBind</code>, <code>ngModel</code>, and <code>ngClass</code>. Much like you create controllers and services, you can create your own directives for AngularJS to use. When AngularJS <a href="https://docs.angularjs.org/guide/bootstrap" target="_blank" rel="external">bootstraps</a> your application, the <a href="https://docs.angularjs.org/guide/compiler" target="_blank" rel="external">HTML compiler</a> traverses the DOM matching directives against the DOM elements.</p>
@@ -115,4 +313,276 @@
 <p>再来个难一点的自定义指令</p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;!doctype html&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">ng-app</span>=<span class="string">"MyModule"</span>&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">"utf-8"</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">"stylesheet"</span> <span class="attr">href</span>=<span class="string">"framework/bootstrap-3.0.0/css/bootstrap.css"</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">"stylesheet"</span> <span class="attr">href</span>=<span class="string">"common.css"</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"framework/angular-1.3.0.14/angular.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"framework/ui-bootstrap-tpls-0.11.0.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"Accordion-ngui.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"container"</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"row"</span>&gt;</span></div><div class="line">            <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"col-md-12"</span>&gt;</span></div><div class="line">                <span class="tag">&lt;<span class="name">div</span> <span class="attr">ng-controller</span>=<span class="string">"AccordionDemoCtrl"</span>&gt;</span></div><div class="line">                    <span class="tag">&lt;<span class="name">p</span>&gt;</span></div><div class="line">                        <span class="tag">&lt;<span class="name">button</span> <span class="attr">class</span>=<span class="string">"btn btn-default btn-md"</span> <span class="attr">ng-click</span>=<span class="string">"status.open = !status.open"</span>&gt;</span>Toggle last panel<span class="tag">&lt;/<span class="name">button</span>&gt;</span></div><div class="line">                        <span class="tag">&lt;<span class="name">button</span> <span class="attr">class</span>=<span class="string">"btn btn-default btn-md"</span> <span class="attr">ng-click</span>=<span class="string">"status.isFirstDisabled = ! status.isFirstDisabled"</span>&gt;</span>Enable / Disable first panel<span class="tag">&lt;/<span class="name">button</span>&gt;</span></div><div class="line">                    <span class="tag">&lt;/<span class="name">p</span>&gt;</span></div><div class="line"></div><div class="line">                    <span class="tag">&lt;<span class="name">label</span> <span class="attr">class</span>=<span class="string">"checkbox"</span>&gt;</span></div><div class="line">                        <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"checkbox"</span> <span class="attr">ng-model</span>=<span class="string">"oneAtATime"</span>&gt;</span>Open only one at a time</div><div class="line">                    <span class="tag">&lt;/<span class="name">label</span>&gt;</span></div><div class="line">                    <span class="tag">&lt;<span class="name">accordion</span> <span class="attr">close-others</span>=<span class="string">"oneAtATime"</span>&gt;</span></div><div class="line">                        <span class="tag">&lt;<span class="name">accordion-group</span> <span class="attr">heading</span>=<span class="string">"Static Header, initially expanded"</span> <span class="attr">is-open</span>=<span class="string">"status.isFirstOpen"</span> <span class="attr">is-disabled</span>=<span class="string">"status.isFirstDisabled"</span>&gt;</span></div><div class="line">                            This content is straight in the template.</div><div class="line">                        <span class="tag">&lt;/<span class="name">accordion-group</span>&gt;</span></div><div class="line">                        <span class="tag">&lt;<span class="name">accordion-group</span> <span class="attr">heading</span>=<span class="string">"&#123;&#123;group.title&#125;&#125;"</span> <span class="attr">ng-repeat</span>=<span class="string">"group in groups"</span>&gt;</span></div><div class="line">                            &#123;&#123;group.content&#125;&#125;</div><div class="line">                        <span class="tag">&lt;/<span class="name">accordion-group</span>&gt;</span></div><div class="line">                        <span class="tag">&lt;<span class="name">accordion-group</span> <span class="attr">heading</span>=<span class="string">"Dynamic Body Content"</span>&gt;</span></div><div class="line">                            <span class="tag">&lt;<span class="name">p</span>&gt;</span>The body of the accordion group grows to fit the contents<span class="tag">&lt;/<span class="name">p</span>&gt;</span></div><div class="line">                            <span class="tag">&lt;<span class="name">button</span> <span class="attr">class</span>=<span class="string">"btn btn-default btn-md"</span> <span class="attr">ng-click</span>=<span class="string">"addItem()"</span>&gt;</span>Add Item<span class="tag">&lt;/<span class="name">button</span>&gt;</span></div><div class="line">                            <span class="tag">&lt;<span class="name">div</span> <span class="attr">ng-repeat</span>=<span class="string">"item in items"</span>&gt;</span>&#123;&#123;item&#125;&#125;<span class="tag">&lt;/<span class="name">div</span>&gt;</span></div><div class="line">                        <span class="tag">&lt;/<span class="name">accordion-group</span>&gt;</span></div><div class="line">                        <span class="tag">&lt;<span class="name">accordion-group</span> <span class="attr">is-open</span>=<span class="string">"status.open"</span>&gt;</span></div><div class="line">                            <span class="tag">&lt;<span class="name">accordion-heading</span>&gt;</span></div><div class="line">                                I can have markup, too! <span class="tag">&lt;<span class="name">i</span> <span class="attr">class</span>=<span class="string">"pull-right glyphicon"</span> <span class="attr">ng-class</span>=<span class="string">"&#123;'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open&#125;"</span>&gt;</span><span class="tag">&lt;/<span class="name">i</span>&gt;</span></div><div class="line">                            <span class="tag">&lt;/<span class="name">accordion-heading</span>&gt;</span></div><div class="line">                            This is just some content to illustrate fancy headings.</div><div class="line">                        <span class="tag">&lt;/<span class="name">accordion-group</span>&gt;</span></div><div class="line">                    <span class="tag">&lt;/<span class="name">accordion</span>&gt;</span></div><div class="line">                <span class="tag">&lt;/<span class="name">div</span>&gt;</span></div><div class="line"></div><div class="line">            <span class="tag">&lt;/<span class="name">div</span>&gt;</span></div><div class="line">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></div></pre></td></tr></table></figure>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> myModule = angular.module(<span class="string">'MyModule'</span>, [<span class="string">'ui.bootstrap'</span>]);</div><div class="line">myModule.controller(<span class="string">'AccordionDemoCtrl'</span>, [<span class="string">'$scope'</span>,</div><div class="line">    <span class="function"><span class="keyword">function</span>(<span class="params">$scope</span>) </span>&#123;</div><div class="line"></div><div class="line">        $scope.oneAtATime = <span class="literal">true</span>;</div><div class="line"></div><div class="line">        $scope.groups = [&#123;</div><div class="line">            <span class="attr">title</span>: <span class="string">'Dynamic Group Header - 1'</span>,</div><div class="line">            <span class="attr">content</span>: <span class="string">'Dynamic Group Body - 1'</span></div><div class="line">        &#125;, &#123;</div><div class="line">            <span class="attr">title</span>: <span class="string">'Dynamic Group Header - 2'</span>,</div><div class="line">            <span class="attr">content</span>: <span class="string">'Dynamic Group Body - 2'</span></div><div class="line">        &#125;];</div><div class="line"></div><div class="line">        $scope.items = [<span class="string">'Item 1'</span>, <span class="string">'Item 2'</span>, <span class="string">'Item 3'</span>];</div><div class="line"></div><div class="line">        $scope.addItem = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">            <span class="keyword">var</span> newItemNo = $scope.items.length + <span class="number">1</span>;</div><div class="line">            $scope.items.push(<span class="string">'Item '</span> + newItemNo);</div><div class="line">        &#125;;</div><div class="line"></div><div class="line">        $scope.status = &#123;</div><div class="line">            <span class="attr">isFirstOpen</span>: <span class="literal">true</span>,</div><div class="line">            <span class="attr">isFirstDisabled</span>: <span class="literal">false</span></div><div class="line">        &#125;;</div><div class="line">    &#125;</div><div class="line">])</div></pre></td></tr></table></figure>
-</div></article></div></main><footer><div class="paginator"><a href="/2017/03/05/JavaScript/JavaScript API/" class="prev">上一篇</a><a href="/2017/01/18/工具类/在github pages利用hexo快速搭建静态个人主页以及更改域名/" class="next">下一篇</a></div><div class="copyright"><p>© 2014 - 2017 <a href="https://github.com/xuhongbo" target="_blank">xuhongbo-github</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" integrity="sha384-crwIf/BuaWM9rM65iM+dWFldgQ1Un8jWZMuh3puxb8TOY9+linwLoI7ZHZT+aekW" crossorigin="anonymous"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script></body></html>
+
+    
+  </div>
+</article>
+
+<button class="assist-btn2 circle" id="assist_btn2" title="点亮屏幕" style="left: 27px; top: 152px;">
+         <i class="iconfont" style="display:inline-block;color:red;width:20px;height:20px;">&#xe61d;</i>
+    </button>
+<button class="assist-btn1 circle" id="assist_btn1" title="关闭屏幕亮度" style="left: 27px; top: 152px;">
+         <i class="iconfont toc-title" style="display:inline-block;color:red;width:20px;height:20px;">&#xe61d;</i>
+    </button>
+	
+
+<script src="//cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script>	
+<script type="text/javascript">
+
+
+    // white theme
+    var body = {color: "#555", background: "#000"};
+    var a_tag = {color: "#222"};
+    var header = { background: "#222"};
+    var logo_line_i = {background: "#222"};
+    // var post_code = {background: "#eee", color: "#222"};
+
+    function switch_theme() {
+        $("body").css(body);
+        $("a:not('.links-of-author-item a, .site-state-item a, .site-state-posts a, .feed-link a, .motion-element a, .post-tags a, .show-commit-cls a, #donate_board a')").css(a_tag);
+        $(".header, .footer").css(header);
+        $(".logo-line-before i, .logo-line-after i").css(logo_line_i);
+        //$(".post code").css(post_code);
+        $("#idhyt-surprise-ball #idhyt-surprise-ball-animation .drag").css(a_tag);
+        $(".post-title-link, .posts-expand .post-meta, .post-comments-count, .disqus-comment-count, .post-category a, .post-nav-next a, .post-nav-item a").css(a_tag);
+        
+        // $("code").css({color: '#c5c8c6', background: '#1d1f21'});
+        //$("#assist_btn1").hide(1500);
+    }
+
+    $(function () {
+		$("#assist_btn2").css("display","none");
+        $("#assist_btn1").click(function() {
+            switch_theme();
+			$("div#toc.toc-article").css({
+				"background":"#eaeaea",
+				"opacity":1
+			});
+			$(".toc-article ol").show();
+			$("#toc.toc-article .toc-title").css("color","#a98602");
+			$("#assist_btn1").css("display","none");
+			$("#assist_btn2").css("display","block");
+        });
+		$("#assist_btn2").click(function() {
+			$("#assist_btn2").css("display","none");
+			$("#assist_btn1").css("display","block");
+			 $("body").css("background","url(http://www.miaov.com/static/ie/images/news/bg.png)")
+            $(".header, .footer").css("background","url(http://www.miaov.com/static/ie/images/news/bg.png)")
+			$(".toc-article ol").toggle(1000);
+        });
+    });
+
+	
+	//背景随机
+
+	var Y, O, E, L, B, C, T, z, N, S, A, I;
+	!function() {
+	var e = function() {
+		for (O.clearRect(0, 0, L, B), T = [{
+			x: 0,
+			y: .7 * B + C
+		}, {
+			x: 0,
+			y: .7 * B - C
+		}]; T[1].x < L + C;) t(T[0], T[1])
+	}, t = function(e, t) {
+			O.beginPath(), O.moveTo(e.x, e.y), O.lineTo(t.x, t.y);
+			var n = t.x + (2 * I() - .25) * C,
+				r = a(t.y);
+			O.lineTo(n, r), O.closePath(), N -= S / -50, O.fillStyle = "#" + (127 * A(N) + 128 << 16 | 127 * A(N + S / 3) + 128 << 8 | 127 * A(N + S / 3 * 2) + 128).toString(16), O.fill(), T[0] = T[1], T[1] = {
+				x: n,
+				y: r
+			}
+		}, a = function n(e) {
+			var t = e + (2 * I() - 1.1) * C;
+			return t > B || t < 0 ? n(e) : t
+		};
+	Y = document.getElementById("evanyou"), O = Y.getContext("2d"), E = window.devicePixelRatio || 1, L = window.innerWidth, B = window.innerHeight, C = 90, z = Math, N = 0, S = 2 * z.PI, A = z.cos, I = z.random, Y.width = L * E, Y.height = B * E, O.scale(E, E), O.globalAlpha = .6, document.onclick = e, document.ontouchstart = e, e()
+	}()
+
+          
+
+
+
+</script>
+
+</div>
+
+
+  <div class="text-center donation">
+    <div class="inner-donation">
+      <span class="btn-donation">支持一下</span>
+      <div class="donation-body">
+        <div class="tip text-center">扫一扫，支持poetries</div>
+        <ul class="theme.donation.items.length">
+        
+          <li class="item">
+            <img src="/images/weixin.jpg" alt="">
+          </li>
+        
+          <li class="item">
+            <img src="/images/zhifubao.jpg" alt="">
+          </li>
+        
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+
+
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/categories/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              分类
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/tags/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              标签
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/search/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              搜索
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/atom.xml"
+              rel="noopener noreferrer"
+              target="_blank"
+              >
+              RSS
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+
+    
+  <section class="duoshuo-comments">
+    <!-- 多说评论框 start -->
+    <div class="ds-thread" data-thread-key="http://xuhongbo.com/2017/02/18/框架/angular/angular Directives/index.html" data-title="angular directive" data-url="http://xuhongbo.com/2017/02/18/框架/angular/angular Directives/index.html"></div>
+    <!-- 多说评论框 end -->
+  </section>
+
+
+
+
+  <script type="text/javascript">
+  var duoshuoQuery = {short_name:"poetry"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0]
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+  </script>
+
+
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>
