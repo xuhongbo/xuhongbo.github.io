@@ -1,0 +1,988 @@
+@charset "UTF-8";
+/*=============================================================================================================================
+*
+*
+*	common.css
+*
+*
+===============================================================================================================================*/
+/*===============================================================================================
+*
+*	関数
+*
+=============================================================================================*/
+.pc {
+  display: block;
+}
+
+.pci {
+  display: inline-block;
+}
+
+.sp {
+  display: none;
+}
+
+.spi {
+  display: none;
+}
+
+.fl {
+  float: left;
+}
+
+.fr {
+  float: right;
+}
+
+a {
+  text-decoration: none;
+}
+
+p {
+  text-align: justify;
+}
+
+@media screen and (max-width: 768px) {
+  .sp {
+    display: block;
+  }
+
+  .spi {
+    display: inline-block;
+    width: 100%;
+    height: auto;
+    max-height: auto;
+  }
+
+  .pc {
+    display: none;
+  }
+
+  .pci {
+    display: none;
+  }
+}
+/*===============================================================================================
+*
+*	common
+*
+=============================================================================================*/
+body, html {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  font-size: 15px;
+  line-height: 2em;
+  color: #000000;
+  font-family: "游ゴシック体", "Yu Gothic", YuGothic, "ヒラギノ角ゴ Pro W3", "Hiragino Kaku Gothic Pro", "メイリオ", Meiryo, "ＭＳ Ｐゴシック", "MS PGothic", Arial, Osaka, Sans-Serif;
+}
+@media screen and (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+}
+
+h1 {
+  height: 110px;
+  line-height: 104px;
+  padding-left: 40px;
+}
+h1.none {
+  display: none;
+}
+@media screen and (max-width: 768px) {
+  h1 {
+    height: 80px;
+    line-height: 76px;
+    padding-left: 20px;
+  }
+  h1 img {
+    width: 120px;
+    height: auto;
+    max-height: auto;
+  }
+}
+
+/*----btn-----*/
+.btn {
+  position: relative;
+}
+.btn a, .btn input {
+  color: #8C8C8C;
+  width: 100%;
+  height: 100%;
+  border: 1px solid #B5B5B5;
+  text-align: center;
+  display: block;
+  z-index: 5;
+  background: url("../images/arrowRight.png"/*tpa=http://mvns.jp/assets/images/arrowRight.png*/) no-repeat 95% 50%;
+  background-size: 18px 6px;
+  padding: 10px 25px;
+  box-sizing: border-box;
+}
+.btn.back a {
+  background: url("../images/arrowLeft.png"/*tpa=http://mvns.jp/assets/images/arrowLeft.png*/) no-repeat 10% 50%;
+  background-size: 18px 6px;
+  padding-right: 20px;
+  padding-left: 40px;
+}
+@media screen and (max-width: 768px) {
+  .btn.back a {
+    background: url("../images/arrowLeft.png"/*tpa=http://mvns.jp/assets/images/arrowLeft.png*/) no-repeat 95% 50%;
+    background-size: 18px 6px;
+  }
+}
+.btn.backToList a {
+  background: url("../images/backtoList.gif"/*tpa=http://mvns.jp/assets/images/backtoList.gif*/) no-repeat 10% 46%;
+  background-size: 12px 11px;
+  padding-right: 20px;
+  padding-left: 40px;
+}
+@media screen and (max-width: 768px) {
+  .btn.backToList a {
+    background: url("../images/backtoList.gif"/*tpa=http://mvns.jp/assets/images/backtoList.gif*/) no-repeat 95% 50%;
+    background-size: 12px 11px;
+  }
+}
+.btn.blank a {
+  background: url("../images/blankIcon.png"/*tpa=http://mvns.jp/assets/images/blankIcon.png*/) no-repeat 93% 50%;
+  background-size: 10px 9px;
+  padding-right: 46px;
+}
+@media screen and (max-width: 768px) {
+  .btn a {
+    padding-right: 15px !important;
+    padding-left: 20px !important;
+    text-align: left !important;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  body, html {
+    width: auto;
+    height: auto;
+  }
+
+  body {
+    font-size: 14px;
+  }
+}
+/*===============================================================================================
+*
+*	Menu
+*
+=============================================================================================*/
+#MenuBtn {
+  position: fixed;
+  z-index: 100;
+  top: 28px;
+  right: 28px;
+  cursor: pointer;
+  width: 55px;
+  height: 50px;
+}
+#MenuBtn ul {
+  padding-top: 16px;
+  padding-left: 17px;
+}
+#MenuBtn ul li {
+  width: 27px;
+  height: 4px;
+  background: #D9D9D9;
+  margin-bottom: 10px;
+}
+#MenuBtn.black ul li {
+  background: #000000;
+}
+@media screen and (max-width: 768px) {
+  #MenuBtn {
+    top: 15px;
+    right: 18px;
+  }
+}
+
+#MenuArea {
+  position: fixed;
+  z-index: 50;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  display: none;
+}
+#MenuArea ul {
+  position: fixed;
+  z-index: 10;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+#MenuArea ul li {
+  font-size: 40px;
+  font-family: Helvetica, Arial, 'Hiragino Kaku Gothic ProN', 'ヒラギノ角ゴ ProN W3', Meiryo, メイリオ, sans-serif;
+  letter-spacing: 1px;
+  margin-bottom: 80px;
+  letter-spacing: 10px;
+  text-align: center;
+  opacity: 0;
+}
+#MenuArea ul li a {
+  color: #CFCFCF;
+}
+#MenuArea ul li:last-child {
+  margin-bottom: 0;
+}
+#MenuArea .bg {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  z-index: 5;
+}
+#MenuArea .bg div {
+  position: fixed;
+  height: 50%;
+  width: 100%;
+  background: #000000;
+  opacity: 0;
+}
+#MenuArea .bg div.top {
+  top: 0%;
+  height: 0%;
+}
+#MenuArea .bg div.under {
+  top: 100%;
+  height: 0%;
+}
+@media screen and (max-width: 768px) {
+  #MenuArea ul li {
+    font-size: 30px;
+    margin-bottom: 50px;
+  }
+}
+
+#BackToList {
+  position: absolute;
+  right: 90px;
+  top: 29px;
+  display: none;
+}
+#BackToList a {
+  font-size: 14px;
+  border: none;
+}
+
+/*=====================================================================================================================
+*======================================================================================================================
+*
+*
+*	#TopPase
+*
+*
+*======================================================================================================================
+=====================================================================================================================*/
+#TopPase {
+  /*===============================================================================================
+  *
+  *	header
+  *
+  =============================================================================================*/
+  /*===============================================================================================
+  *
+  *	AboutSection
+  *
+  =============================================================================================*/
+}
+#TopPase header {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  perspective: 900px;
+  backface-visibility: hidden;
+  overflow: hidden;
+}
+#TopPase header .coverWrapper {
+  display: none;
+}
+#TopPase header .animateWrapper {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transition: all 0.3s ease-out;
+}
+#TopPase header .animateWrapper .logo {
+  position: absolute;
+  z-index: 10;
+  top: 50%;
+  left: 50%;
+  margin-left: -193.5px;
+  margin-top: -27.5px;
+  pointer-events: none;
+  transition: all 0.3s ease-out;
+}
+#TopPase header .animateWrapper .logo div img {
+  margin-bottom: 19px;
+}
+#TopPase header .animateWrapper .logo div img.last-child {
+  margin-bottom: 0;
+}
+#TopPase header .animateWrapper .downArrow {
+  position: absolute;
+  z-index: 10;
+  left: 50%;
+  bottom: 10%;
+  margin-left: -19px;
+  transition: all 0.3s ease-out;
+  pointer-events: none;
+}
+#TopPase header .animateWrapper .cover {
+  position: absolute;
+  z-index: 7;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.42);
+  transition: all 0.3s ease-out;
+  opacity: 0;
+}
+#TopPase header .animateWrapper .bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: url("../images/topImage.jpg"/*tpa=http://mvns.jp/assets/images/topImage.jpg*/) no-repeat center center;
+  background-size: cover;
+  width: 100%;
+  height: 100%;
+  transition: all 0.3s ease-out;
+  opacity: 0;
+  transform: scale(1.1);
+}
+@media screen and (max-width: 768px) {
+  #TopPase header .animateWrapper {
+    width: 100%;
+    height: 500px;
+  }
+  #TopPase header .animateWrapper .logo {
+    text-align: center;
+  }
+  #TopPase header .animateWrapper .logo img {
+    width: 75%;
+    height: auto;
+    max-height: auto;
+  }
+  #TopPase header .animateWrapper .bg {
+    background: url("../images/topImage_sp.jpg"/*tpa=http://mvns.jp/assets/images/topImage_sp.jpg*/) no-repeat center center;
+    background-size: cover;
+  }
+}
+#TopPase #AboutSection {
+  width: 910px;
+  margin: 0 auto;
+  padding-top: 170px;
+}
+@media screen and (max-width: 768px) {
+  #TopPase #AboutSection {
+    width: 100%;
+    padding: 0 15px;
+    margin-top: 50px;
+    box-sizing: border-box;
+  }
+}
+#TopPase #AboutSection section {
+  width: 100%;
+}
+#TopPase #AboutSection section h2 {
+  float: left;
+}
+#TopPase #AboutSection section .block {
+  float: right;
+  font-size: 16px;
+  line-height: 2.1em;
+  margin-top: -9px;
+}
+#TopPase #AboutSection section .block p {
+  margin-bottom: 25px;
+}
+#TopPase #AboutSection section .block p.last-child {
+  margin-bottom: 0;
+}
+@media screen and (max-width: 768px) {
+  #TopPase #AboutSection section .block {
+    float: none;
+    font-size: 14px;
+    line-height: 2em;
+  }
+  #TopPase #AboutSection section .block h3 {
+    font-size: 15px;
+    font-weight: bold;
+    margin-top: 25px;
+    margin-bottom: 5px;
+  }
+  #TopPase #AboutSection section .block p {
+    margin-bottom: 0;
+  }
+}
+#TopPase #AboutSection .table {
+  width: 100%;
+  margin-top: 40px;
+}
+#TopPase #AboutSection .table dl {
+  background: #F2F2F2;
+  display: table;
+  width: 100%;
+  padding: 15px 0;
+  box-sizing: border-box;
+}
+#TopPase #AboutSection .table dl:nth-child(even) {
+  background: #FFFFFF;
+}
+#TopPase #AboutSection .table dl dt {
+  display: table-cell;
+  font-weight: bold;
+  padding-left: 25px;
+  width: 16%;
+}
+#TopPase #AboutSection .table dl dd {
+  display: table-cell;
+  width: 82%;
+}
+#TopPase #AboutSection .table dl dd span {
+  display: block;
+}
+#TopPase #AboutSection .table dl dd a {
+  font-size: 12px;
+  color: #ADADAD;
+  display: block;
+  margin-top: -3px;
+  text-decoration: underline;
+}
+@media screen and (max-width: 768px) {
+  #TopPase #AboutSection .table dl {
+    display: block;
+  }
+  #TopPase #AboutSection .table dl dt {
+    display: block;
+    padding-left: 15px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  #TopPase #AboutSection .table dl dd {
+    display: block;
+    width: 100%;
+    padding: 0 15px;
+    box-sizing: border-box;
+    font-size: 13px;
+  }
+}
+#TopPase #AboutSection .btnBlock {
+  width: 910px;
+  margin-top: 75px;
+}
+#TopPase #AboutSection .btnBlock .btn {
+  width: 440px;
+  text-align: center;
+}
+#TopPase #AboutSection .btnBlock .btn a {
+  padding: 18px 0;
+}
+#TopPase #AboutSection .btnBlock .left {
+  float: left;
+}
+#TopPase #AboutSection .btnBlock .right {
+  float: right;
+}
+@media screen and (max-width: 768px) {
+  #TopPase #AboutSection .btnBlock {
+    width: 100%;
+    margin-top: 30px;
+  }
+  #TopPase #AboutSection .btnBlock .btn {
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+  }
+  #TopPase #AboutSection .btnBlock .btn:last-child {
+    margin-bottom: 0;
+  }
+  #TopPase #AboutSection .btnBlock .left {
+    float: none;
+  }
+  #TopPase #AboutSection .btnBlock .right {
+    float: none;
+  }
+}
+
+/*=====================================================================================================================
+*======================================================================================================================
+*
+*
+*	#WorkPase
+*
+*
+*======================================================================================================================
+=====================================================================================================================*/
+#WorkPase .content {
+  width: 1500px;
+  margin: 0 auto;
+}
+@media screen and (max-width: 1540px) {
+  #WorkPase .content {
+    width: 1200px;
+  }
+}
+@media screen and (max-width: 1240px) {
+  #WorkPase .content {
+    width: 900px;
+  }
+}
+@media screen and (max-width: 758px) {
+  #WorkPase .content {
+    width: 100%;
+    padding: 0 15px;
+    box-sizing: border-box;
+  }
+}
+#WorkPase .content .thumnailBox li {
+  float: left;
+  margin: 25px;
+  position: relative;
+}
+#WorkPase .content .thumnailBox li a {
+  display: block;
+}
+#WorkPase .content .thumnailBox li a img {
+  width: 250px;
+  height: auto;
+  max-height: auto;
+}
+#WorkPase .content .thumnailBox li span {
+  position: absolute;
+  bottom: -32px;
+  color: #BFBFBF;
+  font-size: 11px;
+  display: block;
+}
+@media screen and (max-width: 758px) {
+  #WorkPase .content .thumnailBox li {
+    float: left;
+    margin: 0px;
+    margin-bottom: 8%;
+    width: 48%;
+  }
+  #WorkPase .content .thumnailBox li a img {
+    width: 100%;
+    height: auto;
+    max-height: auto;
+  }
+  #WorkPase .content .thumnailBox li:nth-child(even) {
+    float: right;
+  }
+  #WorkPase .content .thumnailBox li span {
+    bottom: -24px;
+    font-size: 9px;
+  }
+}
+
+/*=====================================================================================================================
+*======================================================================================================================
+*
+*
+*	#WorkDetailPase
+*
+*
+*======================================================================================================================
+=====================================================================================================================*/
+#WorkDetailPase #BackToList {
+  display: block;
+}
+#WorkDetailPase header {
+  height: 390px;
+  position: relative;
+}
+#WorkDetailPase header img {
+  display: none;
+}
+#WorkDetailPase header.coverLogo {
+  background-size: cover;
+}
+#WorkDetailPase header.logo img {
+  display: block;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+@media screen and (max-width: 768px) {
+  #WorkDetailPase header {
+    height: 250px;
+    background-size: cover;
+  }
+  #WorkDetailPase header.logo img {
+    width: 45%;
+    height: auto;
+    max-height: auto;
+  }
+}
+#WorkDetailPase .center {
+  width: 1024px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+@media screen and (max-width: 1024px) {
+  #WorkDetailPase .center {
+    width: 940px;
+  }
+}
+@media screen and (max-width: 768px) {
+  #WorkDetailPase .center {
+    width: 100%;
+    padding: 0 15px;
+  }
+}
+#WorkDetailPase .textSection {
+  margin-top: 75px;
+}
+#WorkDetailPase .textSection h2 {
+  font-size: 28px;
+  margin-bottom: 15px;
+}
+#WorkDetailPase .textSection .date {
+  font-size: 13px;
+  margin-bottom: 40px;
+}
+#WorkDetailPase .textSection p {
+  margin-bottom: 35px;
+  line-height: 2.1em;
+}
+#WorkDetailPase .textSection .block {
+  position: relative;
+}
+#WorkDetailPase .textSection .block .info {
+  line-height: 2.1em;
+  font-size: 14px;
+}
+#WorkDetailPase .textSection .block .btnBlock {
+  right: 0;
+  position: absolute;
+  bottom: 0;
+}
+#WorkDetailPase .textSection .block .btnBlock .backToList {
+  display: none !important;
+}
+#WorkDetailPase .textSection .block .btnBlock .btn {
+  display: inline-block;
+  margin-left: 10px;
+}
+#WorkDetailPase .textSection .block .btnBlock .btn a {
+  font-size: 14px;
+}
+@media screen and (max-width: 768px) {
+  #WorkDetailPase .textSection {
+    margin-top: 40px;
+  }
+  #WorkDetailPase .textSection h2 {
+    font-size: 22px;
+  }
+  #WorkDetailPase .textSection .date {
+    font-size: 11px;
+    margin-bottom: 30px;
+  }
+  #WorkDetailPase .textSection p {
+    margin-bottom: 25px;
+    line-height: 2em;
+  }
+  #WorkDetailPase .textSection .block .info {
+    line-height: 2em;
+    font-size: 12px;
+  }
+  #WorkDetailPase .textSection .block .btnBlock {
+    position: static;
+    margin-top: 30px;
+  }
+  #WorkDetailPase .textSection .block .btnBlock .backToList {
+    display: block !important;
+  }
+  #WorkDetailPase .textSection .block .btnBlock .btn {
+    display: block;
+    margin-left: 0px;
+    width: 100%;
+    margin-top: 10px;
+  }
+  #WorkDetailPase .textSection .block .btnBlock .btn a {
+    font-size: 13px;
+  }
+}
+#WorkDetailPase .imageSection {
+  margin-top: 70px;
+  padding-top: 80px;
+  padding-bottom: 30px;
+  background: #F2F2F2;
+}
+#WorkDetailPase .imageSection .center img {
+  float: left;
+  margin-bottom: 45px;
+}
+#WorkDetailPase .imageSection .center img:nth-child(even) {
+  float: right;
+}
+@media screen and (max-width: 768px) {
+  #WorkDetailPase .imageSection {
+    margin-top: 40px;
+    padding-top: 40px;
+    padding-bottom: 20px;
+  }
+  #WorkDetailPase .imageSection .center img {
+    float: none;
+    margin-bottom: 25px;
+    width: 100%;
+    height: auto;
+    max-height: auto;
+  }
+  #WorkDetailPase .imageSection .center img:nth-child(even) {
+    float: none;
+  }
+}
+#WorkDetailPase .btnSection {
+  margin-top: 60px;
+}
+#WorkDetailPase .btnSection .btn {
+  width: 326px;
+}
+#WorkDetailPase .btnSection .btn a {
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+#WorkDetailPase .btnSection .back {
+  float: left;
+}
+#WorkDetailPase .btnSection .backToList {
+  position: absolute;
+  left: 50%;
+  margin-left: -163px;
+}
+#WorkDetailPase .btnSection .next {
+  float: right;
+}
+@media screen and (max-width: 768px) {
+  #WorkDetailPase .btnSection .btn {
+    width: 100%;
+  }
+  #WorkDetailPase .btnSection .back {
+    float: none;
+  }
+  #WorkDetailPase .btnSection .backToList {
+    position: static;
+    margin: 10px 0;
+  }
+  #WorkDetailPase .btnSection .next {
+    float: none;
+  }
+}
+
+/*===============================================================================================
+*
+*	footer
+*
+=============================================================================================*/
+footer {
+  background: #000000;
+  width: 100%;
+  padding: 150px 70px 140px;
+  margin-top: 100px;
+  box-sizing: border-box;
+  color: #F2F2F2;
+  -webkit-font-smoothing: antialiased;
+}
+@media screen and (max-width: 768px) {
+  footer {
+    padding: 80px 15px;
+    margin-top: 80px;
+  }
+}
+footer .left {
+  float: left;
+}
+footer .left p {
+  font-size: 13px;
+  margin-top: 30px;
+  color: #8F8F8F;
+}
+@media screen and (max-width: 768px) {
+  footer .left {
+    float: none;
+    margin-bottom: 30px;
+    margin-left: 6px;
+  }
+  footer .left p {
+    margin-top: 20px;
+  }
+}
+footer .right {
+  float: right;
+  margin-top: -8px;
+}
+footer .right .title {
+  font-weight: bold;
+  font-family: Helvetica, Arial, 'Hiragino Kaku Gothic ProN', 'ヒラギノ角ゴ ProN W3', Meiryo, メイリオ, sans-serif;
+  letter-spacing: 1px;
+}
+footer .right .footerBtn {
+  margin-top: 17px;
+  width: 340px;
+  height: 60px;
+  line-height: 58px;
+  text-align: center;
+  position: relative;
+}
+footer .right .footerBtn a {
+  color: #FFFFFF;
+  width: 100%;
+  height: 100%;
+  border: 1px solid #828282;
+  position: absolute;
+  display: block;
+  z-index: 5;
+  background: url("../images/arrowRight.png"/*tpa=http://mvns.jp/assets/images/arrowRight.png*/) no-repeat 95% 50%;
+  box-sizing: border-box;
+}
+footer .right .footerBtn span {
+  position: absolute;
+  background: #828282;
+  display: block;
+  height: 100%;
+  width: 0%;
+}
+@media screen and (max-width: 768px) {
+  footer .right {
+    float: none;
+  }
+  footer .right .footerBtn {
+    margin-top: 10px;
+    width: 100%;
+  }
+}
+
+/*=====================================================================================================================
+*======================================================================================================================
+*
+*
+*	#ContactPase
+*
+*
+*======================================================================================================================
+=====================================================================================================================*/
+#ContactPase .content {
+  width: 720px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+@media screen and (max-width: 768px) {
+  #ContactPase .content {
+    width: 100%;
+    padding: 0 15px;
+  }
+}
+#ContactPase .content .mw_wp_form h3 {
+  display: none;
+  margin-bottom: 50px;
+}
+#ContactPase .content .mw_wp_form dl {
+  display: table;
+  margin-bottom: 30px;
+}
+#ContactPase .content .mw_wp_form dl dt, #ContactPase .content .mw_wp_form dl dd {
+  display: table-cell;
+  vertical-align: top;
+}
+#ContactPase .content .mw_wp_form dl dt {
+  width: 155px;
+}
+#ContactPase .content .mw_wp_form dl dd {
+  font-size: 13px;
+}
+#ContactPase .content .mw_wp_form dl dd input {
+  height: 35px;
+}
+#ContactPase .content .mw_wp_form dl dd input, #ContactPase .content .mw_wp_form dl dd textarea {
+  width: 565px;
+  max-width: 565px;
+  background: #F2F2F2;
+  border: none;
+  padding-left: 10px;
+  box-sizing: border-box;
+}
+#ContactPase .content .mw_wp_form dl dd textarea {
+  height: 200px;
+  padding: 10px;
+}
+#ContactPase .content .mw_wp_form .btn {
+  width: 350px;
+  margin: 0 auto;
+  height: 60px;
+  margin-top: 40px;
+  padding-right: 60px;
+}
+#ContactPase .content .mw_wp_form .btn input {
+  cursor: pointer;
+}
+#ContactPase .content .mw_wp_form.mw_wp_form_input h3.input {
+  display: block;
+}
+#ContactPase .content .mw_wp_form.mw_wp_form_preview h3.preview {
+  display: block;
+}
+#ContactPase .content .mw_wp_form.mw_wp_form_preview .btn {
+  text-align: center;
+  padding-right: 0;
+}
+#ContactPase .content .mw_wp_form.mw_wp_form_preview .btn input {
+  display: inline-block;
+}
+#ContactPase .content .mw_wp_form.mw_wp_form_preview .btn input:nth-child(1) {
+  width: 100px;
+  background: none;
+  margin-right: 15px;
+}
+#ContactPase .content .mw_wp_form.mw_wp_form_preview .btn input:nth-child(2) {
+  width: 200px;
+}
+@media screen and (max-width: 768px) {
+  #ContactPase .content .mw_wp_form h3 {
+    margin-bottom: 30px;
+  }
+  #ContactPase .content .mw_wp_form dl {
+    display: block;
+    margin-bottom: 20px;
+  }
+  #ContactPase .content .mw_wp_form dl dt, #ContactPase .content .mw_wp_form dl dd {
+    display: block;
+  }
+  #ContactPase .content .mw_wp_form dl dt {
+    width: 100%;
+    margin-bottom: 8px;
+  }
+  #ContactPase .content .mw_wp_form dl dd input, #ContactPase .content .mw_wp_form dl dd textarea {
+    width: 100%;
+    max-width: 100%;
+  }
+  #ContactPase .content .mw_wp_form .btn {
+    width: 100%;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  #ContactPase .content .mw_wp_form .btn input {
+    cursor: pointer;
+  }
+}
+
+#ContactPase header, #WorkPase header {
+  text-align: center;
+  margin-top: 35px;
+  margin-bottom: 60px;
+}
+@media screen and (max-width: 768px) {
+  #ContactPase header, #WorkPase header {
+    margin-top: 15px;
+    margin-bottom: 35px;
+  }
+}
