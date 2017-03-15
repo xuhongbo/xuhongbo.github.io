@@ -410,9 +410,9 @@
     <link href="http://xuhongbo.com/2017/01/26/%E8%A7%84%E8%8C%83/AMD%E4%B9%8Brequirejs/"/>
     <id>http://xuhongbo.com/2017/01/26/规范/AMD之requirejs/</id>
     <published>2017-01-25T18:09:23.000Z</published>
-    <updated>2017-03-15T09:14:10.996Z</updated>
+    <updated>2017-03-15T09:18:18.082Z</updated>
     
-    <content type="html"><![CDATA[<p>首先说一下，这篇文章是之前我一个好友给我的文档，并非原创 如有侵权请联系 <a href="xuhongbo@outlook.com">个人邮箱</a></p>
+    <content type="html"><![CDATA[<p>首先说一下，这篇文章是之前我一个好友给我的文档，并非原创 如有侵权请联系 xuhongbo@outlook.com</p>
 <p>还有就是如果问我为什么不分享CMD的，我感觉sea.js的中文社区很活跃，还有就是玉伯的sea.js中的issue中的解释也都很清晰 <a href="https://github.com/seajs/seajs/issues/547" target="_blank" rel="external">#547</a>其他的issue自己去找，都可以找得到的</p>
 <a id="more"></a>
 <h3 id="一：为什么使用require-js？"><a href="#一：为什么使用require-js？" class="headerlink" title="一：为什么使用require.js？"></a>一：为什么使用require.js？</h3><p>最早的时候，所有javascript代码都写在一个文件里，只要加载一个文件就够了，后来，代码越来越多，一个文件不够，必须分成多个文件，依次加载。<br><code>&lt;script src=&quot;1.js&quot;&gt;&lt;/script&gt;</code><br><code>&lt;script src=&quot;2.js&quot;&gt;&lt;/script&gt;</code><br><code>&lt;script src=&quot;3.js&quot;&gt;&lt;/script&gt;</code><br><code>&lt;script src=&quot;4.js&quot;&gt;&lt;/script&gt;</code><br><code>&lt;script src=&quot;5.js&quot;&gt;&lt;/script&gt;</code><br><code>&lt;script src=&quot;6.js&quot;&gt;&lt;/script&gt;</code><br>这段代码依次加载多个js文件。<br>这样的写法有很大缺点，首先，加载的时候，浏览器会停止网页渲染，加载文件越多，网页失去响应的时间就会越长；其次，由于js文件之间存在依赖关系，因此必须严格保证加载顺序。<br>require.js解决两大问题：<br>(1) 实现js文件的异步加载，避免网页失去响应。<br>(2) 管理模块之间的依赖性，便于代码的编写和维护。</p>
@@ -438,7 +438,7 @@
     
     <summary type="html">
     
-      &lt;p&gt;首先说一下，这篇文章是之前我一个好友给我的文档，并非原创 如有侵权请联系 &lt;a href=&quot;xuhongbo@outlook.com&quot;&gt;个人邮箱&lt;/a&gt;&lt;/p&gt;
+      &lt;p&gt;首先说一下，这篇文章是之前我一个好友给我的文档，并非原创 如有侵权请联系 xuhongbo@outlook.com&lt;/p&gt;
 &lt;p&gt;还有就是如果问我为什么不分享CMD的，我感觉sea.js的中文社区很活跃，还有就是玉伯的sea.js中的issue中的解释也都很清晰 &lt;a href=&quot;https://github.com/seajs/seajs/issues/547&quot;&gt;#547&lt;/a&gt;其他的issue自己去找，都可以找得到的&lt;/p&gt;
     
     </summary>
@@ -1154,11 +1154,11 @@
   </entry>
   
   <entry>
-    <title>ui-router</title>
+    <title>Angular-ui-router</title>
     <link href="http://xuhongbo.com/2016/12/14/%E6%A1%86%E6%9E%B6/angular/ui-router/"/>
     <id>http://xuhongbo.com/2016/12/14/框架/angular/ui-router/</id>
     <published>2016-12-14T05:57:30.000Z</published>
-    <updated>2017-03-02T14:41:07.318Z</updated>
+    <updated>2017-03-15T09:16:44.772Z</updated>
     
     <content type="html"><![CDATA[<h2 id="为什么用-Route"><a href="#为什么用-Route" class="headerlink" title="为什么用 Route"></a>为什么用 Route</h2><ul>
 <li>AJAX 请求不会留下 History 记录</li>
