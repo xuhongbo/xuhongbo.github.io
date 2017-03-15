@@ -1224,14 +1224,14 @@
     <link href="http://xuhongbo.com/2016/10/20/%E8%A7%84%E8%8C%83/Common&amp;AMD&amp;CMD/"/>
     <id>http://xuhongbo.com/2016/10/20/规范/Common&amp;AMD&amp;CMD/</id>
     <published>2016-10-20T15:02:33.000Z</published>
-    <updated>2017-03-15T08:37:17.932Z</updated>
+    <updated>2017-03-15T08:39:59.724Z</updated>
     
     <content type="html"><![CDATA[<p>前言：个人认为想要最快的去学习某个新的技术最直接的是要知道它能解决什么事情，如果不知道他要做什么，我感觉源码让你看烂也不行，下面我将在下面的几个方面讲述一下前端模块化的必要性，这里<a href="https://github.com/seajs/seajs/issues/547" target="_blank" rel="external">#547 </a>玉伯也就是sea.js作者说的特别清楚 ，以及实现的方式，</p>
 <p><strong>记住AMD&amp;CMD解决的是文件之间相互依赖的情况下script标签顺序问题而导致依赖关系发生错误，还有就是js文件的加载会阻塞页面渲染，使用AMD&amp;CMD我们就可以等到相关的js依赖加载完毕后，再去执行我们后面的代码（requirejs是执行后面的回调函数，seajs是依赖就近）</strong></p>
 <a id="more"></a>
 <h3 id="JavaScript语言的不足"><a href="#JavaScript语言的不足" class="headerlink" title="JavaScript语言的不足"></a>JavaScript语言的不足</h3><p>对于JavaScript文件：</p>
 <ul>
-<li>文件按<script>顺序加载，JavaScript本身缺少对文件依赖关系的管理。更重要的是：js文件的加载会阻塞页面渲染。</li>
+<li>文件按<code>&lt;script&gt;</code>顺序加载，JavaScript本身缺少对文件依赖关系的管理。更重要的是：js文件的加载会阻塞页面渲染。</li>
 <li>在单页面Web应用中，只有一个页面，但许多script不需要在页面初始化的时候一次性加载，只需要在加载了某个子页面时加载——这在Python叫模块动态加载、很自然；而原生JavaScript中是没有任何机制可以实现的。—— 这是一个性能问题。</li>
 </ul>
 <p>对于全局命名空间：</p>
@@ -1243,7 +1243,7 @@
 <li>即使不出现上述问题，模块化本身也是一个需求。模块化可以实现高内聚、低耦合的良好系统，但JavaScript没有提供模块化工具——我们至少需要“定义模块”和“引用模块”的功能。</li>
 </ul>
 <h3 id="注意到没：JavaScript的第三方库，都是单JS文件！！！"><a href="#注意到没：JavaScript的第三方库，都是单JS文件！！！" class="headerlink" title="注意到没：JavaScript的第三方库，都是单JS文件！！！"></a>注意到没：JavaScript的第三方库，都是单JS文件！！！</h3><p>不论多大、不论多少行内！@#￥%……&amp;*（）——</p>
-<h3 id="所以我们的js中诞生了模块化这个概念………"><a href="#所以我们的js中诞生了模块化这个概念………" class="headerlink" title="所以我们的js中诞生了模块化这个概念………"></a>所以我们的js中诞生了模块化这个概念………</h3><p><strong>CommonJS 加载模块是同步的  <a href="https://github.com/seajs/seajs/issues/269">#269</a> ，所以只有加载完成才能执行后面的操作。像Node.js主要用于服务器的编程，加载的模块文件一般都已经存在本地硬盘，所以加载起来比较快，不用考虑异步加载的方式，所以CommonJS规范比较适用。但如果是浏览器环境，要从服务器加载模块，这是就必须采用异步模式。所以就有了 AMD  CMD 解决方案。</strong> </p>
+<h3 id="所以我们的js中诞生了模块化这个概念………"><a href="#所以我们的js中诞生了模块化这个概念………" class="headerlink" title="所以我们的js中诞生了模块化这个概念………"></a>所以我们的js中诞生了模块化这个概念………</h3><p><strong>CommonJS 加载模块是同步的  <a href="https://github.com/seajs/seajs/issues/269" target="_blank" rel="external">#269</a> ，所以只有加载完成才能执行后面的操作。像Node.js主要用于服务器的编程，加载的模块文件一般都已经存在本地硬盘，所以加载起来比较快，不用考虑异步加载的方式，所以CommonJS规范比较适用。但如果是浏览器环境，要从服务器加载模块，这是就必须采用异步模式。所以就有了 AMD  CMD 解决方案。</strong> </p>
 <p>下面再说一下AMD与CMD的区别</p>
 <p>CMD和AMD的区别有以下几点：</p>
 <p>1.对于依赖的模块AMD是提前执行，CMD是延迟执行。不过RequireJS从2.0开始，也改成可以延迟执行（根据写法不同，处理方式不通过）。</p>
@@ -1348,7 +1348,7 @@
 <li>.js常常可以省略<br>比如main-data中指定的js文件，可以省略路径；path中指定的位置、如果是本地文件，可以省略后缀</li>
 <li>用别名代替全路径</li>
 </ul>
-</script></li></ul>]]></content>
+]]></content>
     
     <summary type="html">
     
